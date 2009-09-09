@@ -1,0 +1,72 @@
+<project name="ncombat" basedir="." default="all">
+
+<property file="build.properties"/>
+<property name="build.dir" location="build"/>
+<property name="stage.dir" location="${build.dir}/stage"/>
+<property name="deploy.dir" location="${build.dir}/deploy"/>
+<property name="dist.dir" location="dist"/>
+
+<target name="all" depends="compile,stage,package">
+</target>
+
+<target name="init">
+	<mkdir dir="${build.dir}"/>
+	<mkdir dir="${dist.dir}"/>
+</target>
+
+<target name="clean">
+	<delete dir="${build.dir}" failonerror="false"/>
+	<delete dir="${dist.dir}" failonerror="false"/>
+</target>
+
+<target name="compile" depends="init">
+	<mkdir dir="${stage.dir}/WEB-INF/classes"/>
+	<javac srcdir="src" destdir="${stage.dir}/WEB-INF/classes">
+		<classpath>
+			<fileset dir=".">
+				<include name="WebContent/WEB-INF/lib/*.jar"/>
+				<include name="lib/*.jar"/>
+			</fileset>
+		</classpath>
+	</javac>
+</target>
+
+<target name="stage" depends="init">
+	<copy todir="${stage.dir}">
+		<fileset dir="WebContent">
+			<exclude name="WEB-INF/classes/**/*"/>
+		</fileset>
+	</copy>
+
+	<copy todir="${stage.dir}" includeEmptyDirs="false">
+		<fileset dir="src">
+			<exclude name="**/*.java"/>
+		</fileset>
+	</copy>
+
+	<copy todir="${stage.dir}/WEB-INF/src">
+		<fileset dir="src">
+			<include name="**/*.java"/>
+		</fileset>
+	</copy>
+</target>
+
+<target name="package" depends="init">
+	<zip destfile="${dist.dir}/${war.file}" basedir="${stage.dir}"/>
+</target>
+
+<target name="deploy" depends="init">
+	<copy file="${dist.dir}/${war.file}" tofile="${deploy.dir}/${deploy.ftp.file}"/>
+
+	<echo message="Deploy FTP server: ${deploy.ftp.server}"/>
+	<echo message="Deploy FTP user:   ${deploy.ftp.user}"/>
+
+	<ftp server="${deploy.ftp.server}"
+		 userid="${deploy.ftp.user}"
+		 password="${deploy.ftp.password}">
+
+		<fileset dir="${deploy.dir}"/>
+	</ftp>
+</target>
+
+</project>
