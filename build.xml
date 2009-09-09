@@ -56,6 +56,8 @@
 </target>
 
 <target name="deploy" depends="init">
+	<input message="Enter password: " addproperty="deploy.ftp.password"/>
+
 	<copy file="${dist.dir}/${war.file}" tofile="${deploy.dir}/${deploy.ftp.file}"/>
 
 	<echo message="Deploy FTP server: ${deploy.ftp.server}"/>
