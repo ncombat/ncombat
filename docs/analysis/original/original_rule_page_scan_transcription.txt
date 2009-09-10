@@ -122,26 +122,37 @@ SP      DMG     P1 P2   Speed Course Azimuth    Range Heading
 * this much for own ship*
 
 SP = ship number
+
 DMG =damage to ship
+
 P1 = power on shield 1
 P2 = power on shield 2
+
 Speed = speed of ship in km/sec.
+
 Course = flight angle away from or toward your ship.
-If your own ships course is not equal to zero, it means you are not pointing the direction you are moving. 180 or -180 indicates you are pointing opposite the direction you are moving. To regain a 0 course angle, rotate -negative- the course angle.
-Ex: -136.5 so: r136.5
-to stop the movement of your ship, you must accelerate in the opposite direction of the initial acceleration.
-Ex: 152.3 add 27.7 to get 180 thus: R27.7 or R-152.3 which will allow you to use reverse engines. Or do I1,x where x is your ship number. It will figure out all the angles and speeds needed. Just enter them. Remember to wait until you have rotated (up to 30 seconds) before accelerating.
-The course of another ship indicates whether it is coming toward you or moving away (180 or -180) 
-Ex: -27 means the other ship will move past you
-Ex: -.3 means ship is coming almost at you.
+	If your own ships course is not equal to zero, it means you are not pointing the direction you are moving. 
+	180 or -180 indicates you are pointing opposite the direction you are moving. 
+	To regain a 0 course angle, rotate -negative- the course angle.
+		Ex: -136.5 so: r136.5
+	to stop the movement of your ship, you must accelerate in the opposite direction of the initial acceleration.
+	Ex: 152.3 add 27.7 to get 180 thus: R27.7 or R-152.3 which will allow you to use reverse engines. Or do I1,x where x is your ship number. It will figure out all the angles and speeds needed. Just enter them. Remember to wait until you have rotated (up to 30 seconds) before accelerating.
+	The course of another ship indicates whether it is coming toward you or moving away (180 or -180) 
+	Ex: -27 means the other ship will move past you
+	Ex: -.3 means ship is coming almost at you.
+
 Azimuth = angle off line of fire (from front of ship)
-Ex: your own course is zero, azimuth to ship is -179 means you are moving almost directly away from ship 3, and are unable to make any hits on ship 3.
-Ex: ship 5 is at range 20300 Azimuth 137.2 and you wish to hit ship 5 with missiles. This:
-R 137.2 then: A1,30
-A little later ship is at range less than 20000 and you can fire with missiles. But then ship 5 starts moving off at high speed, so you use the I1,5 command to parallel ship 5 to make stationary relative to you...by this time ship 5 has been destroyed by ship 9 and ship 2 popped up 5000 km from you and is making life miserable...
+	Ex: your own course is zero, azimuth to ship is -179 means you are moving almost directly away from ship 3, 
+		and are unable to make any hits on ship 3.
+	Ex: ship 5 is at range 20300 Azimuth 137.2 and you wish to hit ship 5 with missiles. 
+	This: R 137.2 then: A1,30
+	A little later ship is at range less than 20000 and you can fire with missiles. 
+		But then ship 5 starts moving off at high speed, so you use the I1,5 command to parallel ship 5 to make stationary relative to you...by this time ship 5 has been destroyed by ship 9 and ship 2 popped up 5000 km from you and is making life miserable...
+	
 Range = distance to ship in KM.
+	
 Heading = direction ship is pointing (0=at you 180=away from you) 
-Ex: ship 2 has heading of 2.5 degrees. This means that player 2 seens that the azimuth to you is 2.5 and it just so happens the range is 18000 km so he decides to fire 2 missiles at you.
+	Ex: ship 2 has heading of 2.5 degrees. This means that player 2 seens that the azimuth to you is 2.5 and it just so happens the range is 18000 km so he decides to fire 2 missiles at you.
 
 Data about your own ship comes before commands input request.
 
