@@ -8,17 +8,17 @@ import junit.framework.TestCase;
 
 public class VectorTest extends TestCase
 {
-	public void testAbs()
-	{
-		Vector v1 = new Vector(3.0, 4.0);
-		assertEquals(5.0, v1.abs());
-		
-		Vector v2 = new Vector(4.0, 3.0);
-		assertEquals(5.0, v2.abs());
-		
-		Vector v3 = new Vector(-3.0, 4.0);
-		assertEquals(5.0, v3.abs());
-	}
+	public void testR()
+		{
+			Vector v1 = new Vector(3.0, 4.0);
+			assertEquals(5.0, v1.r());
+			
+			Vector v2 = new Vector(4.0, 3.0);
+			assertEquals(5.0, v2.r());
+			
+			Vector v3 = new Vector(-3.0, 4.0);
+			assertEquals(5.0, v3.r());
+		}
 	
 	public void testAddSubtractNegate()
 	{
@@ -34,7 +34,7 @@ public class VectorTest extends TestCase
 		assertEquals(diff.negate(), v2.subtract(v1));
 	}
 	
-	public void testAngle()
+	public void testAngleTheta()
 	{
 		double sqr3 = Math.sqrt(3.0);
 		
@@ -58,6 +58,13 @@ public class VectorTest extends TestCase
 		double tol = 1.0e-5;
 		
 		ArrayList<Double> angles = new ArrayList<Double>(vectors.keySet());
+		
+		for (double angle : angles) {
+			Vector vector = vectors.get(angle);
+			double canonAngle = (angle < 180.0 ? angle : angle - 360.0);
+			assertEquals(canonAngle, vector.thetaDegrees(), tol);
+		}
+		
 		for (int i = 0 ; i < angles.size() ; i++) {
 			double angle1 = angles.get(i);
 			Vector vector1 = vectors.get(angle1);
@@ -79,14 +86,14 @@ public class VectorTest extends TestCase
 	public void testCtorsAndGetters()
 	{
 		Vector v1 = new Vector();
-		assertEquals(0.0, v1.getX());
-		assertEquals(0.0, v1.getY());
+		assertEquals(0.0, v1.x());
+		assertEquals(0.0, v1.y());
 		
 		double x = 1.0;
 		double y = 3.0;
 		Vector v2 = new Vector(x,y);
-		assertEquals(x, v2.getX());
-		assertEquals(y, v2.getY());
+		assertEquals(x, v2.x());
+		assertEquals(y, v2.y());
 	}
 	
 	public void testDot()
@@ -154,8 +161,8 @@ public class VectorTest extends TestCase
 		double tol = 1.0e-16;
 
 		Vector proj = v75.proj(v45);
-		assertEquals(sqr3 / sqr2, proj.getX(), tol);
-		assertEquals(sqr3 / sqr2, proj.getY(), tol);
+		assertEquals(sqr3 / sqr2, proj.x(), tol);
+		assertEquals(sqr3 / sqr2, proj.y(), tol);
 		
 		assertEquals(sqr3, v75.comp(v45), tol);
 		assertEquals(1.0, v75.distance(v45), tol);

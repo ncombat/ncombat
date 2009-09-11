@@ -29,9 +29,10 @@ public class Vector
 	}
 	
 	/**
-	 * Returns the absolute value (also known as the magnitude) of this vector.
+	 * Returns the magnitude of this vector, often denoted as <code>r</code> in
+	 * polar coordinates.
 	 */
-	public double abs() {
+	public double r() {
 		return Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2));
 	}
 	
@@ -51,7 +52,7 @@ public class Vector
 	 */
 	public double angle(Vector that)
 	{
-		double cos = this.dot(that) / (this.abs() * that.abs());
+		double cos = this.dot(that) / (this.r() * that.r());
 		cos = Math.min(cos, 1.0);
 		cos = Math.max(cos, -1.0);
 		return Math.acos(cos);
@@ -77,7 +78,7 @@ public class Vector
 	 * Returns the perpendicular distance to a vector.
 	 */
 	public double distance(Vector that) {
-		return this.subtract(this.proj(that)).abs();
+		return this.subtract(this.proj(that)).r();
 	}
 	
 	/**
@@ -106,14 +107,14 @@ public class Vector
 	/**
 	 * Returns the x coordinate of this vector.
 	 */
-	public double getX() {
+	public double x() {
 		return x;
 	}
 	
 	/**
 	 * Returns the y coordinate of this vector.
 	 */
-	public double getY() {
+	public double y() {
 		return y;
 	}
 
@@ -187,6 +188,23 @@ public class Vector
 	 * Returns the unit vector in the same direction as this vector.
 	 */
 	public Vector unit() {
-		return divide(abs());
+		return divide(r());
 	}
+	
+	/**
+	 * Returns the angular coordinate of this vector in polar coordinates, often
+	 * denoted as <code>theta</code>, in radians.
+	 */
+	public double theta() {
+		return Math.atan2(y, x);
+	}
+	
+	/**
+	 * Returns the angular coordinate of this vector in polar coordinates, often
+	 * denoted as <code>theta</code>, in degrees.
+	 */
+	public double thetaDegrees() {
+		return Math.toDegrees( theta());
+	}
+
 }
