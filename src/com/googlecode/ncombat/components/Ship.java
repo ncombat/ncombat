@@ -3,12 +3,13 @@ package com.googlecode.ncombat.components;
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-
-import com.googlecode.ncombat.utils.NCombatConstants;
+import com.googlecode.ncombat.utils.*;
 
 
 /**
  * @author lmiller
+ *
+ *	Ship class is primary game object - receives commands from game server.
  *
  */
 public class Ship {
@@ -16,7 +17,7 @@ public class Ship {
 	public String guid;
 	private double y;
 	private double x;
-	private double course;
+	private double course; // TODO: degrees or radians?
 	private double velocity;
 	private double heading;
 	private int power;
@@ -30,13 +31,45 @@ public class Ship {
 	private int pendingAccelerationTime;
 	private int accelerationRate;
 	private int laserCooldown;
-	private int tube1Time;
-	private int tube2Time;
+	private MissileTube tube1;
+	private MissileTube tube2;
 	private int freeMissileTube;
 	private boolean negativeTurn;
 	NumberFormat xyForm = new DecimalFormat("0000.0");
 	
-	
+
+	class MissileTube {
+		
+		// note there is NOT a missile object - server controls missile generation, movement and lifecycle.
+		// Ship controls firing and tubes only.
+		int remainingLoadTime = 0;
+		
+		void update() {
+			if (remainingLoadTime > 0) { remainingLoadTime--; }
+			// special case: if we ran out of missiles, tubes were disabled by setting load time to -1. 
+			// If missles are restored, need to reload tubes.
+			if (missiles > 0 && remainingLoadTime == -1) {
+				reload();
+			}
+		}
+		
+		void fire(int target) {
+			if (remainingLoadTime==0) {
+				// TODO: here is where I tell the server I am firing at target - server handles from there
+				reload();
+			}
+		}
+		
+		void reload() {
+			if (missiles > 0) {	
+				missiles--;
+				remainingLoadTime=NCombatUtils.MISSILE_LOAD_TIME_SECONDS;
+			}
+			else {
+				remainingLoadTime = -1; // tube will never be ready
+			}	
+		}
+	}
 	/**
 	 * @param args
 	 */
@@ -55,8 +88,8 @@ public class Ship {
 		shield1 = 100;
 		shield2 = 100;
 		id = 1;
-		
-		
+		tube1 = new MissileTube();
+		tube2 = new MissileTube();
 		messages = new StringBuffer();
 	}
 	
@@ -186,29 +219,20 @@ public class Ship {
  * CD percent damage on ship itself
 */
 	public void fireMissile(int target){
-		getFreeMissileTube();
-		// are there missiles left?
-		if (missiles > 0) { 
-			// is there a available tube?
-			if (freeMissileTube > 0) {
-				// fire the missile
+		MissileTube tube = null;
+		if (tube1.remainingLoadTime==0) tube = tube1;
+		if (tube2.remainingLoadTime==0) tube = tube2;
+		if (tube == null)
+		{
+			messages.append("Can't fire missile at target " + target + " : " + (missiles == 0 ? "No missiles left" : "tubes not ready"));
+		}
+		else {
+		// fire the missile
 				messages.append ("Firing missile from tube " + freeMissileTube + " at target " + target  + "\n");
-				missiles--;
-				if (freeMissileTube == 1) {tube1Time = 60;}
-				if (freeMissileTube == 2) {tube2Time = 60;}
-				getFreeMissileTube();
-			}
-			else {messages.append ("Can't fire missile at target " + target  + ", no free tube: tube1Time:  " + tube1Time + " tube2Time: " + tube2Time + "\n"); }
-		 }
-		else { messages.append ("Can't fire missile: at target " + target  + ", no missiles remaining\n"); }
+				tube.fire(target);
+		}
 	}
 		
-	private void getFreeMissileTube() {
-		if (tube1Time == 0)   { freeMissileTube = 1; return; }
-		if (tube2Time == 0)  {freeMissileTube= 2; return;}
-		freeMissileTube = 0;
-	}
-
 	/*N - null command, If player wishes to get the latest information about the position of ships, ships destroyed and other related information, and have used only the b,c,e,g,i usually n */
 	public void noCommand() {
 		
@@ -260,11 +284,11 @@ Ex FS2 turns S1 and S2on to full and then turns s2 off, faster than S1,25. Shiel
 	
 	public void update(){	
 		
-		if (power >= ((accelerationRate) * NCombatConstants.ENGINE_POWER_CONSUMPTION)) {
+		if (power >= ((accelerationRate) * NCombatUtils.ENGINE_POWER_CONSUMPTION)) {
 			if (pendingAccelerationTime > 0) {
 				velocity = velocity + accelerationRate;
 				pendingAccelerationTime--;
-				power = power-((accelerationRate) * NCombatConstants.ENGINE_POWER_CONSUMPTION);
+				power = power-((accelerationRate) * NCombatUtils.ENGINE_POWER_CONSUMPTION);
 			}
 		}
 		else {messages.append("No acceleration, power depleted - burn will resume when power restored\n");}
@@ -280,12 +304,12 @@ Ex FS2 turns S1 and S2on to full and then turns s2 off, faster than S1,25. Shiel
 			else {
 				// need to increment
 				if (negativeTurn) { // less than 0, CCW rotation
-					heading = heading - NCombatConstants.BASE_TURN_RATE;
-					remainingHeadingChange = remainingHeadingChange + NCombatConstants.BASE_TURN_RATE;
+					heading = heading - NCombatUtils.BASE_TURN_RATE;
+					remainingHeadingChange = remainingHeadingChange + NCombatUtils.BASE_TURN_RATE;
 				}
 				else { // CW rotation
-					heading = heading + NCombatConstants.BASE_TURN_RATE;
-					remainingHeadingChange = remainingHeadingChange - NCombatConstants.BASE_TURN_RATE;
+					heading = heading + NCombatUtils.BASE_TURN_RATE;
+					remainingHeadingChange = remainingHeadingChange - NCombatUtils.BASE_TURN_RATE;
 				}
 			}
 
@@ -300,22 +324,22 @@ Ex FS2 turns S1 and S2on to full and then turns s2 off, faster than S1,25. Shiel
 		y = y + (velocity * (Math.sin(Math.toRadians(heading))));
 		
 		// keep ship within boundaries
-		if (x > NCombatConstants.ARENA_SIZE) { x = 0; }
-		if (x < 0) { x = NCombatConstants.ARENA_SIZE; }
-		if (y > NCombatConstants.ARENA_SIZE) { y = 0; }
-		if (y < 0) { y = NCombatConstants.ARENA_SIZE; }
+		if (x > NCombatUtils.ARENA_SIZE) { x = 0; }
+		if (x < 0) { x = NCombatUtils.ARENA_SIZE; }
+		if (y > NCombatUtils.ARENA_SIZE) { y = 0; }
+		if (y < 0) { y = NCombatUtils.ARENA_SIZE; }
 		
 		// missile time 
-		if (tube1Time > 0) {tube1Time--;}
-		if (tube2Time > 0) {tube2Time--;}
-
+		tube1.update();
+		tube2.update();
+		
 		// laserTime
 		if (laserCooldown > 0) {laserCooldown--;}
 		
 		//update power and damage
-		power = power + NCombatConstants.BASE_POWER_PRODUCTION_RATE;
+		power = power + NCombatUtils.BASE_POWER_PRODUCTION_RATE;
 		if (power> 2000) {power = 2000;}
-		if (damage > 0) { damage = damage - NCombatConstants.BASE_REPAIR_RATE; }
+		if (damage > 0) { damage = damage - NCombatUtils.BASE_REPAIR_RATE; }
 	}
 	
 	
@@ -410,11 +434,48 @@ Ex FS2 turns S1 and S2on to full and then turns s2 off, faster than S1,25. Shiel
 	}
 
 	public int getTube1Time() {
-		return tube1Time;
+		return tube1.remainingLoadTime;
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((guid == null) ? 0 : guid.hashCode());
+		result = prime * result + id;
+		long temp;
+		temp = Double.doubleToLongBits(x);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(y);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Ship other = (Ship) obj;
+		if (guid == null) {
+			if (other.guid != null)
+				return false;
+		} else if (!guid.equals(other.guid))
+			return false;
+		if (id != other.id)
+			return false;
+		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+			return false;
+		if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+			return false;
+		return true;
 	}
 
 	public int getTube2Time() {
-		return tube2Time;
+		return tube2.remainingLoadTime;
 	}
 
 	public double getVelocity() {
