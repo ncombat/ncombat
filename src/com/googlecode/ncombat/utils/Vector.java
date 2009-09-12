@@ -11,6 +11,9 @@ public class Vector
 	/** The unit vector along the Cartesian y axis. */
 	public static final Vector J = new Vector(0.0, 1.0);
 	
+	private static final double PI = Math.PI;
+	private static final double TWO_PI = 2.0 * Math.PI;
+	
 	private double x;
 	private double y;
 
@@ -52,10 +55,19 @@ public class Vector
 	 */
 	public double angle(Vector that)
 	{
-		double cos = this.dot(that) / (this.r() * that.r());
-		cos = Math.min(cos, 1.0);
-		cos = Math.max(cos, -1.0);
-		return Math.acos(cos);
+		double angle = that.theta() - this.theta();
+		
+		if (angle < -PI) {
+			angle += TWO_PI;
+		}
+		else if (angle > PI) {
+			angle -= TWO_PI;
+		}
+		
+		angle = Math.max(-PI, angle);
+		angle = Math.min(angle, PI);
+		
+		return angle;
 	}
 	
 	/**

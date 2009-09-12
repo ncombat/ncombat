@@ -71,13 +71,24 @@ public class VectorTest extends TestCase
 			for (int j = 0 ; j < angles.size() ; j++) {
 				double angle2 = angles.get(j);
 				Vector vector2 = vectors.get(angle2);
-				double angleDiff = angle1 - angle2;
-				if (angleDiff < 0.0) angleDiff += 360.0;
-				if (angleDiff > 180.0) angleDiff = 360.0 - angleDiff;
+				
+				double angleDiff = angle2 - angle1;
+				if (angleDiff < -180.0) angleDiff += 360.0;
+				if (angleDiff > 180.0) angleDiff -= 360.0;
+				
+				double v1v2theta = vector1.angleDegrees(vector2);
+				double v2v1theta = vector2.angleDegrees(vector1);
+				
+				// Deal with the case where angle is arbitrary (+/-180)
+				if ((Math.abs(angleDiff) == 180.0) && (Math.abs(v1v2theta) == 180.0)) {
+					angleDiff = v1v2theta;
+				}
+				
 				assertEquals("(1) angle1: " + angle1 + ", angle2: " + angle2,
-								angleDiff, vector1.angleDegrees(vector2), tol);
+								angleDiff, v1v2theta, tol);
+				
 				assertEquals("(2) angle1: " + angle1 + ", angle2: " + angle2,
-						angleDiff, vector2.angleDegrees(vector1), tol);
+								-angleDiff, v2v1theta, tol);
 
 			}
 		}
