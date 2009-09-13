@@ -1,0 +1,85 @@
+----------------------------------------------------------------------------*/
+/* Import other stylesheets
+-----------------------------------------------------------------------------*/
+
+/* Set the document up
+/* Remove padding and margin */
+*
+    {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.clear
+    {
+    clear:both;
+}
+
+.right
+    {
+    float: right;
+}
+
+.left
+    {
+    float: left;
+}
+
+
+body
+    {
+    font: Verdana, sans-serif;
+    background: url(/images/blank.png) repeat;
+    color: #000000;    
+    text-align:center;
+}
+
+#wrapper
+    {
+    /* width:980px;
+    text-align:left;  
+    margin-left:auto;
+    margin-right:auto;
+    /* background-color: #FFFFFF;
+}
+
+
+/* Sections 
+
+/* Header
+-----------------------------------------------------------------------------*/
+
+/* Navigation
+-----------------------------------------------------------------------------*/
+
+/* Footer
+-----------------------------------------------------------------------------*/
+
+
+/* Forms
+-----------------------------------------------------------------------------*/
+
+input.text
+    {
+    padding: 3px;
+    border: 1px solid #999999;    
+}
+
+
+/* Tables
+-----------------------------------------------------------------------------*/
+
+table
+    {
+      border-spacing: 0;
+    border-collapse: collapse;
+}
+
+td
+    {
+      text-align: left;
+    font-weight: normal;
+}
+
+

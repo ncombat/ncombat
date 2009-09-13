@@ -20,17 +20,14 @@ original thermal paper printouts.
 The ncombat development project is hosted on
 <a target="google.hosting" href="http://code.google.com/hosting/">Google Code</a> at 
 <a target="google.ncombat" href="http://code.google.com/p/ncombat/">http://code.google.com/p/ncombat/</a>.
-
 <p>ncombat is temporarily deployed at <a href="http://www.babyrockyroo.org/ncombat">http://www.babyrockyroo.org/ncombat</a>.
 
-<p>
-
 <hr>
-
+<p>Test link to <a href="html/content/colorchart.html">content file</a> and <a href="html/content/docs/HowToPlay.html">Player documentation</a>.
+<hr>
 <p>Our starting point, the original player documentation:
-
 <pre>
-<jsp:include page="COMINFO.txt"/>
+<jsp:include page="html/content/docs/COMINFO.txt"/>
 </pre>
 </body>
 </html>
