@@ -19,6 +19,23 @@ public class Vector
 	
 	private double x;
 	private double y;
+	
+	/**
+	 * Constructs a vector using the specified coordinates, where theta is
+	 * expressed in radians.
+	 */
+	public static Vector polar(double r, double theta) {
+		return new Vector( r * Math.cos(theta), r * Math.sin(theta));
+	}
+	
+	/**
+	 * Constructs a vector using the specified coordinates, where theta is
+	 * expressed in radians.
+	 */
+	public static Vector polarDegrees(double r, double theta) {
+		double thetaDegrees = Math.toRadians(theta);
+		return polar(r, thetaDegrees);
+	}
 
 	/**
 	 * Constructs a zero vector.

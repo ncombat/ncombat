@@ -8,8 +8,23 @@ import junit.framework.TestCase;
 
 public class VectorTest extends TestCase
 {
+	public void testPolar()
+	{
+		Vector v = Vector.polar(1.2, 2.3);
+		assertEquals(1.2, v.r());
+		assertEquals(2.3, v.theta());
+	}
+	
+	public void testPolarDegrees()
+	{
+		Vector v = Vector.polarDegrees(2.0, 30);
+		double tol = 1.0e-15;
+		assertEquals( Math.sqrt(3), v.x(), tol);
+		assertEquals( 1.0, v.y(), tol);
+	}
+	
 	public void testR()
-		{
+	{
 			Vector v1 = new Vector(3.0, 4.0);
 			assertEquals(5.0, v1.r());
 			
