@@ -11,6 +11,9 @@ public class Vector
 	/** The unit vector along the Cartesian y axis. */
 	public static final Vector J = new Vector(0.0, 1.0);
 	
+	/** The two-dimensional zero vector. */
+	public static final Vector ZERO = new Vector(0.0, 0.0);
+	
 	private static final double PI = Math.PI;
 	private static final double TWO_PI = 2.0 * Math.PI;
 	
