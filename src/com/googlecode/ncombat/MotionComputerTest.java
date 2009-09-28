@@ -6,7 +6,6 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.googlecode.ncombat.MotionComputer.Response;
 import com.googlecode.ncombat.utils.Vector;
 
 public class MotionComputerTest
@@ -207,7 +206,7 @@ public class MotionComputerTest
 		in.rotationRate = 0.0;
 		in.rotationTime = 0.0;
 		
-		out.finalPosition = new Vector(-9.9422965671275100, -159.3256150623530000);
+		out.finalPosition = new Vector(-82.3256664135248000, -146.5624740038340000);
 		out.finalVelocity = new Vector(-7.7357587416242300, -12.9488104296804000);
 		out.finalHeading = in.initialHeading;
 		out.accelTimeLeft = 0.0;
@@ -223,6 +222,23 @@ public class MotionComputerTest
 		// Starting from rest
 		// Accel coincident with interval
 		// Rotation coincident with interval
+		
+		in.intervalLength = 7.0;
+		in.initialPosition = Vector.polarDegrees(5.0, 20.0);
+		in.initialVelocity = Vector.ZERO;
+		in.initialHeading = Math.toRadians(60.0);
+		in.accelRate = 5.0;
+		in.accelTime = 7.0;
+		in.rotationRate = Math.toRadians(6.0);
+		in.rotationTime = 7.0;
+		
+		out.finalPosition = new Vector(38.0198199330568000, 117.7011992794170000);
+		out.finalVelocity = new Vector(5.3534405624444400, 33.8002934598564000);
+		out.finalHeading = Math.toRadians(102.0);
+		out.accelTimeLeft = 0.0;
+		out.rotationTimeLeft = 0.0;
+		
+		checkComputation();
 	}
 	
 	@Test public void testAccelWithRot2()
@@ -232,32 +248,172 @@ public class MotionComputerTest
 		// Starting in motion
 		// Course == heading
 		// Accel beyond interval
-		// Rotation within interval
+		// Rotation coincident with interval
+		
+		in.intervalLength = 3.0;
+		in.initialPosition = Vector.polarDegrees(5.0, 20.0);
+		in.initialVelocity = Vector.polarDegrees(9.0, -130.0);
+		in.initialHeading = Math.toRadians(-130.0);
+		in.accelRate = -2.75;
+		in.accelTime = 10.0;
+		in.rotationRate = Math.toRadians(4.5);
+		in.rotationTime = 3.0;
+		
+		out.finalPosition = new Vector(-5.4815159158057600, -8.9140624984655900);
+		out.finalVelocity = new Vector(-1.2721256060954100, -0.0109876530150999);
+		out.finalHeading = Math.toRadians(-116.5);
+		out.accelTimeLeft = 7.0;
+		out.rotationTimeLeft = 0.0;
+		
+		checkComputation();
 	}
 	
 	@Test public void testAccelWithRot3()
+	{
+		// Positive acceleration
+		// Negative rotation
+		// Starting in motion
+		// Course != heading
+		// Accel coincident with interval
+		// Rotation beyond interval
+		
+		in.intervalLength = 4.0;
+		in.initialPosition = Vector.polarDegrees(25.0, 120.0);
+		in.initialVelocity = Vector.polarDegrees(9.0, -90.0);
+		in.initialHeading = Math.toRadians(-130.0);
+		in.accelRate = 9.9;
+		in.accelTime = 4.0;
+		in.rotationRate = Math.toRadians(-3.6);
+		in.rotationTime = 55.5;
+		
+		out.finalPosition = new Vector(-68.2080789907288000, -70.4499242722185000);
+		out.finalVelocity = new Vector(-28.9792914469691000, -35.8351181134541000);
+		out.finalHeading = Math.toRadians(-144.4);
+		out.accelTimeLeft = 0.0;
+		out.rotationTimeLeft = 51.5;
+		
+		checkComputation();
+	}
+	
+	@Test public void testAccelWithRot4()
 	{
 		// Negative acceleration
 		// Negative rotation
 		// Starting in motion
 		// Course != heading
-		// Acceleration within interval
-		// Rotation within interval (finishes after accel)
+		// Accel beyond interval
+		// Rotation beyond interval
+		
+		in.intervalLength = 5.0;
+		in.initialPosition = Vector.polarDegrees(200.0, 120.0);
+		in.initialVelocity = Vector.polarDegrees(50.0, 45.0);
+		in.initialHeading = Math.toRadians(180.0);
+		in.accelRate = -2.5;
+		in.accelTime = 6.0;
+		in.rotationRate = Math.toRadians(-2.5);
+		in.rotationTime = 6.0;
+		
+		out.finalPosition = new Vector(107.9029426355630000, 347.7146141001500000);
+		out.finalVelocity = new Vector(47.7564154574216000, 33.9972003096914000);
+		out.finalHeading = Math.toRadians(167.5);
+		out.accelTimeLeft = 1.0;
+		out.rotationTimeLeft = 1.0;
+		
+		checkComputation();
 	}
 	
-	// Unaccelerated motion is linear.
-	
-	private Response response(Vector finalPosition, Vector finalVelocity,
-			double finalHeading, double accelTimeLeft,
-			double rotationTimeLeft)
+	@Test public void testLinkage1()
 	{
-		Response response = new Response();
-		response.finalPosition = finalPosition;
-		response.finalVelocity = finalVelocity;
-		response.finalHeading = finalHeading;
-		response.accelTimeLeft = accelTimeLeft;
-		response.rotationTimeLeft = rotationTimeLeft;
-		return response;
+		// Accel, Rotation within interval
+		// Accel ends first.
+
+		// The combined request.
+		in.intervalLength = 10.0;
+		in.initialPosition = Vector.polarDegrees(200.0, 120.0);
+		in.initialVelocity = Vector.polarDegrees(50.0, 45.0);
+		in.initialHeading = Math.toRadians(180.0);
+		in.accelRate = -2.5;
+		in.accelTime = 3.0;
+		in.rotationRate = Math.toRadians(-2.5);
+		in.rotationTime = 7.0;
+		
+		// First leg of the separated requests.
+		MotionComputer.Request in2 = new MotionComputer.Request();
+		in2.intervalLength = in.accelTime;
+		in2.initialPosition = in.initialPosition;
+		in2.initialVelocity = in.initialVelocity;
+		in2.initialHeading = in.initialHeading;
+		in2.accelRate = in.accelRate;
+		in2.accelTime = in.accelTime;
+		in2.rotationRate = in.rotationRate;
+		in2.rotationTime = in.rotationTime;
+		out = MotionComputer.compute(in2);
+		
+		// Second leg of the separated requests.
+		in2.intervalLength = out.rotationTimeLeft;
+		in2.initialPosition = out.finalPosition;
+		in2.initialVelocity = out.finalVelocity;
+		in2.initialHeading = out.finalHeading;
+		in2.accelRate = 0.0;
+		in2.accelTime = 0.0;
+		in2.rotationRate = in.rotationRate;
+		in2.rotationTime = out.rotationTimeLeft;
+		out = MotionComputer.compute(in2);
+		
+		// Third leg of the separated requests.
+		in2.intervalLength = in.intervalLength - Math.max(in.accelTime, in.rotationTime);
+		in2.initialPosition = out.finalPosition;
+		in2.initialVelocity = out.finalVelocity;
+		in2.initialHeading = out.finalHeading;
+		in2.accelRate = 0.0;
+		in2.accelTime = 0.0;
+		in2.rotationRate = 0.0;
+		in2.rotationTime = 0.0;
+		out = MotionComputer.compute(in2);
+		
+		
+		checkComputation();
+	}
+	
+	@Test public void testLinkage2()
+	{
+		// Accel, Rotation within interval
+		// Rotation ends first.
+		
+		// The combined request.
+		in.intervalLength = 10.0;
+		in.initialPosition = Vector.polarDegrees(200.0, 120.0);
+		in.initialVelocity = Vector.polarDegrees(50.0, 45.0);
+		in.initialHeading = Math.toRadians(180.0);
+		in.accelRate = -2.5;
+		in.accelTime = 9.0;
+		in.rotationRate = Math.toRadians(-2.5);
+		in.rotationTime = 3.0;
+		
+		// First leg of the separated requests.
+		MotionComputer.Request in2 = new MotionComputer.Request();
+		in2.intervalLength = in.rotationTime;
+		in2.initialPosition = in.initialPosition;
+		in2.initialVelocity = in.initialVelocity;
+		in2.initialHeading = in.initialHeading;
+		in2.accelRate = in.accelRate;
+		in2.accelTime = in.accelTime;
+		in2.rotationRate = in.rotationRate;
+		in2.rotationTime = in.rotationTime;
+		out = MotionComputer.compute(in2);
+		
+		// Second leg of the separated requests.
+		in2.intervalLength = in.intervalLength - in.rotationTime;
+		in2.initialPosition = out.finalPosition;
+		in2.initialVelocity = out.finalVelocity;
+		in2.initialHeading = out.finalHeading;
+		in2.accelRate = in.accelRate;
+		in2.accelTime = out.accelTimeLeft;
+		in2.rotationRate = 0.0;
+		in2.rotationTime = 0.0;
+		out = MotionComputer.compute(in2);
+		
+		checkComputation();
 	}
 	
 	private void checkComputation()
@@ -268,23 +424,23 @@ public class MotionComputerTest
 		double accelTimeTol = 1.0e-14;
 		double rotationTimeTol = 1.0e-14;
 		
-		Response actual = MotionComputer.compute(in);
+		MotionComputer.Response actual = MotionComputer.compute(in);
 		
-		assertEquals(out.finalPosition.x(), actual.finalPosition.x(), positionCoordTol);
-		assertEquals(out.finalPosition.y(), actual.finalPosition.y(), positionCoordTol);
-		assertEquals(out.finalVelocity.x(), actual.finalVelocity.x(), velocityCoordTol);
-		assertEquals(out.finalVelocity.y(), actual.finalVelocity.y(), velocityCoordTol);
 		assertEquals(out.finalHeading, actual.finalHeading, headingTol);
 		assertEquals(out.accelTimeLeft, actual.accelTimeLeft, accelTimeTol);
 		assertEquals(out.rotationTimeLeft, actual.rotationTimeLeft, rotationTimeTol);
+		assertEquals(out.finalVelocity.x(), actual.finalVelocity.x(), velocityCoordTol);
+		assertEquals(out.finalVelocity.y(), actual.finalVelocity.y(), velocityCoordTol);
+		assertEquals(out.finalPosition.x(), actual.finalPosition.x(), positionCoordTol);
+		assertEquals(out.finalPosition.y(), actual.finalPosition.y(), positionCoordTol);
 	}
 	
 	private void checkComputationExact() {
-		Response actual = MotionComputer.compute(in);
+		MotionComputer.Response actual = MotionComputer.compute(in);
 		Assert.assertTrue( equals(out, actual));
 	}
 	
-	private boolean equals(Response r1, Response r2)
+	private boolean equals(MotionComputer.Response r1, MotionComputer.Response r2)
 	{
 		if ((r1 == null) && (r2 == null)) return true;
 		if ((r1 == null) || (r2 == null)) return false;

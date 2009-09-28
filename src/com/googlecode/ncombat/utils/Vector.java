@@ -36,6 +36,22 @@ public class Vector
 		double thetaDegrees = Math.toRadians(theta);
 		return polar(r, thetaDegrees);
 	}
+	
+	/**
+	 * Constructs a unit vector with the orientation expressed in radians.
+	 */
+	public static Vector unit(double theta) {
+		double x = Math.cos(theta);
+		double y = Math.sin(theta);
+		return new Vector(x,y);
+	}
+	
+	/**
+	 * Constructs a unit vector with the orientation expressed in degrees.
+	 */
+	public static Vector unitDegrees(double theta) {
+		return unit(Math.toRadians(theta));
+	}
 
 	/**
 	 * Constructs a zero vector.
