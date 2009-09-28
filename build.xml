@@ -66,7 +66,7 @@
 	<zip destfile="${dist.dir}/${war.file}" basedir="${stage.dir}"/>
 </target>
 
-<target name="kattare_deploy" depends="init">
+<target name="deploy_kattare" depends="init" description="deploys to Kattare ISP">
 	<input message="Enter password: " addproperty="deploy.ftp.password"/>
 
 	<copy file="${dist.dir}/${war.file}" tofile="${deploy.dir}/${deploy.ftp.file}"/>
@@ -83,7 +83,7 @@
 </target>
 	
     
-<target name="local_deploy" description="Install application in local Tomcat"
+<target name="deploy_local" description="Install application in local Tomcat"
     depends="all">
     <deploy url="${tomcat.manager.url}"
         username="${tomcat.username}"
