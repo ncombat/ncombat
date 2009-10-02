@@ -79,9 +79,30 @@
 
     <ftp server="${deploy.ftp.server}"
          userid="${deploy.ftp.user}"
-         password="${deploy.ftp.password}">
+         password="${deploy.ftp.password}"
+    	 verbose="true">
 
         <fileset dir="${deploy.dir}"/>
+    </ftp>
+</target>
+
+<target name="undeploy_kattare" depends="init" description="undeploys from Kattare ISP">
+    <input message="Enter password: " addproperty="deploy.ftp.password"/>
+
+    <copy file="${dist.dir}/${war.file}" tofile="${deploy.dir}/${deploy.ftp.file}"/>
+
+    <echo message="Deploy FTP server: ${deploy.ftp.server}"/>
+    <echo message="Deploy FTP user:   ${deploy.ftp.user}"/>
+
+    <ftp server="${deploy.ftp.server}"
+         userid="${deploy.ftp.user}"
+         password="${deploy.ftp.password}"
+    	 verbose="true"
+    	 action="del">
+
+        <fileset dir="${deploy.dir}">
+        	<include name="${war.file}"/>
+        </fileset>
     </ftp>
 </target>
 
