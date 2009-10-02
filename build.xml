@@ -7,160 +7,160 @@
 <property name="dist.dir" location="dist"/>
 
 <taskdef file="tomcatTasks.properties" description="tomcat ant tasks for automated local deploys">
-	<classpath>
-	    <pathelement path="${tomcat.antjmxlib}"/>
-	  	<pathelement path="${tomcat.antlib}"/>
-	</classpath>
+    <classpath>
+        <pathelement path="${tomcat.antjmxlib}"/>
+        <pathelement path="${tomcat.antlib}"/>
+    </classpath>
 </taskdef>
-		
+
 <target name="all" depends="compile,stage,package">
-	<antcall target="timestamp">
-		<param name="message" value="build done at " />
-	</antcall>
+    <antcall target="timestamp">
+        <param name="message" value="build done at " />
+    </antcall>
 </target>
 
-
 <target name="init">
-	<mkdir dir="${build.dir}"/>
-	<mkdir dir="${dist.dir}"/>
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${dist.dir}"/>
 </target>
 
 <target name="clean">
-	<delete dir="${build.dir}" failonerror="false"/>
-	<delete dir="${dist.dir}" failonerror="false"/>
+    <delete dir="${build.dir}" failonerror="false"/>
+    <delete dir="${dist.dir}" failonerror="false"/>
 </target>
 
 <target name="compile" depends="init">
-	<mkdir dir="${stage.dir}/WEB-INF/classes"/>
-	<javac srcdir="src" destdir="${stage.dir}/WEB-INF/classes">
-		<classpath>
-			<fileset dir=".">
-				<include name="WebContent/WEB-INF/lib/*.jar"/>
-				<include name="lib/*.jar"/>
-			</fileset>
-		</classpath>
-	</javac>
+    <mkdir dir="${stage.dir}/WEB-INF/classes"/>
+    <javac srcdir="src" destdir="${stage.dir}/WEB-INF/classes">
+        <classpath>
+            <fileset dir=".">
+                <include name="WebContent/WEB-INF/lib/*.jar"/>
+                <include name="lib/*.jar"/>
+            </fileset>
+        </classpath>
+    </javac>
 </target>
 
 <target name="stage" depends="init">
-	<copy todir="${stage.dir}">
-		<fileset dir="WebContent">
-			<exclude name="WEB-INF/classes/**/*"/>
-		</fileset>
-	</copy>
+    <copy todir="${stage.dir}">
+        <fileset dir="WebContent">
+            <exclude name="WEB-INF/classes/**/*"/>
+        </fileset>
+    </copy>
 
-	<copy todir="${stage.dir}" includeEmptyDirs="false">
-		<fileset dir="src">
-			<exclude name="**/*.java"/>
-		</fileset>
-	</copy>
+    <copy todir="${stage.dir}" includeEmptyDirs="false">
+        <fileset dir="src">
+            <exclude name="**/*.java"/>
+        </fileset>
+    </copy>
 
-	<copy todir="${stage.dir}/WEB-INF/src">
-		<fileset dir="src">
-			<include name="**/*.java"/>
-		</fileset>
-	</copy>
+    <copy todir="${stage.dir}/WEB-INF/src">
+        <fileset dir="src">
+            <include name="**/*.java"/>
+        </fileset>
+    </copy>
+	
+    <copy todir="${stage.dir}/WEB-INF/classes">
+        <fileset dir="config"/>
+    </copy>
 </target>
 
 <target name="package" depends="init">
-	<zip destfile="${dist.dir}/${war.file}" basedir="${stage.dir}"/>
+    <zip destfile="${dist.dir}/${war.file}" basedir="${stage.dir}"/>
 </target>
 
 <target name="deploy_kattare" depends="init" description="deploys to Kattare ISP">
-	<input message="Enter password: " addproperty="deploy.ftp.password"/>
+    <input message="Enter password: " addproperty="deploy.ftp.password"/>
 
-	<copy file="${dist.dir}/${war.file}" tofile="${deploy.dir}/${deploy.ftp.file}"/>
+    <copy file="${dist.dir}/${war.file}" tofile="${deploy.dir}/${deploy.ftp.file}"/>
 
-	<echo message="Deploy FTP server: ${deploy.ftp.server}"/>
-	<echo message="Deploy FTP user:   ${deploy.ftp.user}"/>
+    <echo message="Deploy FTP server: ${deploy.ftp.server}"/>
+    <echo message="Deploy FTP user:   ${deploy.ftp.user}"/>
 
-	<ftp server="${deploy.ftp.server}"
-		 userid="${deploy.ftp.user}"
-		 password="${deploy.ftp.password}">
+    <ftp server="${deploy.ftp.server}"
+         userid="${deploy.ftp.user}"
+         password="${deploy.ftp.password}">
 
-		<fileset dir="${deploy.dir}"/>
-	</ftp>
+        <fileset dir="${deploy.dir}"/>
+    </ftp>
 </target>
-	
-    
-<target name="deploy_local" description="Install application in local Tomcat"
-    depends="all">
+
+<target name="deploy_local" description="Install application in local Tomcat" depends="all">
     <deploy url="${tomcat.manager.url}"
-        username="${tomcat.username}"
-        password="${tomcat.password}"
-        path="/${tomcat.path}"
-        war="file:${dist.dir}/${war.file}"/>
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="/${tomcat.path}"
+            war="file:${dist.dir}/${war.file}"/>
 </target>
 
 <target name="remove" description="Remove application in Tomcat">
     <undeploy url="${tomcat.manager.url}"
-        username="${tomcat.username}"
-        password="${tomcat.password}"
-        path="/${tomcat.path}"/>
+              username="${tomcat.username}"
+              password="${tomcat.password}"
+              path="/${tomcat.path}"/>
 </target>
 
 <target name="reload" description="Reload application in Tomcat" depends="all">
     <reload url="${tomcat.manager.url}"
-        username="${tomcat.username}"
-        password="${tomcat.password}"
-        path="/${tomcat.path}"/>
+            username="${tomcat.username}"
+            password="${tomcat.password}"
+            path="/${tomcat.path}"/>
 </target>
 
 <target name="start" description="Start Tomcat application">
     <start url="${tomcat.manager.url}"
-        username="${tomcat.username}"
-        password="${tomcat.password}"
-        path="/${tomcat.path}"/>
+           username="${tomcat.username}"
+           password="${tomcat.password}"
+           path="/${tomcat.path}"/>
 </target>
 
 <target name="stop" description="Stop Tomcat application">
     <stop url="${tomcat.manager.url}"
-        username="${tomcat.username}"
-        password="${tomcat.password}"
-        path="/${tomcat.path}"/>
+          username="${tomcat.username}"
+          password="${tomcat.password}"
+          path="/${tomcat.path}"/>
 </target>
 
 <target name="list" description="List Tomcat applications">
     <list url="${tomcat.manager.url}"
-        username="${tomcat.username}"
-        password="${tomcat.password}"/>
+          username="${tomcat.username}"
+          password="${tomcat.password}"/>
 </target>
-	
-	<!-- Helper targets -->
-	<!-- The "sysInfo" target displays information about Ant's configuration. -->
-	      <target name="sysinfo" depends="currentTimestamp">
-	    	        <echo message = "basedir is ${basedir}"/>
-			        <echo message = "user is ${user.name}"/>
-	    	        <echo message = "ant.project.name is ${ant.project.name}"/>
-	    	        <echo message = "ant.file is ${ant.file}"/>
-	    	        <echo message = "ant.version is ${ant.version}"/>
-	    	        <echo message = "JAVA_HOME is ${env.JAVA_HOME}"/>                
-	    	        <echo message = "JDK version is ${ant.java.version}"/>
-	    	        <echo message = "app version is ${vnum}"/>
-	      			<antcall target="timestamp">
-	      	              <param name="message" value="current time is " />
-	      	        </antcall>
-	       </target> 
-		
-	    <target name="timestamp">
-	        <tstamp>
-	            <format property="TODAY_US" pattern="MM/dd/yy HH:mm:ss"/>
-	        </tstamp>
-	        <echo message=" - - - - - - - - - - - - ${message} ${TODAY_US}" />
-	    </target>
 
-	      <!-- sets a 'started at' timestamp -->
-	      <target name="initialTimestamp">
-	          <antcall target="timestamp">
-	              <param name="message" value="building at " />
-	          </antcall>
-	      </target>
-		
-	      	<target name="currentTimestamp">
-	      	          <antcall target="timestamp">
-	      	              <param name="message" value=" " />
-	      	          </antcall>
-	       </target>
-		
-	
+<!-- Helper targets -->
+<!-- The "sysInfo" target displays information about Ant's configuration. -->
+<target name="sysinfo" depends="currentTimestamp">
+    <echo message = "basedir is ${basedir}"/>
+    <echo message = "user is ${user.name}"/>
+    <echo message = "ant.project.name is ${ant.project.name}"/>
+    <echo message = "ant.file is ${ant.file}"/>
+    <echo message = "ant.version is ${ant.version}"/>
+    <echo message = "JAVA_HOME is ${env.JAVA_HOME}"/>
+    <echo message = "JDK version is ${ant.java.version}"/>
+    <echo message = "app version is ${vnum}"/>
+    <antcall target="timestamp">
+        <param name="message" value="current time is " />
+    </antcall>
+</target>
+
+<target name="timestamp">
+    <tstamp>
+        <format property="TODAY_US" pattern="MM/dd/yy HH:mm:ss"/>
+    </tstamp>
+    <echo message=" - - - - - - - - - - - - ${message} ${TODAY_US}" />
+</target>
+
+<!-- sets a 'started at' timestamp -->
+<target name="initialTimestamp">
+    <antcall target="timestamp">
+        <param name="message" value="building at " />
+    </antcall>
+</target>
+
+<target name="currentTimestamp">
+    <antcall target="timestamp">
+        <param name="message" value=" " />
+    </antcall>
+</target>
+
 </project>
