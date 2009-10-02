@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:flow="http://www.springframework.org/schema/webflow-config"
+	xmlns:jee="http://www.springframework.org/schema/jee"
+	xmlns:lang="http://www.springframework.org/schema/lang"
+	xmlns:osgi="http://www.springframework.org/schema/osgi"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.1.xsd
+		http://www.springframework.org/schema/webflow-config http://www.springframework.org/schema/webflow-config/spring-webflow-config-1.0.xsd
+		http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-2.0.xsd
+		http://www.springframework.org/schema/lang http://www.springframework.org/schema/lang/spring-lang-2.0.xsd
+		http://www.springframework.org/schema/osgi http://www.springframework.org/schema/osgi/spring-osgi.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.1.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
+		
+	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
+		<property name="mappings">
+			<value>
+				/app/*=appController
+				/game/*=gameController
+				/admin/*=adminController
+			</value>
+		</property>
+		
+		<property name="interceptors">
+			<list>
+				<bean class="com.googlecode.ncombat.web.JsonInterceptor"/>	
+			</list>
+		</property>
+	</bean>
+	
+	<bean id="appController" class="com.googlecode.ncombat.web.AppController"/>
+	
+	<bean id="gameController" class="com.googlecode.ncombat.web.GameController"/>
+	
+	<bean id="adminController" class="com.googlecode.ncombat.web.AdminController"/>
+	
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<property name="order" value="1"/>
+	</bean>
+	
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="viewClass" value="org.springframework.web.servlet.view.InternalResourceView"/>
+		<property name="prefix" value="WEB-INF/jsp/"/>
+		<property name="suffix" value=".jsp"/>
+		<property name="order" value="2"/>
+	</bean>
+	
+	<bean id="jsonView" class="com.googlecode.ncombat.web.JsonView"/>		
+</beans>
