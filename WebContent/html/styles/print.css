@@ -1,8 +1,28 @@
 /* from http://line25.com/tutorials/handy-tips-for-creating-a-print-css-stylesheet */
 @CHARSET "ISO-8859-1";
 
+
+<!-
+Palette, generated from 
+	http://www.degraeve.com/color-palette/index.php?q=http://www.xmission.com/~legalize/vintage/images/ti/texassilent700.gif,5d0b0b575254989896c8cdd0827e7c,790000716568a99f99c5c6c0f9ffff		
+	dull
+		#551111
+		#555555
+		#999999
+		#cccccc
+		#887777
+	
+	vibrant
+		#770000
+		#776666
+		#aa9999
+		#ccccbb
+		#ffffff
+-->
+
+
 body {
-	font-family: "Georgia", Times New Roman, Serif;
+	font-family: Monospace, Serif;
 	color: #000;
 	background: #fff;
 }

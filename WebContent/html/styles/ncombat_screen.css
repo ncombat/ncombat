@@ -1,0 +1,106 @@
+----------------------------------------------------------------------------*/
+/* Import other stylesheets
+-----------------------------------------------------------------------------*/
+
+/* Set the document up
+/* Remove padding and margin */
+*
+    {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.clear
+    {
+    clear:both;
+}
+/* Sections 
+
+/* Header
+-----------------------------------------------------------------------------*/
+#header {
+	line-height: 200%;
+	font-family: Monospace,Serif;
+	font-variant:small-caps;
+	width:100%;
+	text-align:center;
+}
+
+
+/* Body
+-----------------------------------------------------------------------------*/
+	body {
+	margin: 0px;
+	padding: 0px;
+	background: #FFF3E5;
+	font-size:100%;
+	}
+
+	#content {
+		background: #FEFFE5;
+		float: center;
+	}
+
+
+
+/* Game console and elements
+-----------------------------------------------------------------------------*/	
+#gameConsole {
+	background: #FFFF00;
+	float: center;
+	width: 100%;
+}
+
+#playerInfo {
+	background: #FFFFFF;
+	float: center;
+	width: 100%;
+}
+
+#statusScreen {
+	font-family:Monospace,Serif;
+	background: #FFFFCC;
+	float: center;
+	width: 100%;
+	height: 200px;
+	overflow: auto;
+}
+
+#commandConsole {
+	background: #FFFFFF;
+	float: center;
+}
+
+#docPane {
+	background: #E5F1FF;
+}
+
+	
+/* Footer
+-----------------------------------------------------------------------------*/
+#footer {
+	background: #E5FFE6;
+	clear: both;
+	width: 100%;
+	text-align: right;
+}
+
+/* Forms
+-----------------------------------------------------------------------------*/
+
+input.text
+    {
+    padding: 3px;
+    border: 1px solid #999999;    
+}
+
+
+
+
+
+
+
+
+
+

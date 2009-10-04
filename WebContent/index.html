@@ -1,7 +1,17 @@
 <html>
 <head>
-<title>Teletype Simulation</title>
-<script>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>N * C * O * M * B * A * T Home Page</title>
+	<!-- Javascript library -->
+	<script src="html/lib/jquery-1.3.2.js" content="text/javascript" ></script>
+	<script src="html/lib/ncombat_base.js" content="text/javascript" ></script>
+    <!-- Framework CSS -->
+    <!--<link rel="stylesheet" href="html/styles/blueprint/screen.css" type="text/css" media="screen, projection"> -->
+    <!--<link rel="stylesheet" href="html/styles/blueprint/print.css" type="text/css" media="print"> -->
+    <!--[if lt IE 8]><link rel="stylesheet" href="./styles/blueprint/ie.css" type="text/css" media="screen, projection"><![endif]-->
+    <link rel="stylesheet" href="html/styles/ncombat_screen.css" type="text/css" media="screen">
+    <!-- setup methods -->
+    <script>
 	var someText = "Four score and seven years ago our fathers brought forth on this continent, a new nation, "
 					+ "conceived in liberty, and dedicated to the proposition that all men are created equal. "
 					+ "\n"
@@ -94,58 +104,63 @@
 	}();
 								
 </script>
-<style type="text/css">
-	body {
-		background-color: cornsilk;
-	}
-	
-	input[type='button'] {
-		width: 80px;
-	}
-	
-	div {
-		border-style: solid;
-		border-width: 1px;
-		border-color: blue;
-		margin: 5px;
-		padding: 5px;
-		width: 620;		
-	}
-	
-	div#tt {
-		background-color: white;
-		font-family: "Courier New", Courier, Monospace;
-		font-size: 9pt;
-		height: 200;
-		overflow: auto;
-		vertical-align: bottom;
-	}
-	
-	div#buttons {
-		height: 20px;
-	}
-	
-	form {
-		vertical-align: middle;
-	}
-</style>
+  <script type="text/javascript" src="text-utils.js"> </script>
+  <script language="javascript" type="text/javascript">
+   var request = null;
+   function createRequest() {
+     try {
+       request = new XMLHttpRequest();
+     } catch (trymicrosoft) {
+       try {
+         request = new ActiveXObject("Msxml2.XMLHTTP");
+       } catch (othermicrosoft) {
+         try {
+           request = new ActiveXObject("Microsoft.XMLHTTP");
+         } catch (failed) {
+           request = null;
+         }
+       }
+     }
+
+     if (request == null)
+       alert("Error creating request object!");
+   }
+   function sendCommandStack() {
+      createRequest();
+      var url = "ncombat/GameStatus";
+      request.open("POST", url, true);
+      request.onreadystatechange = updatePage;
+      request.send(null);
+      }
+   function updateStatus() {
+   if (request.readyState == 4) {
+         var newStatus = request.responseText;
+         var statusEl = document.getElementById("statusScreen");
+         replaceText(statusEl, newStatus);
+         }
+         }
+
+   
+ </script>
+ 	<!-- <script type="text/javascript">init();</script> -->
+    <div id="header"><h1>N * C * O * M * B * A * T</h1></div>
 </head>
 <body>
-	<h1>Teletype Simulation</h1>
-	
-	<div id="tt"></div>
-	
-	<div id="buttons">
-		<form action="#">
-			<input id="start" type="button" value="Start" 
-				onclick="teletype.start(tt); start.disabled=true; pause.disabled=false; resume.disabled=true">
-			&nbsp;
-			<input id="pause" type="button" value="Pause" disabled="true" 
-				onclick="teletype.pause(); pause.disabled = true; resume.disabled = false">
-			&nbsp;
-			<input id="resume" type="button" value="Resume" disabled="true"
-				onclick="teletype.resume(); resume.disabled = true; pause.disabled = false">
-		</form>
+	<div id="content"><p><jsp:include page="html/content/docs/ncombatIntro.html"/></p>
+		<div id="playerInfo">Player information - handle, game, game time</div>
+		<div id="gameConsole">
+			<div id="statusScreen">Server status updates appear here.</div>
+			<div id="commandConsole">
+				<input id="start" type="button" value="Join" 
+				onclick="teletype.start(statusScreen); start.disabled=true; pause.disabled=false; resume.disabled=true">
+				<form id="cmdString" action="servlet/gameManager/" method="post"> 
+				   CMDS? <input type="text" name="cmds" /> 
+				   <input type="submit" value="send" /> 
+				</form>
+			</div>
+		</div>
 	</div>
+	<div id="docPane"><p>Our starting point, the original player documentation:</p><pre><jsp:include page="html/content/docs/COMINFO.txt"/></pre></div>
+	<div id="footer">InfoBar - about, contact, help, copyright, license</div>
 </body>
 </html>
