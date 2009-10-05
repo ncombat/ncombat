@@ -17,7 +17,7 @@
 		
 		function processResponse(xhr, status) {
 			if (!status || (status != 'success')) return;
-			alert("AJAX SUCCESS: status=" + status +", response=" + xhr.responseText);
+			//alert("AJAX SUCCESS: status=" + status +", response=" + xhr.responseText);
 			eval('var data = ' + xhr.responseText + '.data');
 			var messages = data.messages;
 			if (messages) {
@@ -53,10 +53,9 @@
 				});
 			}		
 		}
-		
+
 		$(document).ready( function() {
 			teletype.start(statusScreen);
-
 			$.ajax({
 				complete: processResponse,
 				error: processError,
@@ -83,7 +82,20 @@
 		</div>
 	</div>
 	
-	<div id="docPane"><p>Our starting point, the original player documentation:</p><pre><jsp:include page="/html/content/docs/COMINFO.txt"/></pre></div>
+	<div id="docPane">
+		<dl>
+			<dt>Our starting point, the original player documentation (click to view)</dt>
+			<dd><pre><jsp:include page="/html/content/docs/COMINFO.txt"/></pre></dd>
+		</dl></div>
+		<script type="text/javascript">
+		$(document).ready(function(){
+			$("dd").hide();
+		});
+		
+		$("dt").click(function(){
+			$(this).next().toggle();
+		});
+		</script>
 	<div id="footer">InfoBar - about, contact, help, copyright, license</div>
 </body>
 </html>
