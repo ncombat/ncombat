@@ -20,9 +20,9 @@
 	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="mappings">
 			<value>
-				/app/*=appController
-				/game/*=gameController
-				/admin/*=adminController
+				/app*=appController
+				/game*=gameController
+				/admin*=adminController
 			</value>
 		</property>
 		
