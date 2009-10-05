@@ -26,7 +26,7 @@
 					teletype.println(messages[i]);
 				}
 				teletype.callWhenDone( function() {
-					$('#commandConsole').css('display', null);
+					$('#commandConsole').css('display', 'inline');
 					$('#cmds').val('').focus();
 				});
 			}
