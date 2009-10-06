@@ -18,7 +18,7 @@ import com.googlecode.ncombat.command.CommandTokenizer;
 public class GameController extends MultiActionController
 {
 	private static final String NAME_PROMPT = "ENTER YOUR NAME?";
-	private static final String COMMAND_PROPMPT = "CMDS?";
+	private static final String COMMAND_PROMPT = "CMDS?";
 	
 	private static final String LOGIN_URL = "gameLogin.json";
 	private static final String COMMAND_URL = "gameCommands.json";
@@ -37,7 +37,12 @@ public class GameController extends MultiActionController
 		SimpleDateFormat dateFmt = new SimpleDateFormat("EEE  MMM dd, yyyy hh:mm aa"); 
 		String date = dateFmt.format(now).toUpperCase();
 		
-		model.addMessage(date + " SHIP-VS-SHIP TACTICAL SPACE COMBAT GAME IV");
+		model.addMessage("            \nATDT9,6124102397                         " +
+				"                                      \n" +
+				"                                      \n" +
+				"                                      \n" +
+				"CONNECT 300\n\n\n");
+		model.addMessage(date + " SHIP-VS-SHIP TACTICAL SPACE COMBAT GAME V");
 		model.addMessage("STOP TO QUIT. H FOR HELP.");
 		
 		model.setPrompt(NAME_PROMPT);
@@ -50,10 +55,10 @@ public class GameController extends MultiActionController
 	{
 		GameStatusModel model = new GameStatusModel();
 		
-		String text = request.getParameter("text");
-		if ((text != null)) text = text.trim().toUpperCase();
+		String playerName = request.getParameter("text");
+		if ((playerName != null)) playerName = playerName.trim().toUpperCase();
 		
-		if ((text == null) || (text.length() == 0)) {
+		if ((playerName == null) || (playerName.length() == 0)) {
 			model.addMessage("");
 			model.addMessage("PLEASE ENTER YOUR NAME, DUMBASS.");
 			model.setPrompt(NAME_PROMPT);
@@ -62,12 +67,12 @@ public class GameController extends MultiActionController
 		}
 		
 		model.addMessage("");
-		model.addMessage( String.format("WELCOME, %s.", text));
+		model.addMessage( String.format("WELCOME, %s.", playerName));
 		model.addMessage("");
 		model.addMessage("SHP   COMMANDERS NAME   TER USERNUM KL");
-		model.addMessage( String.format(" 1    %-17s 123 H7LT444  0", text));
+		model.addMessage( String.format(" 1    %-17s 123 H7LT444  0", playerName));
 		
-		model.setPrompt(COMMAND_PROPMPT);
+		model.setPrompt(COMMAND_PROMPT);
 		model.setUrl(COMMAND_URL);
 		
 		return model;
@@ -77,15 +82,15 @@ public class GameController extends MultiActionController
 	{
 		GameStatusModel model = new GameStatusModel();
 		
-		String text = request.getParameter("text");
-		if ((text != null)) text = text.trim().toUpperCase();
+		String cmdLine = request.getParameter("text");
+		if ((cmdLine != null)) cmdLine = cmdLine.trim().toUpperCase();
 		
-		if ((text != null) || (text.length() > 0)) {
+		if ((cmdLine != null) || (cmdLine.length() > 0)) {
 			CommandTokenizer ctok = new CommandTokenizer();
-			model.addMessage("CMDS? " + text);
-			List<CommandText> commands = ctok.parse(text);
+			model.addMessage("CMDS? " + cmdLine);
+			List<CommandText> commands = ctok.parse(cmdLine);
 			int cmdNum = 1;
-			for (CommandText cmd : ctok.parse(text)) {
+			for (CommandText cmd : ctok.parse(cmdLine)) {
 				String msg = "  CMD#" + cmdNum + ": ACTION=" + cmd.getAction();
 				int argNum = 1;
 				for (String arg : cmd.getArgs()) {
@@ -97,7 +102,7 @@ public class GameController extends MultiActionController
 			}
 		}
 		
-		model.setPrompt(COMMAND_PROPMPT);
+		model.setPrompt(COMMAND_PROMPT);
 		model.setUrl(COMMAND_URL);
 		
 		return model;
