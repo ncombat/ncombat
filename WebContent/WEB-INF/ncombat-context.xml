@@ -17,4 +17,6 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.1.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 
+<bean id="gameServer" class="com.googlecode.ncombat.GameServer"/>
+
 </beans>
