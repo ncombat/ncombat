@@ -9,9 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+import com.googlecode.ncombat.GameManager;
 import com.googlecode.ncombat.command.CommandText;
 import com.googlecode.ncombat.command.CommandTokenizer;
 
@@ -25,6 +27,16 @@ public class GameController extends MultiActionController
 	
 	private Logger log = Logger.getLogger(GameController.class);
 	
+	private GameManager gameManager;
+	
+	public GameController() {
+	}
+	
+	@Required
+	public void setGameManager(GameManager gameManager) {
+		this.gameManager = gameManager;
+	}
+
 	public ModelAndView game(HttpServletRequest request, HttpServletResponse response) {
 		return new ModelAndView("ncombat");
 	}
