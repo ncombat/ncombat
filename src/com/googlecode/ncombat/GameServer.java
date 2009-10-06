@@ -31,7 +31,7 @@ public class GameServer
 		
 		log.info("Game server #" + serverNumber + " is starting.");
 
-		timer = new Timer("NcombatServer", true);
+		timer = new Timer("GameServer" + serverNumber, true);
 		timerTask = new GameServerTimerTask();
 	}
 	
