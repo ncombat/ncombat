@@ -10,7 +10,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 public class AppController extends MultiActionController
 {
-	public Map test(HttpServletRequest request, HttpServletResponse response) {
+	public Map appTest(HttpServletRequest request, HttpServletResponse response) {
 		Map model = new HashMap();
 		model.put("msg1", "Hello, world!");
 		model.put("msg2", "AppController says hello.");

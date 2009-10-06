@@ -10,7 +10,7 @@ import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 public class AdminController extends MultiActionController
 {
-	public Map test(HttpServletRequest request, HttpServletResponse response) {
+	public Map adminTest(HttpServletRequest request, HttpServletResponse response) {
 		Map model = new HashMap();
 		model.put("msg1", "Hello, world!");
 		model.put("msg2", "AdminController says hello.");
