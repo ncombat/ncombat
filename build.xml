@@ -106,12 +106,15 @@
     </ftp>
 </target>
 
-<target name="deploy_local" description="Install application in local Tomcat" depends="all">
+<target name="deploy_local" description="Install application in local Tomcat" depends="all, remove">
     <deploy url="${tomcat.manager.url}"
             username="${tomcat.username}"
             password="${tomcat.password}"
             path="/${tomcat.path}"
             war="file:${dist.dir}/${war.file}"/>
+    <antcall target="timestamp">
+        <param name="message" value="${war.file} deploy completed at " />
+    </antcall>
 </target>
 
 <target name="remove" description="Remove application in Tomcat">
@@ -119,6 +122,9 @@
               username="${tomcat.username}"
               password="${tomcat.password}"
               path="/${tomcat.path}"/>
+	<antcall target="timestamp">
+	        <param name="message" value="${war.file} removed at" />
+	</antcall>
 </target>
 
 <target name="reload" description="Reload application in Tomcat" depends="all">
