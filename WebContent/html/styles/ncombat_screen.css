@@ -26,19 +26,24 @@
 	width:100%;
 	text-align:center;
 }
-
+#ncombatTitle {
+	margin: 10px;
+	padding: 10px;
+	background: #FFFFFF;
+	font-size:150%;
+}
 
 /* Body
 -----------------------------------------------------------------------------*/
 	body {
 	margin: 0px;
 	padding: 0px;
-	background: #FFF3E5;
+	background: #F0FFFF;
 	font-size:100%;
 	}
 
 	#content {
-		background: #FEFFE5;
+		background: #FFEBCD;
 		float: center;
 	}
 
@@ -47,29 +52,31 @@
 /* Game console and elements
 -----------------------------------------------------------------------------*/	
 #gameConsole {
-	background: #FFFF00;
+	background: #FFEBCD;
 	float: center;
-	width: 100%;
+	width: 96%;
 }
 
 #playerInfo {
 	background: #FFFFFF;
 	float: center;
-	width: 100%;
+	width: 94%;
 }
 
 #statusScreen {
 	font-family:Monospace,Serif;
+	font-variant: small-caps;
 	background: #FFFFCC;
 	float: center;
-	width: 100%;
-	height: 200px;
+	width: 94%;
+	height: 400px;
 	overflow: auto;
 }
 
 #commandConsole {
 	background: #FFFFFF;
 	float: center;
+	width: 94%;
 }
 
 #docPane {

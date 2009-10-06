@@ -55,6 +55,15 @@
 		}
 
 		$(document).ready( function() {
+
+			$("#dd").load("/html/content/docs/COMINFO.txt");
+			// allow click to expand dd tag
+			$("dt").click(function(){
+				$(this).next().toggle();
+				
+			});
+			
+			// start interface	
 			teletype.start(statusScreen);
 			$.ajax({
 				complete: processResponse,
@@ -66,12 +75,10 @@
 	</script>
 </head>
 <body>
-	<div id="header"><h1>N * C * O * M * B * A * T</h1></div>
-
+	<div id="header"><span id="ncombatTitle">N * C * O * M * B * A * T</span></div>
 	<div id="content">
 		<div id="gameConsole">
-			<div id="statusScreen"><!--  Server status updates appear here. --></div>
-			
+			<div id="statusScreen"></div>
 			<div id="commandConsole">
 				<form id="cmdString" action="#" method="post" onsubmit="sendRequest(); return false"> 
 				   <span id="prompt"></span>
@@ -81,21 +88,11 @@
 			</div>
 		</div>
 	</div>
-	
 	<div id="docPane">
 		<dl>
-			<dt>Our starting point, the original player documentation (click to view)</dt>
-			<dd><pre><jsp:include page="/html/content/docs/COMINFO.txt"/></pre></dd>
+			<dt>Our starting point, the original player documentation (click to hide/unhide)</dt>
+			<dd><pre><span id="originalDocs"></span></pre></dd>
 		</dl></div>
-		<script type="text/javascript">
-		$(document).ready(function(){
-			$("dd").hide();
-		});
-		
-		$("dt").click(function(){
-			$(this).next().toggle();
-		});
-		</script>
-	<div id="footer">InfoBar - about, contact, help, copyright, license</div>
+	<div id="footer"><span id="about">about</span> <span id="contact">contact</span> <span id="help">help</span> <span id="license">license</span> </div>
 </body>
 </html>
