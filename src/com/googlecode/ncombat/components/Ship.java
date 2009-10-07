@@ -1,10 +1,10 @@
 package com.googlecode.ncombat.components;
 
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import com.googlecode.ncombat.utils.*;
 
+import com.googlecode.ncombat.Combatant;
+import com.googlecode.ncombat.utils.NCombatUtils;
 
 /**
  * @author lmiller
@@ -12,7 +12,7 @@ import com.googlecode.ncombat.utils.*;
  *	Ship class is primary game object - receives commands from game server.
  *
  */
-public class Ship {
+public class Ship extends Combatant {
 	
 	public String guid;
 	private double y;
