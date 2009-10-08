@@ -211,8 +211,8 @@ public class GameController extends MultiActionController
 	
 	private void setCombatant(HttpSession session, Combatant combatant)
 	{
-		int combatantId = gameManager.addCombatant(combatant);
-		session.setAttribute("COMBATANT_ID", combatantId);
+		gameManager.addCombatant(combatant);
+		session.setAttribute("COMBATANT_ID", combatant.getId());
 	}
 	
 	private GameStatusModel internalError(HttpServletRequest request, String msg)
