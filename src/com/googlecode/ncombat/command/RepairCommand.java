@@ -17,4 +17,34 @@ public class RepairCommand implements Command
 	public double getShieldRepair2Pct() {
 		return shield2RepairPct;
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(shield1RepairPct);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		temp = Double.doubleToLongBits(shield2RepairPct);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RepairCommand other = (RepairCommand) obj;
+		if (Double.doubleToLongBits(shield1RepairPct) != Double
+				.doubleToLongBits(other.shield1RepairPct))
+			return false;
+		if (Double.doubleToLongBits(shield2RepairPct) != Double
+				.doubleToLongBits(other.shield2RepairPct))
+			return false;
+		return true;
+	}
 }
