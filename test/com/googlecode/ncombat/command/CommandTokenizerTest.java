@@ -92,4 +92,47 @@ public class CommandTokenizerTest
 		
 		process("E-22.0 F\tG3 G4H5,6.I  ");
 	}
+	
+	@Test
+	public void testLoneMessageCommandWithText() {
+		CommandText ct = new CommandText("E");
+		ct.getArgs().add("Jazzmaster MC");
+		expected.add(ct);
+		
+		process("E|Jazzmaster MC ");
+	}
+	
+	@Test
+	public void testEmbeddedMessageCommandWithPrivateText() {
+		CommandText ct = new CommandText("C");
+		expected.add(ct);
+		
+		ct = new CommandText("E");
+		ct.getArgs().add("7");
+		ct.getArgs().add("HI, THERE. ");
+		expected.add(ct);
+		
+		ct = new CommandText("D");
+		ct.getArgs().add("2");
+		expected.add(ct);
+		
+		process("CE7|HI, THERE. | D2");
+	}
+	
+	@Test
+	public void testStopCommand() {
+		CommandText ct = new CommandText("STOP");
+		expected.add(ct);
+		
+		process("STOP");
+	}
+	
+	@Test
+	public void testBadStartOfString() {
+		CommandText ct = new CommandText(null);
+		ct.getArgs().add("15%");
+		expected.add(ct);
+		
+		process("15%");
+	}
 }

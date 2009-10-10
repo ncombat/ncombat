@@ -22,20 +22,39 @@ public class CommandTokenizer
 		line = line.trim();
 		if (line.length() == 0) return commands;
 		
+		if (line.toUpperCase().equals("STOP")) {
+			command = new CommandText("STOP");
+			commands.add(command);
+			return commands;
+		}
+		
+		boolean inLongArg = false;
+		
 		for (int i = 0 ; i < line.length() ; i++) {
 			char ch = line.charAt(i);
 			
-			if (Character.isWhitespace(ch)) {
-				continue;
-			}
-			else if (Character.isLetter(ch)) {
-				newCommand(ch);
-			}
-			else if (ch == ',') {
+			if (ch == '|') {
 				completeCurrentArgument();
+				inLongArg = !inLongArg;
 			}
 			else {
-				appendToCurrentArgument(ch);
+				if (inLongArg) {
+					appendToCurrentArgument(ch);
+				}
+				else {
+					if (Character.isWhitespace(ch)) {
+						continue;
+					}
+					else if (Character.isLetter(ch)) {
+						newCommand(ch);
+					}
+					else if (ch == ',') {
+						completeCurrentArgument();
+					}					
+					else {
+						appendToCurrentArgument(ch);
+					}
+				}
 			}
 		}
 		
@@ -60,6 +79,7 @@ public class CommandTokenizer
 	}
 	
 	private void appendToCurrentArgument(char ch) {
+		if (command == null) command = new CommandText(null);
 		argBuf.append(ch);
 	}
 	
