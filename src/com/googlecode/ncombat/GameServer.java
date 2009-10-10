@@ -1,7 +1,5 @@
 package com.googlecode.ncombat;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -25,18 +23,6 @@ public class GameServer
 	
 	private boolean started;
 	
-	//------------------------------------------------------------
-	// The following variables are protected by the cycle monitor.
-	//------------------------------------------------------------
-	
-	private Object cycleMonitor = new Object();
-	
-	private List<Combatant> combatants = new ArrayList<Combatant>();
-	
-	//-------------------------------------------------
-	// End of variables protected by the cycle monitor.
-	//-------------------------------------------------
-	
 	public GameServer()
 	{
 		synchronized (GameServer.class) {
@@ -47,14 +33,6 @@ public class GameServer
 
 		timer = new Timer("GameServer" + serverNumber, true);
 		timerTask = new GameServerTimerTask();
-	}
-	
-	public void addCombatant(Combatant combatant)
-	{
-		combatant.setGameServer(this);
-		synchronized (cycleMonitor) {
-			combatants.add(combatant);
-		}
 	}
 	
 	public synchronized void start()
@@ -79,17 +57,16 @@ public class GameServer
 		this.cyclePeriod = cyclePeriod;
 	}
 	
-	private void runGameCycle()
+	private void runCommandCycle()
 	{
-		log.debug("Entering game cycle.");
-		log.debug("Exiting game cycle.");
+		log.debug("Game server #" + serverNumber + ": running command cycle.");
 	}
 	
 	public class GameServerTimerTask extends TimerTask
 	{
 		@Override
 		public void run() {
-			runGameCycle();
+			runCommandCycle();
 		}
 	}
 }

@@ -22,14 +22,6 @@ public class GameStatusModel extends HashMap
 	public void setGameStatus(GameStatus gameStatus) {
 		this.gameStatus = gameStatus;
 	}
-	
-	public boolean isAlive() {
-		return gameStatus.isAlive();
-	}
-
-	public void setAlive(boolean alive) {
-		gameStatus.setAlive(alive);
-	}
 
 	public boolean getSuccess() {
 		return (Boolean) get("success");

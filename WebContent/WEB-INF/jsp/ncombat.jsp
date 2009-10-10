@@ -56,7 +56,7 @@
 
 		$(document).ready( function() {
 
-			$("#dd").load("html/content/docs/COMINFO.txt");
+			$("#dd").load("/html/content/docs/COMINFO.txt");
 			// allow click to expand dd tag
 			$("dt").click(function(){
 				$(this).next().toggle();
