@@ -6,10 +6,15 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
 public class AdminController extends MultiActionController
 {
+	public ModelAndView admin(HttpServletRequest request, HttpServletResponse response) {
+		return new ModelAndView("admin");
+	}
+
 	public Map adminTest(HttpServletRequest request, HttpServletResponse response) {
 		Map model = new HashMap();
 		model.put("msg1", "Hello, world!");

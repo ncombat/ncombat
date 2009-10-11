@@ -17,6 +17,8 @@
 		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-2.1.xsd
 		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
 		
+	<bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
+	
 	<bean class="org.springframework.web.servlet.handler.SimpleUrlHandlerMapping">
 		<property name="mappings">
 			<value>
@@ -35,7 +37,9 @@
 	
 	<bean id="appController" class="com.googlecode.ncombat.web.AppController"/>
 	
-	<bean id="gameController" class="com.googlecode.ncombat.web.GameController"/>
+	<bean id="gameController" class="com.googlecode.ncombat.web.GameController">
+		<property name="gameManager" ref="gameManager"/>
+	</bean>
 	
 	<bean id="adminController" class="com.googlecode.ncombat.web.AdminController"/>
 	

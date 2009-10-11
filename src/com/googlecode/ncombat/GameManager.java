@@ -1,7 +1,7 @@
 package com.googlecode.ncombat;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.InitializingBean;
@@ -10,18 +10,37 @@ public class GameManager implements InitializingBean
 {
 	private Logger logger = Logger.getLogger(GameManager.class);
 	
-	private List<GameServer> gameServers = new ArrayList<GameServer>();
+	private GameServer gameServer;
+	
+	private Map<Integer, Combatant> combatants = new HashMap<Integer, Combatant>();
 	
 	public GameManager() {
 	}
 
 	public void afterPropertiesSet() throws Exception
 	{
-		GameServer initialGameServer = new GameServer();
-		initialGameServer.start();
+		logger.info("GameManager is starting.");
 		
-		gameServers.add(initialGameServer);
+		gameServer = new GameServer();
+		gameServer.start();
 		
-		logger.info( getClass().getSimpleName() + " has started.");
+		logger.info("GameManager has started.");
+	}
+	
+	public Combatant getCombatant(Integer combatantId)
+	{
+		if (combatantId == null) return null;
+		synchronized (combatants) {
+			return combatants.get(combatantId);
+		}
+	}
+	
+	public void addCombatant(Combatant combatant)
+	{
+		synchronized (combatants) {
+			combatants.put( combatant.getId(), combatant);
+		}
+		
+		gameServer.addCombatant(combatant);
 	}
 }
