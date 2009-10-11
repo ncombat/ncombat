@@ -1,4 +1,4 @@
-package com.googlecode.ncombat.web;
+package org.ncombat.web;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -9,13 +9,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.log4j.Logger;
+import org.ncombat.GameManager;
+import org.ncombat.command.CommandText;
+import org.ncombat.command.CommandTokenizer;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
-
-import com.googlecode.ncombat.GameManager;
-import com.googlecode.ncombat.command.CommandText;
-import com.googlecode.ncombat.command.CommandTokenizer;
 
 public class GameController extends MultiActionController
 {

@@ -1,4 +1,4 @@
-package com.googlecode.ncombat.command;
+package org.ncombat.command;
 
 public class ShieldCommand implements Command
 {

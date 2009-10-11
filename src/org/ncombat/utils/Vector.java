@@ -1,4 +1,4 @@
-package com.googlecode.ncombat.utils;
+package org.ncombat.utils;
 
 /**
  * An immutable two-dimensional vector.

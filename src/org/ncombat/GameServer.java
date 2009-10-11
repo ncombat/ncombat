@@ -1,4 +1,4 @@
-package com.googlecode.ncombat;
+package org.ncombat;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,9 +6,8 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
+import org.ncombat.command.CommandBatch;
 import org.springframework.beans.factory.DisposableBean;
-
-import com.googlecode.ncombat.command.CommandBatch;
 
 public class GameServer implements DisposableBean
 {

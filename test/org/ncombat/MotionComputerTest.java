@@ -1,12 +1,11 @@
-package com.googlecode.ncombat;
+package org.ncombat;
 
 import static junit.framework.Assert.assertEquals;
 import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-
-import com.googlecode.ncombat.utils.Vector;
+import org.ncombat.utils.Vector;
 
 public class MotionComputerTest
 {

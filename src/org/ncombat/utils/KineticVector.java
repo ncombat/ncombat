@@ -1,7 +1,6 @@
-package com.googlecode.ncombat.utils;
+package org.ncombat.utils;
 
 
-import java.math.BigDecimal;
 
 /**
  * KineticVector is the motion handler for all game objects. 

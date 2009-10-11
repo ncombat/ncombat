@@ -19,6 +19,6 @@
 
 <bean class="org.springframework.beans.factory.annotation.RequiredAnnotationBeanPostProcessor"/>
 
-<bean id="gameManager" class="com.googlecode.ncombat.GameManager"/>
+<bean id="gameManager" class="org.ncombat.GameManager"/>
 
 </beans>

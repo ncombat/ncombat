@@ -1,4 +1,4 @@
-package com.googlecode.ncombat;
+package org.ncombat;
 
 import java.util.HashMap;
 import java.util.Map;

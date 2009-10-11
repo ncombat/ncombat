@@ -1,9 +1,10 @@
-package com.googlecode.ncombat.components;
+package org.ncombat.components;
 
 
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import com.googlecode.ncombat.utils.*;
+
+import org.ncombat.utils.NCombatUtils;
 
 
 /**

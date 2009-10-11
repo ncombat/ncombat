@@ -1,6 +1,6 @@
-package com.googlecode.ncombat;
+package org.ncombat;
 
-import com.googlecode.ncombat.command.CommandBatch;
+import org.ncombat.command.CommandBatch;
 
 public class Combatant
 {

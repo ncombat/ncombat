@@ -1,12 +1,11 @@
-package com.googlecode.ncombat;
+package org.ncombat;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Date;
 import java.util.StringTokenizer;
 
-import com.googlecode.ncombat.components.Ship;
+import org.ncombat.components.Ship;
 
 	/**
 	 * @author lmiller

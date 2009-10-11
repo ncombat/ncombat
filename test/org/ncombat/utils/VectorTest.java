@@ -1,4 +1,4 @@
-package com.googlecode.ncombat.utils;
+package org.ncombat.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

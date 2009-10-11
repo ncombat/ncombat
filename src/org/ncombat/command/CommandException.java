@@ -1,6 +1,6 @@
-package com.googlecode.ncombat.command;
+package org.ncombat.command;
 
-import com.googlecode.ncombat.NcombatException;
+import org.ncombat.NcombatException;
 
 public class CommandException extends NcombatException
 {

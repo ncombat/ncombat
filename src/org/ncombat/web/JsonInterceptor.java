@@ -1,4 +1,4 @@
-package com.googlecode.ncombat.web;
+package org.ncombat.web;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;

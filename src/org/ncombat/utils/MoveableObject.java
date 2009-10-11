@@ -1,6 +1,5 @@
-package com.googlecode.ncombat.utils;
-	import java.util.Date;
-
+package org.ncombat.utils;
+	
 	public abstract class MoveableObject {
 
 		// momentum vector = which way you are moving and how fast - determines position

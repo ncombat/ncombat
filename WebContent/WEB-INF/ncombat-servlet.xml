@@ -30,18 +30,18 @@
 		
 		<property name="interceptors">
 			<list>
-				<bean class="com.googlecode.ncombat.web.JsonInterceptor"/>	
+				<bean class="org.ncombat.web.JsonInterceptor"/>	
 			</list>
 		</property>
 	</bean>
 	
-	<bean id="appController" class="com.googlecode.ncombat.web.AppController"/>
+	<bean id="appController" class="org.ncombat.web.AppController"/>
 	
-	<bean id="gameController" class="com.googlecode.ncombat.web.GameController">
+	<bean id="gameController" class="org.ncombat.web.GameController">
 		<property name="gameManager" ref="gameManager"/>
 	</bean>
 	
-	<bean id="adminController" class="com.googlecode.ncombat.web.AdminController"/>
+	<bean id="adminController" class="org.ncombat.web.AdminController"/>
 	
 	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver">
 		<property name="order" value="1"/>
@@ -54,5 +54,5 @@
 		<property name="order" value="2"/>
 	</bean>
 	
-	<bean id="jsonView" class="com.googlecode.ncombat.web.JsonView"/>		
+	<bean id="jsonView" class="org.ncombat.web.JsonView"/>		
 </beans>

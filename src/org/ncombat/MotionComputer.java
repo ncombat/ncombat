@@ -1,6 +1,7 @@
-package com.googlecode.ncombat;
+package org.ncombat;
 
-import com.googlecode.ncombat.utils.Vector;
+import org.ncombat.utils.Vector;
+
 
 public class MotionComputer
 {

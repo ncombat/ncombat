@@ -1,4 +1,4 @@
-package com.googlecode.ncombat.web;
+package org.ncombat.web;
 
 import java.util.ArrayList;
 import java.util.List;

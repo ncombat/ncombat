@@ -1,9 +1,9 @@
-package com.googlecode.ncombat.command;
+package org.ncombat.command;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.googlecode.ncombat.Combatant;
+import org.ncombat.Combatant;
 
 public class CommandBatch
 {

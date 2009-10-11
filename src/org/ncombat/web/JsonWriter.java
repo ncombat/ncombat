@@ -1,4 +1,4 @@
-package com.googlecode.ncombat.web;
+package org.ncombat.web;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Array;

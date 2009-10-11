@@ -1,4 +1,4 @@
-package com.googlecode.ncombat;
+package org.ncombat;
 
 public class NcombatException extends RuntimeException
 {
