@@ -17,6 +17,12 @@ public class AccelerateCommand implements Command
 	public double getTime() {
 		return time;
 	}
+	
+	@Override
+	public String toString() {
+		return "[AccelerateCommand: rate=" + rate
+					+ ", time=" + time + "]";
+	}
 
 	@Override
 	public int hashCode() {

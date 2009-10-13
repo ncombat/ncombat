@@ -4,12 +4,21 @@ public class TrackCommand implements Command
 {
 	private int target;
 	
+	public TrackCommand() {
+		this(0);
+	}
+	
 	public TrackCommand(int target) {
 		this.target = target;
 	}
 
 	public int getTarget() {
 		return target;
+	}
+	
+	@Override
+	public String toString() {
+		return "[TrackCommand: target=" + target + "]";
 	}
 
 	@Override

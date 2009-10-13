@@ -11,6 +11,11 @@ public class SensorCommand implements Command
 	public double getRange() {
 		return range;
 	}
+	
+	@Override
+	public String toString() {
+		return "[SensorCommand: range=" + range + "]";
+	}
 
 	@Override
 	public int hashCode() {

@@ -4,6 +4,10 @@ import java.util.HashMap;
 
 public class GameStatusModel extends HashMap
 {
+	private static final String NAME_PROMPT = "ENTER YOUR NAME?";
+	private static final String COMMAND_PROMPT = "CMDS?";
+	private static final String MESSAGE_PROMPT = "MESSAGE?";
+	
 	private GameStatus gameStatus = new GameStatus();
 	
 	public GameStatusModel() {
@@ -21,6 +25,14 @@ public class GameStatusModel extends HashMap
 
 	public void setGameStatus(GameStatus gameStatus) {
 		this.gameStatus = gameStatus;
+	}
+
+	public boolean isAlive() {
+		return gameStatus.isAlive();
+	}
+
+	public void setAlive(boolean alive) {
+		gameStatus.setAlive(alive);
 	}
 
 	public boolean getSuccess() {
@@ -45,5 +57,29 @@ public class GameStatusModel extends HashMap
 
 	public void setUrl(String url) {
 		gameStatus.setUrl(url);
+	}
+	
+	public GameStatusModel promptForCommands() {
+		setPrompt(COMMAND_PROMPT);
+		setUrl(GameController.COMMAND_URL);
+		return this;
+	}
+	
+	public GameStatusModel promptForName() {
+		setPrompt(NAME_PROMPT);
+		setUrl(GameController.LOGIN_URL);
+		return this;
+	}
+	
+	public GameStatusModel promptForMessage() {
+		setPrompt(MESSAGE_PROMPT);
+		setUrl(GameController.MESSAGE_URL);
+		return this;
+	}
+	
+	public GameStatusModel markForDeath() {
+		setPrompt(null);
+		setAlive(false);
+		return this;
 	}
 }

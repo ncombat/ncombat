@@ -6,6 +6,11 @@ public class StopCommand implements Command
 	}
 	
 	@Override
+	public String toString() {
+		return "[StopCommand]";
+	}
+
+	@Override
 	public boolean equals(Object o) {
 		if (o == null) return false;
 		if (this == o) return true;

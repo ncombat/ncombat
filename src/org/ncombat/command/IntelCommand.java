@@ -21,6 +21,12 @@ public class IntelCommand implements Command
 	public int getShip() {
 		return ship;
 	}
+	
+	@Override
+	public String toString() {
+		return "[IntelCommand: subcommand=" + subcommand
+					+ ", ship=" + ship + "]";
+	}
 
 	@Override
 	public int hashCode() {

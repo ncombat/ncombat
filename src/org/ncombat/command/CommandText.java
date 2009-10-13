@@ -21,6 +21,14 @@ public class CommandText
 		return args;
 	}
 	
+	public String getArg(int i) {
+		return args.get(i);
+	}
+	
+	public int numArgs() {
+		return args.size();
+	}
+	
 
 	@Override
 	public String toString()

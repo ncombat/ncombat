@@ -5,6 +5,10 @@ public class MessageCommand implements Command
 	private int destination;
 	private String message;
 	
+	public MessageCommand() {
+		this(0, null);
+	}
+	
 	public MessageCommand(String message) {
 		this(0, message);
 	}
@@ -20,6 +24,12 @@ public class MessageCommand implements Command
 
 	public String getMessage() {
 		return message;
+	}
+	
+	@Override
+	public String toString() {
+		return "[MessageCommand: destination=" + destination
+					+ ", message='" + message + "']";
 	}
 
 	@Override

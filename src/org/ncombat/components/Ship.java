@@ -4,6 +4,7 @@ package org.ncombat.components;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
+import org.ncombat.Combatant;
 import org.ncombat.utils.NCombatUtils;
 
 
@@ -13,7 +14,7 @@ import org.ncombat.utils.NCombatUtils;
  *	Ship class is primary game object - receives commands from game server.
  *
  */
-public class Ship {
+public class Ship extends Combatant {
 	
 	public String guid;
 	private double y;
@@ -23,7 +24,7 @@ public class Ship {
 	private double heading;
 	private int power;
 	private int missiles;
-	private int id;
+	private int shipNum;
 	private int damage;
 	private int shield1;
 	private int shield2;
@@ -88,7 +89,7 @@ public class Ship {
 		damage = 0;
 		shield1 = 100;
 		shield2 = 100;
-		id = 1;
+		shipNum = 1;
 		tube1 = new MissileTube();
 		tube2 = new MissileTube();
 		messages = new StringBuffer();
@@ -348,7 +349,7 @@ Ex FS2 turns S1 and S2on to full and then turns s2 off, faster than S1,25. Shiel
 		StringBuffer retValue = new StringBuffer();
 		retValue.append(messages);
 		retValue.append("SP\tDMG\tP1\tP2\tSpeed\tPower\tCourse\tX\tY\tAzimuth\tRange\tHeading\n");
-		retValue.append(id + "\t" + damage + "\t" + shield1 + "\t" + shield2 + "\t" + velocity + "\t" + power + "\t" + heading + "\t" + xyForm.format(x) + "\t" + xyForm.format(y) +"\t\t");
+		retValue.append(shipNum + "\t" + damage + "\t" + shield1 + "\t" + shield2 + "\t" + velocity + "\t" + power + "\t" + heading + "\t" + xyForm.format(x) + "\t" + xyForm.format(y) +"\t\t");
 		messages=new StringBuffer();
 		this.update();
 		return retValue.toString();
@@ -386,14 +387,6 @@ Ex FS2 turns S1 and S2on to full and then turns s2 off, faster than S1,25. Shiel
 		this.heading = heading;
 	}
 
-	public StringBuffer getMessages() {
-		return messages;
-	}
-
-	public void setMessages(StringBuffer messages) {
-		this.messages = messages;
-	}
-
 	public int getMissiles() {
 		return missiles;
 	}
@@ -426,8 +419,8 @@ Ex FS2 turns S1 and S2on to full and then turns s2 off, faster than S1,25. Shiel
 		this.shield2 = shield2;
 	}
 
-	public int getId() {
-		return id;
+	public int getShipNum() {
+		return shipNum;
 	}
 
 	public int getRemainingHeadingChange() {
@@ -443,7 +436,7 @@ Ex FS2 turns S1 and S2on to full and then turns s2 off, faster than S1,25. Shiel
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + ((guid == null) ? 0 : guid.hashCode());
-		result = prime * result + id;
+		result = prime * result + shipNum;
 		long temp;
 		temp = Double.doubleToLongBits(x);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
@@ -466,7 +459,7 @@ Ex FS2 turns S1 and S2on to full and then turns s2 off, faster than S1,25. Shiel
 				return false;
 		} else if (!guid.equals(other.guid))
 			return false;
-		if (id != other.id)
+		if (shipNum != other.shipNum)
 			return false;
 		if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
 			return false;

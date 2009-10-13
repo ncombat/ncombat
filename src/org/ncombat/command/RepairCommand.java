@@ -17,6 +17,12 @@ public class RepairCommand implements Command
 	public double getShieldRepair2Pct() {
 		return shield2RepairPct;
 	}
+	
+	@Override
+	public String toString() {
+		return "[RepairCommand: shield1RepairPct=" + shield1RepairPct
+					+ ", shield2RepairPct=" + shield2RepairPct + "]";
+	}
 
 	@Override
 	public int hashCode() {

@@ -3,19 +3,25 @@ package org.ncombat.command;
 public class RotateCommand implements Command
 {
 	private double angle;
-	private double time;
+	private double rate;
 	
-	public RotateCommand(double angle, double time) {
+	public RotateCommand(double angle, double rate) {
 		this.angle = angle;
-		this.time = time;
+		this.rate = rate;
 	}
 
 	public double getAngle() {
 		return angle;
 	}
 
-	public double getTime() {
-		return time;
+	public double getRate() {
+		return rate;
+	}
+	
+	@Override
+	public String toString() {
+		return "[RotateCommand: angle=" + angle
+					+ ", rate=" + rate + "]";
 	}
 
 	@Override
@@ -25,7 +31,7 @@ public class RotateCommand implements Command
 		long temp;
 		temp = Double.doubleToLongBits(angle);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
-		temp = Double.doubleToLongBits(time);
+		temp = Double.doubleToLongBits(rate);
 		result = prime * result + (int) (temp ^ (temp >>> 32));
 		return result;
 	}
@@ -42,8 +48,8 @@ public class RotateCommand implements Command
 		if (Double.doubleToLongBits(angle) != Double
 				.doubleToLongBits(other.angle))
 			return false;
-		if (Double.doubleToLongBits(time) != Double
-				.doubleToLongBits(other.time))
+		if (Double.doubleToLongBits(rate) != Double
+				.doubleToLongBits(other.rate))
 			return false;
 		return true;
 	}

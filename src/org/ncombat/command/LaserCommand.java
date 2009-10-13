@@ -11,6 +11,11 @@ public class LaserCommand implements Command
 	public double getPower() {
 		return power;
 	}
+	
+	@Override
+	public String toString() {
+		return "[LaserCommand: power=" + power + "]";
+	}
 
 	@Override
 	public int hashCode() {

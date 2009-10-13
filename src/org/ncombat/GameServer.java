@@ -65,7 +65,7 @@ public class GameServer implements DisposableBean
 	
 	private void runGameCycle()
 	{
-		log.debug("Entering game cycle.");
+		// log.debug("Entering game cycle.");
 		
 		synchronized (cycleMonitor) {
 			long updateTime = System.currentTimeMillis();
@@ -99,7 +99,7 @@ public class GameServer implements DisposableBean
 		
 		notifyPlayers();
 		
-		log.debug("Exiting game cycle.");
+		// log.debug("Exiting game cycle.");
 	}
 	
 	public boolean isPaused() {

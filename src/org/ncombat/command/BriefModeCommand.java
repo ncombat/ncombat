@@ -4,6 +4,11 @@ public class BriefModeCommand implements Command
 {
 	public BriefModeCommand() {
 	}
+	
+	@Override
+	public String toString() {
+		return "[BriefModeCommand]";
+	}
 
 	@Override
 	public boolean equals(Object o) {

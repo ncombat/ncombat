@@ -6,6 +6,11 @@ public class HelpCommand implements Command
 	}
 	
 	@Override
+	public String toString() {
+		return "[HelpCommand]";
+	}
+	
+	@Override
 	public boolean equals(Object o) {
 		if (o == null) return false;
 		if (this == o) return true;
