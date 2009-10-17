@@ -14,7 +14,7 @@ import org.ncombat.utils.NCombatUtils;
  *	Ship class is primary game object - receives commands from game server.
  *
  */
-public class Ship extends Combatant {
+public class OldShip {
 	
 	public String guid;
 	private double y;
@@ -80,7 +80,7 @@ public class Ship extends Combatant {
 
 	}
 	
-	public Ship() {
+	public OldShip() {
 		course = 0.0;
 		heading = 0.0; 
 		power = 1000;
@@ -453,7 +453,7 @@ Ex FS2 turns S1 and S2on to full and then turns s2 off, faster than S1,25. Shiel
 			return false;
 		if (getClass() != obj.getClass())
 			return false;
-		Ship other = (Ship) obj;
+		OldShip other = (OldShip) obj;
 		if (guid == null) {
 			if (other.guid != null)
 				return false;

@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.StringTokenizer;
 
-import org.ncombat.components.Ship;
+import org.ncombat.components.OldShip;
 
 	/**
 	 * @author lmiller
@@ -13,7 +13,7 @@ import org.ncombat.components.Ship;
 	 */
 	public class NCombatMain {
 
-		static Ship s;
+		static OldShip s;
 		static StringTokenizer st;
 		static String cmd = new String();
 		static int units;
@@ -24,7 +24,7 @@ import org.ncombat.components.Ship;
 		public static void main(String[] args) {
 			NCombatMain r = new NCombatMain();
 			// System.out.println(r.ncombatMethod());
-			s = new Ship();
+			s = new OldShip();
 			
 			try {
 			   	System.out.println(s.getStatus());

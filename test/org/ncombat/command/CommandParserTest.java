@@ -7,11 +7,12 @@ import junit.framework.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.ncombat.Combatant;
-import org.ncombat.components.Ship;
+import org.ncombat.Ship;
+import org.ncombat.utils.Vector;
 
 public class CommandParserTest
 {
-	private Combatant combatant = new Ship();
+	private Combatant combatant = new Ship(Vector.ZERO);
 	private CommandParser parser = new CommandParser(combatant);
 	private CommandBatch expectedBatch;
 	private Command expectedCommand;

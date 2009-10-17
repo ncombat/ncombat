@@ -12,11 +12,12 @@ import org.apache.log4j.Logger;
 import org.ncombat.Combatant;
 import org.ncombat.GameManager;
 import org.ncombat.GameServer;
+import org.ncombat.Ship;
 import org.ncombat.command.Command;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.command.CommandParser;
 import org.ncombat.command.MessageCommand;
-import org.ncombat.components.Ship;
+import org.ncombat.utils.Vector;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -114,7 +115,7 @@ public class GameController extends MultiActionController
 			return model.promptForName();
 		}
 		
-		Ship ship = new Ship();
+		Ship ship = new Ship(Vector.ZERO);
 		setCombatant(session, ship);
 		
 		model.addMessage("");

@@ -7,11 +7,30 @@ import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
 import org.ncombat.command.CommandBatch;
+import org.ncombat.utils.Vector;
 import org.springframework.beans.factory.DisposableBean;
 
 public class GameServer implements DisposableBean
 {
 	public static final long DEFAULT_CYCLE_PERIOD = 1000; // milliseconds
+	
+	private static Vector randomPosition()
+	{
+		double maxCoord = 30000.0;
+		double x0 = (2.0 * (Math.random() - 0.5)) * maxCoord;
+		double y0 = (2.0 * (Math.random() - 0.5)) * maxCoord;
+		Vector position = new Vector(x0, y0);
+		return position;
+	}
+	
+	private static Vector randomVelocity()
+	{
+		double maxSpeed = 20.0;
+		double speed = Math.random() * maxSpeed;
+		double heading = Math.random() * 2.0 * Math.PI;
+		Vector velocity = Vector.polarDegrees(speed, heading);
+		return velocity;
+	}
 	
 	private static final long PLAYER_SYNC_TIMEOUT = 5000; // milliseconds
 	
