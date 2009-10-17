@@ -52,7 +52,41 @@ public class Vector
 	public static Vector unitDegrees(double theta) {
 		return unit(Math.toRadians(theta));
 	}
+	
+	/*
+	 * Returns the angle equivalent to the given angle (in radians) and within
+	 * the interval -PI (exclusive) to PI (inclusive).
+	 */
+	public static double stdAngle(double angle)
+	{
+		while (angle > PI) {
+			angle -= TWO_PI;
+		}
+		
+		while (angle <= -PI) {
+			angle += TWO_PI;
+		}
+		
+		return angle;
+	}
 
+	/*
+	 * Returns the angle equivalent to the given angle (in degrees) and within
+	 * the interval -180 (exclusive) to 180 (inclusive).
+	 */
+	public static double stdAngleDegrees(double angle)
+	{
+		while (angle > 180.0) {
+			angle -= 360.0;
+		}
+		
+		while (angle <= -180.0) {
+			angle += 360.0;
+		}
+		
+		return angle;
+	}
+	
 	/**
 	 * Constructs a zero vector.
 	 */
@@ -92,18 +126,7 @@ public class Vector
 	public double angle(Vector that)
 	{
 		double angle = that.theta() - this.theta();
-		
-		if (angle < -PI) {
-			angle += TWO_PI;
-		}
-		else if (angle > PI) {
-			angle -= TWO_PI;
-		}
-		
-		angle = Math.max(-PI, angle);
-		angle = Math.min(angle, PI);
-		
-		return angle;
+		return stdAngle(angle);
 	}
 	
 	/**
@@ -244,7 +267,7 @@ public class Vector
 	 * denoted as <code>theta</code>, in radians.
 	 */
 	public double theta() {
-		return Math.atan2(y, x);
+		return stdAngle( Math.atan2(y, x));
 	}
 	
 	/**
