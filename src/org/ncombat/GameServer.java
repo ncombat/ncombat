@@ -6,6 +6,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
+import org.ncombat.combatants.Combatant;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.utils.Vector;
 import org.springframework.beans.factory.DisposableBean;

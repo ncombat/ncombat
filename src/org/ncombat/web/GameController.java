@@ -9,10 +9,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.log4j.Logger;
-import org.ncombat.Combatant;
 import org.ncombat.GameManager;
 import org.ncombat.GameServer;
-import org.ncombat.Ship;
+import org.ncombat.combatants.Combatant;
+import org.ncombat.combatants.Ship;
 import org.ncombat.command.Command;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.command.CommandParser;

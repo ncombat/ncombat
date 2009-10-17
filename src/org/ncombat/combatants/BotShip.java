@@ -1,4 +1,4 @@
-package org.ncombat;
+package org.ncombat.combatants;
 
 import org.ncombat.utils.Vector;
 

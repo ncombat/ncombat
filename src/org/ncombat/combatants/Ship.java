@@ -1,4 +1,4 @@
-package org.ncombat;
+package org.ncombat.combatants;
 
 import org.ncombat.command.AccelerateCommand;
 import org.ncombat.command.LaserCommand;

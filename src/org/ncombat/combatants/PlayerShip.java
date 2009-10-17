@@ -1,4 +1,4 @@
-package org.ncombat;
+package org.ncombat.combatants;
 
 import org.ncombat.command.BriefModeCommand;
 import org.ncombat.command.HelpCommand;

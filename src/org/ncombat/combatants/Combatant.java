@@ -1,4 +1,4 @@
-package org.ncombat;
+package org.ncombat.combatants;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.ncombat.GameServer;
+import org.ncombat.ShieldArray;
 import org.ncombat.command.Command;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.utils.Vector;

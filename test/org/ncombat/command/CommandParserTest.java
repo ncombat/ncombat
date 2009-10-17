@@ -6,8 +6,8 @@ import junit.framework.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.ncombat.Combatant;
-import org.ncombat.Ship;
+import org.ncombat.combatants.Combatant;
+import org.ncombat.combatants.Ship;
 import org.ncombat.utils.Vector;
 
 public class CommandParserTest

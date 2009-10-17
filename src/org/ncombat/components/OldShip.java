@@ -1,12 +1,9 @@
 package org.ncombat.components;
 
-
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
-import org.ncombat.Combatant;
 import org.ncombat.utils.NCombatUtils;
-
 
 /**
  * @author lmiller

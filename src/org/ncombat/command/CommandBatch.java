@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import org.ncombat.Combatant;
+import org.ncombat.combatants.Combatant;
 
 public class CommandBatch
 {

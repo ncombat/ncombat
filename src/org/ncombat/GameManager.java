@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.log4j.Logger;
+import org.ncombat.combatants.Combatant;
 import org.springframework.beans.factory.InitializingBean;
 
 public class GameManager implements InitializingBean
