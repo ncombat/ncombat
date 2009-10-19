@@ -17,7 +17,6 @@ import org.ncombat.command.Command;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.command.CommandParser;
 import org.ncombat.command.MessageCommand;
-import org.ncombat.utils.Vector;
 import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -115,14 +114,19 @@ public class GameController extends MultiActionController
 			return model.promptForName();
 		}
 		
-		Ship ship = new Ship(Vector.ZERO);
+		Ship ship = gameManager.createPlayerShip();
 		setCombatant(session, ship);
 		
 		model.addMessage("");
 		model.addMessage( String.format("Welcome, %s.", playerName));
 		model.addMessage("");
-		model.addMessage("SHP   COMMANDERS NAME   TER USERNUM KL");
-		model.addMessage( String.format(" 1    %-17s 123 H7LT444  0", playerName));
+//		model.addMessage("SHP   COMMANDERS NAME   TER USERNUM KL");
+//		model.addMessage( String.format(" 1    %-17s 123 H7LT444  0", playerName));
+		
+		// Pass on the user's messages to the UI.
+		for (String message : ship.drainMessages()) {
+			model.addMessage(message);
+		}
 		
 		return model.promptForCommands();
 	}
@@ -306,9 +310,7 @@ public class GameController extends MultiActionController
 		return gameManager.getCombatant(combatantId);
 	}
 	
-	private void setCombatant(HttpSession session, Combatant combatant)
-	{
-		gameManager.addCombatant(combatant);
+	private void setCombatant(HttpSession session, Combatant combatant) {
 		session.setAttribute("COMBATANT_ID", combatant.getId());
 	}
 	

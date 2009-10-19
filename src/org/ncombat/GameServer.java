@@ -1,12 +1,19 @@
 package org.ncombat;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import org.apache.log4j.Logger;
+import org.ncombat.combatants.BotShip;
 import org.ncombat.combatants.Combatant;
+import org.ncombat.combatants.GornBase;
+import org.ncombat.combatants.PlayerShip;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.utils.Vector;
 import org.springframework.beans.factory.DisposableBean;
@@ -27,8 +34,8 @@ public class GameServer implements DisposableBean
 	private static Vector randomVelocity()
 	{
 		double maxSpeed = 20.0;
-		double speed = Math.random() * maxSpeed;
-		double heading = Math.random() * 2.0 * Math.PI;
+		double speed = Math.floor( Math.random() * maxSpeed);
+		double heading = Math.random() * 360.0;
 		Vector velocity = Vector.polarDegrees(speed, heading);
 		return velocity;
 	}
@@ -51,7 +58,7 @@ public class GameServer implements DisposableBean
 	
 	private Object cycleMonitor = new Object();
 	private boolean paused;
-	private List<Combatant> combatants = new ArrayList<Combatant>();
+	private Map<Integer,Combatant> combatants = new HashMap<Integer,Combatant>();
 	private List<CommandBatch> commandBatches = new ArrayList<CommandBatch>();
 	
 	//-------------------------------------------------
@@ -74,6 +81,22 @@ public class GameServer implements DisposableBean
 		}
 		
 		log.info("GameServer #" + serverNumber + " is starting.");
+		
+		// Create Gorn bases
+		addCombatant(21, new GornBase(new Vector(100000.0,0.0)));
+		addCombatant(22, new GornBase(new Vector(0.0,100000.0)));
+		addCombatant(23, new GornBase(new Vector(-100000.0,0.0)));
+		addCombatant(24, new GornBase(new Vector(0,-100000.0)));
+		
+		// TODO: Gorn base regeneration
+		
+		// Create a few bot ships just for fun.
+		int numBots = 2;
+		for (int i = 0 ; i < numBots ; i++) {
+			Vector botPosition = randomPosition();
+			Vector botVelocity = randomVelocity();
+			addCombatant( new BotShip(botPosition, botVelocity));
+		}
 
 		timer = new Timer("GameServer" + serverNumber, true);
 		timerTask = new GameServerTimerTask();
@@ -90,7 +113,7 @@ public class GameServer implements DisposableBean
 		synchronized (cycleMonitor) {
 			long updateTime = System.currentTimeMillis();
 			
-			for (Combatant combatant : combatants) {
+			for (Combatant combatant : combatants.values()) {
 				if (combatant.isAlive()) {
 					if (!paused) {
 						combatant.update(updateTime);
@@ -109,7 +132,7 @@ public class GameServer implements DisposableBean
 					}
 				}
 				
-				for (Combatant combatant : combatants) {
+				for (Combatant combatant : combatants.values()) {
 					if (combatant.isAlive()) {
 						combatant.completeGameCycle();
 					}
@@ -133,13 +156,80 @@ public class GameServer implements DisposableBean
 			this.paused = paused;
 		}
 	}
-
-	public void addCombatant(Combatant combatant)
+	
+	public PlayerShip createPlayerShip()
 	{
-		combatant.setGameServer(this);
-		synchronized (cycleMonitor) {
-			combatants.add(combatant);
+		PlayerShip ship = new PlayerShip( randomPosition());
+		
+		if ( addCombatant(ship) == 0) {
+			return null;
 		}
+		
+		ship.generateDataReadout();
+		
+		return ship;
+	}
+	
+	public int addCombatant(Combatant combatant)
+	{
+		synchronized (cycleMonitor) {
+			for (int shipNum = 1 ; shipNum <= 15 ; shipNum++){
+				if (!combatants.containsKey(shipNum)) {
+					addCombatant(shipNum, combatant);
+					return shipNum;
+				}
+			}
+		}
+		
+		return 0;
+	}
+
+	public void addCombatant(int shipNumber, Combatant combatant) {
+		synchronized (cycleMonitor) {
+			combatant.setShipNumber(shipNumber);
+			combatant.setGameServer(this);
+			combatant.setLastUpdateTime(System.currentTimeMillis());
+			combatants.put(shipNumber, combatant);
+		}
+	}
+	
+	public void removeCombatant(Combatant combatant)
+	{
+		synchronized (cycleMonitor) {
+			if ( combatant.getGameServer() == this) {
+				int shipNumber = combatant.getShipNumber();
+				if (combatants.containsKey(shipNumber)) {
+					combatants.remove(shipNumber);
+					combatant.setGameServer(null);
+					combatant.setShipNumber(0);
+				}
+			}
+		}
+	}
+	
+	public Combatant getCombatant(int shipNum) {
+		synchronized (cycleMonitor) {
+			return combatants.get(shipNum);
+		}
+	}
+	
+	public List<Combatant> getCombatants()
+	{
+		List<Combatant> results = null;
+		
+		synchronized (cycleMonitor) {
+			results = new ArrayList<Combatant>( combatants.values());
+		}
+		
+		Collections.sort(results, new Comparator<Combatant>() {
+			public int compare(Combatant o1, Combatant o2) {
+				Integer s1 = o1.getShipNumber();
+				Integer s2 = o2.getShipNumber();
+				return s1.compareTo(s2);
+			}
+		});
+		
+		return results;
 	}
 	
 	public void addCommandBatch(CommandBatch commandBatch) {
@@ -153,6 +243,23 @@ public class GameServer implements DisposableBean
 			List<CommandBatch> drainedBatches = new ArrayList(commandBatches);
 			commandBatches.clear();
 			return drainedBatches;
+		}
+	}
+	
+	public void sendMessage(int shipNum, String message) {
+		synchronized (cycleMonitor) {
+			Combatant combatant = combatants.get(shipNum);
+			if (combatant != null) {
+				combatant.addMessage(message);
+			}
+		}
+	}
+	
+	public void sendMessage(String message) {
+		synchronized (cycleMonitor) {
+			for (Combatant combatant : combatants.values()) {
+				combatant.addMessage(message);
+			}
 		}
 	}
 	

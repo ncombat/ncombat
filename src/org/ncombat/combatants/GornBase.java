@@ -1,17 +1,22 @@
 package org.ncombat.combatants;
 
+import org.ncombat.GornShieldArray;
 import org.ncombat.utils.Vector;
 
 public class GornBase extends Combatant
 {
-	public static final int NUM_SHIELDS = 1;
-	
 	public GornBase(Vector position) {
 		super(position);
+		setShields( new GornShieldArray());
 	}
 
 	@Override
-	public int getNumShields() {
-		return NUM_SHIELDS;
+	public void update(long updateTime) {
+		// TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void completeGameCycle() {
+		// TODO Auto-generated method stub
 	}
 }

@@ -1,6 +1,6 @@
 package org.ncombat;
 
-public class ShieldArray
+public abstract class ShieldArray
 {
 	private int numShields;
 	
@@ -31,6 +31,10 @@ public class ShieldArray
 		this.power[shieldNum-1] = power;
 	}
 	
+	public double getEffectivePower(int shieldNum) {
+		return power[shieldNum-1] * (100.0 - damage[shieldNum-1]) / 100.0;
+	}
+	
 	public void dropShield(int shieldNum) {
 		setPower(shieldNum-1, 0.0);
 	}
@@ -50,6 +54,14 @@ public class ShieldArray
 			fullShield(i);
 		}
 	}
+	
+	/**
+	 * Returns the number of the shield that will be hit by a weapon fired from
+	 * the indicated azimuth, expressed in degrees, with positive clockwise.
+	 */
+	public abstract int coveringShield(double azimuth);
+	
+	public abstract double shieldStrength(int shieldNum);
 
 	@Override
 	public String toString() {

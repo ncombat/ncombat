@@ -5,6 +5,7 @@ import java.util.Map;
 
 import org.apache.log4j.Logger;
 import org.ncombat.combatants.Combatant;
+import org.ncombat.combatants.PlayerShip;
 import org.springframework.beans.factory.InitializingBean;
 
 public class GameManager implements InitializingBean
@@ -28,6 +29,17 @@ public class GameManager implements InitializingBean
 		logger.info("GameManager has started.");
 	}
 	
+	public PlayerShip createPlayerShip()
+	{
+		PlayerShip playerShip = gameServer.createPlayerShip();
+		
+		if (playerShip != null) {
+			addCombatant(playerShip);
+		}
+		
+		return playerShip;
+	}
+	
 	public Combatant getCombatant(Integer combatantId)
 	{
 		if (combatantId == null) return null;
@@ -41,7 +53,5 @@ public class GameManager implements InitializingBean
 		synchronized (combatants) {
 			combatants.put( combatant.getId(), combatant);
 		}
-		
-		gameServer.addCombatant(combatant);
 	}
 }

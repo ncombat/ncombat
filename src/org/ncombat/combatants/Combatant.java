@@ -25,18 +25,25 @@ public abstract class Combatant
 	private Logger log = Logger.getLogger(Combatant.class);
 	
 	private int id;
+	
 	private long lastUpdateTime;
+	
 	private boolean alive = true;
+	
 	private List<String> messages = new ArrayList<String>();
 	
 	private GameServer gameServer;
+	
+	private Map<Class,Method> commandMethods = new HashMap<Class,Method>();
 	
 	private int shipNumber;
 	
 	private Vector position;
 	
 	private double damage;
+	
 	private double damageRepairRate;
+	
 	private double damageRepairStartTime;
 	
 	private ShieldArray shields;
@@ -48,10 +55,7 @@ public abstract class Combatant
 		this.position = position;
 	}
 	
-	public void update(long updateTime) {
-	}
-	
-	private Map<Class,Method> commandMethods = new HashMap<Class,Method>();
+	public abstract void update(long updateTime);
 	
 	public void processCommands(CommandBatch commandBatch) {
 		for (Command command : commandBatch.getCommands()) {
@@ -77,8 +81,7 @@ public abstract class Combatant
 		}
 	}
 	
-	public void completeGameCycle() {
-	}
+	public abstract void completeGameCycle();
 	
 	public int getId() {
 		return id;
@@ -141,13 +144,35 @@ public abstract class Combatant
 		}
 	}
 	
-	public abstract int getNumShields();
-
 	public int getShipNumber() {
 		return shipNumber;
 	}
 
 	public void setShipNumber(int shipNumber) {
 		this.shipNumber = shipNumber;
+	}
+
+	public ShieldArray getShields() {
+		return shields;
+	}
+
+	public void setShields(ShieldArray shields) {
+		this.shields = shields;
+	}
+
+	public Vector getPosition() {
+		return position;
+	}
+
+	public void setPosition(Vector position) {
+		this.position = position;
+	}
+
+	public double getDamage() {
+		return damage;
+	}
+
+	public void setDamage(double damage) {
+		this.damage = damage;
 	}
 }
