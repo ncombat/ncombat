@@ -3,7 +3,6 @@ package org.ncombat.combatants;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.ncombat.Movable;
 import org.ncombat.command.BriefModeCommand;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.command.HelpCommand;
@@ -28,8 +27,8 @@ public class PlayerShip extends Ship
 	
 	private boolean regenDataReadout;
 	
-	public PlayerShip(Vector position) {
-		super(position);
+	public PlayerShip(String commander) {
+		super(commander);
 	}
 	
 	@Override
@@ -63,7 +62,7 @@ public class PlayerShip extends Ship
 		switch (cmd.getSubcommand()) {
 		case 1:	computeParallelCourse(cmd.getShip()); break;
 		case 2: computeCentralCourse();	break;
-		case 3:
+		case 3: generateShipRoster( cmd.getShip()); break;
 		case 4:
 		case 5:
 		case 6:
@@ -80,16 +79,16 @@ public class PlayerShip extends Ship
 		}
 		
 		Vector velocityToMatch = Vector.ZERO;
-		if (combatant instanceof Movable) {
-			velocityToMatch = ((Movable) combatant).getVelocity();
+		if (combatant instanceof Ship) {
+			velocityToMatch = ((Ship)combatant).velocity;
 		}
 		
-		Vector velocityDiff = velocityToMatch.subtract( getVelocity());
+		Vector velocityDiff = velocityToMatch.subtract(velocity);
 		
 		double speed1 = velocityDiff.r();
 		double rot1 = 0.0;
 		if (Math.abs(speed1) > 0.0) {
-			rot1 = NcombatMath.degreeAngle( velocityDiff.theta() - getHeading());
+			rot1 = NcombatMath.degreeAngle( velocityDiff.theta() - heading);
 		}
 		
 		double speed2 = -speed1;
@@ -102,11 +101,10 @@ public class PlayerShip extends Ship
 	
 	private void computeCentralCourse()
 	{
-		Vector pos = getPosition();
-		double range = pos.r();
+		double range = position.r();
 		double azimuth = Vector.stdAngleDegrees( 
 							Math.toDegrees( 
-								getHeading() - pos.negate().theta()));
+								heading - position.negate().theta()));
 		
 		addMessage( String.format("AZ: %6.1f RNG: %8.0f TO CENTER", azimuth, range));
 	}
@@ -127,7 +125,7 @@ public class PlayerShip extends Ship
 	}
 
 	public void processNullCommand(NullCommand cmd) {
-		// Do nothing.
+		// Do nothing.  Duh.
 	}
 	
 	public void processSensorCommand(SensorCommand cmd) {
@@ -154,6 +152,27 @@ public class PlayerShip extends Ship
 		public double heading;
 	}
 	
+	public void generateShipRoster() {
+		generateShipRoster(0);
+	}
+	
+	public void generateShipRoster(int shipNum)
+	{
+		addMessage("SHP  COMMANDERS NAME       KL");
+		
+		for (Combatant combatant : gameServer.getCombatants()) {
+			if (combatant instanceof Ship) {
+				if ((shipNum <= 0) || (shipNum == combatant.getShipNumber())) {
+					String fmt = "%2d   %-20s %3d";
+					addMessage( String.format(fmt,
+									combatant.getShipNumber(),
+									combatant.commander,
+									combatant.numKills));
+				}
+			}
+		}
+	}
+	
 	public void generateDataReadout()
 	{
 		List<String> buf = new ArrayList<String>();
@@ -177,11 +196,12 @@ public class PlayerShip extends Ship
 			Ship ship = (Ship) combatant;
 			int shipNum = combatant.getShipNumber();
 			if ((trackedShip > 0) && (shipNum != trackedShip)) continue;
+			if ( range(combatant) > sensorRange) continue;
 			
-			int damage = (int) ship.getDamage();
-			int p1 = (int) ship.getShields().getEffectivePower(1);
-			int p2 = (int) ship.getShields().getEffectivePower(2);
-			int speed = (int) ship.getVelocity().r();
+			int damage = (int) ship.damage;
+			int p1 = (int) ship.shields.getEffectivePower(1);
+			int p2 = (int) ship.shields.getEffectivePower(2);
+			int speed = (int) ship.velocity.r();
 			double course = course(ship);
 			double azimuth = azimuth(ship);
 			int range = (int) range(ship);
@@ -193,10 +213,10 @@ public class PlayerShip extends Ship
 		
 		// Now data for our own ship.
 		int shipNum = getShipNumber();
-		int damage = (int) this.getDamage();
-		int p1 = (int) this.getShields().getEffectivePower(1);
-		int p2 = (int) this.getShields().getEffectivePower(2);
-		int speed = (int) this.getVelocity().r();
+		int damage = (int) this.damage;
+		int p1 = (int) this.shields.getEffectivePower(1);
+		int p2 = (int) this.shields.getEffectivePower(2);
+		int speed = (int) this.velocity.r();
 		double course = course();
 		
 		buf.add( String.format("%2d %3d %2d %2d  %5d %6.1f", shipNum, damage, p1, p2, speed, course));
@@ -215,7 +235,7 @@ public class PlayerShip extends Ship
 				if ((trackedShip > 0) && (shipNum == trackedShip)) continue;
 				double heading = ship.azimuth(this);
 				
-				buf.add( String.format("%3d %6.1f", shipNum, heading));
+				buf.add( String.format("%3d/%6.1f)", shipNum, heading));
 			}
 		}
 		
@@ -224,13 +244,22 @@ public class PlayerShip extends Ship
 			buf.add("ENERGY DMG1 DMG2 T1/M1/T2 T3 ACEL/TIM  DEG/TIM HEAT");
 		}
 		
-		int acel = (int)( getAccelRate() * getAccelTime());
-		int acelTim = (int) getAccelTime();
-		int deg = (int)( Math.toDegrees( getRotationRate() * getRotationTime()));
+		int deg = (int)( NcombatMath.degreeAngle( getRotationRate() * getRotationTime()));
 		int degTim = (int) getRotationTime();
 		
 		buf.add( String.format("%6d %4d %4d %2d/%2d/%2d %2d %4d/%3d %4d/%3d %4d",
-						0, 0, 0, 0, 0, 0, 0, acel, acelTim, deg, degTim, 0));
+						(int) energy, // ENERGY 
+						(int) shields.getDamage(1), // DMG1
+						(int) shields.getDamage(2), // DMG2
+						(int) missileLoadTime[0], // T1
+						numMissiles, // M1
+						(int) missileLoadTime[1], // T2
+						(int) laserCoolingTime, // T3
+						(int)( getAccelRate() * getAccelTime()), // ACEL
+						(int) getAccelTime(), // TIM
+						deg, // DEG
+						degTim, // TIM
+						(int) engineHeat)); // HEAT
 		
 		addMessages(buf);
 		

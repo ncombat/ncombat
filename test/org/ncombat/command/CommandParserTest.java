@@ -8,11 +8,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.ncombat.combatants.Combatant;
 import org.ncombat.combatants.PlayerShip;
-import org.ncombat.utils.Vector;
 
 public class CommandParserTest
 {
-	private Combatant combatant = new PlayerShip(Vector.ZERO);
+	private Combatant combatant = new PlayerShip("TEST");
 	private CommandParser parser = new CommandParser(combatant);
 	private CommandBatch expectedBatch;
 	private Command expectedCommand;

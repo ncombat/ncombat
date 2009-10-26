@@ -114,14 +114,8 @@ public class GameController extends MultiActionController
 			return model.promptForName();
 		}
 		
-		Ship ship = gameManager.createPlayerShip();
+		Ship ship = gameManager.createPlayerShip(playerName);
 		setCombatant(session, ship);
-		
-		model.addMessage("");
-		model.addMessage( String.format("Welcome, %s.", playerName));
-		model.addMessage("");
-//		model.addMessage("SHP   COMMANDERS NAME   TER USERNUM KL");
-//		model.addMessage( String.format(" 1    %-17s 123 H7LT444  0", playerName));
 		
 		// Pass on the user's messages to the UI.
 		for (String message : ship.drainMessages()) {
@@ -187,21 +181,26 @@ public class GameController extends MultiActionController
 				}
 			}
 			
-			// Submit the commands for processing.
+			// Submit the commands for processing.  If a game server cannot
+			// be found, we are no longer alive and cannot submit any more 
+			// commands.
+			
 			GameServer gameServer = combatant.getGameServer();
-			gameServer.addCommandBatch(batch);
+			if (gameServer != null) {
+				gameServer.addCommandBatch(batch);
 			
-			// If we need to get messages from the user, there's no
-			// need to make the user wait for the next game cycle
-			// update.
-			if (numMessages > 0) {
-				setNumMessages(session, numMessages);
-				return model.promptForMessage();
+				// If we need to get messages from the user, there's no
+				// need to make the user wait for the next game cycle
+				// update.
+				if (numMessages > 0) {
+					setNumMessages(session, numMessages);
+					return model.promptForMessage();
+				}
+				
+				// Otherwise, wait for the next game cycle to
+				// complete.
+				gameServer.playerSync();
 			}
-			
-			// Otherwise, wait for the next game cycle to
-			// complete.
-			gameServer.playerSync();
 			
 			// Pass on the user's messages to the UI.
 			for (String message : combatant.drainMessages()) {
@@ -212,6 +211,7 @@ public class GameController extends MultiActionController
 				model.promptForCommands();
 			}
 			else {
+				session.invalidate();
 				model.markForDeath();
 			}
 		}

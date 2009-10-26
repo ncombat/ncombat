@@ -6,6 +6,8 @@ public class GornShieldArray extends ShieldArray
 	
 	public static final double MAX_SHIELD_POWER = 50.0;
 	
+	public static final double REPAIR_DELAY = 30.0;
+	
 	public GornShieldArray() {
 		super(NUM_SHIELDS, MAX_SHIELD_POWER);
 	}
@@ -18,5 +20,10 @@ public class GornShieldArray extends ShieldArray
 	@Override
 	public double shieldStrength(int shieldNum) {
 		return 1.0;
+	}
+
+	@Override
+	public double repairDelay(int shieldNum) {
+		return REPAIR_DELAY;
 	}
 }

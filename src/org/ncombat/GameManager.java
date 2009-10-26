@@ -29,9 +29,9 @@ public class GameManager implements InitializingBean
 		logger.info("GameManager has started.");
 	}
 	
-	public PlayerShip createPlayerShip()
+	public PlayerShip createPlayerShip(String commander)
 	{
-		PlayerShip playerShip = gameServer.createPlayerShip();
+		PlayerShip playerShip = gameServer.createPlayerShip(commander);
 		
 		if (playerShip != null) {
 			addCombatant(playerShip);

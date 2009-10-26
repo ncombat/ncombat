@@ -83,6 +83,17 @@
 	background: #E5F1FF;
 }
 
+#restartPane {
+	background: pink;
+	display: none;
+	width: 94%;
+}
+
+#restartLink {
+	padding-top: 10px;
+	padding-left: 50px;
+	padding-bottom: 5px;
+}
 	
 /* Footer
 -----------------------------------------------------------------------------*/

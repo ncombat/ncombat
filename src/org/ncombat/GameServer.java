@@ -20,11 +20,24 @@ import org.springframework.beans.factory.DisposableBean;
 
 public class GameServer implements DisposableBean
 {
-	public static final long DEFAULT_CYCLE_PERIOD = 1000; // milliseconds
+	public static final int NUM_GORN_BASES = 4;
+	
+	/** 
+	 * Gorn bases are arranged at uniform intervals on a circle of
+	 * GORN_BASE_RADIUS kilometers from the center of the combat
+	 * zone. 
+	 */
+	public static final double GORN_BASE_RADIUS = 100000.0;
+	
+	public static final int NUM_BOT_SHIPS = 2;
+	
+	private static final long DEFAULT_CYCLE_PERIOD = 1000; // milliseconds
+	
+	private static int nextBotShipNum = 1; 
 	
 	private static Vector randomPosition()
 	{
-		double maxCoord = 30000.0;
+		double maxCoord = 20000.0;
 		double x0 = (2.0 * (Math.random() - 0.5)) * maxCoord;
 		double y0 = (2.0 * (Math.random() - 0.5)) * maxCoord;
 		Vector position = new Vector(x0, y0);
@@ -83,25 +96,23 @@ public class GameServer implements DisposableBean
 		log.info("GameServer #" + serverNumber + " is starting.");
 		
 		// Create Gorn bases
-		addCombatant(21, new GornBase(new Vector(100000.0,0.0)));
-		addCombatant(22, new GornBase(new Vector(0.0,100000.0)));
-		addCombatant(23, new GornBase(new Vector(-100000.0,0.0)));
-		addCombatant(24, new GornBase(new Vector(0,-100000.0)));
+		for (int i = 1 ; i <= NUM_GORN_BASES ; i++) {
+			createGornBase(i);
+		}
 		
 		// TODO: Gorn base regeneration
 		
 		// Create a few bot ships just for fun.
-		int numBots = 2;
-		for (int i = 0 ; i < numBots ; i++) {
-			Vector botPosition = randomPosition();
-			Vector botVelocity = randomVelocity();
-			addCombatant( new BotShip(botPosition, botVelocity));
+		for (int i = 1 ; i <= NUM_BOT_SHIPS ; i++) {
+			createBotShip();
 		}
+		
+		// TODO: Bot ship regeneration
 
 		timer = new Timer("GameServer" + serverNumber, true);
 		timerTask = new GameServerTimerTask();
 	}
-	
+
 	public void destroy() throws Exception {
 		stop();
 	}
@@ -113,7 +124,16 @@ public class GameServer implements DisposableBean
 		synchronized (cycleMonitor) {
 			long updateTime = System.currentTimeMillis();
 			
-			for (Combatant combatant : combatants.values()) {
+			// We must copy the list of combatants because sometimes a
+			// combatant dies in the update.  In that case, the update
+			// removes the combatant from the game server's store, but
+			// this is not possible if we're iterating over it at the
+			// time.  In that case, a ConcurrentModificationException
+			// would be generated.
+			
+			List<Combatant> updateCombatants = getCombatants();
+			
+			for (Combatant combatant : updateCombatants) {
 				if (combatant.isAlive()) {
 					if (!paused) {
 						combatant.update(updateTime);
@@ -157,17 +177,52 @@ public class GameServer implements DisposableBean
 		}
 	}
 	
-	public PlayerShip createPlayerShip()
+	private void createGornBase(int baseNum)
 	{
-		PlayerShip ship = new PlayerShip( randomPosition());
+		if ((baseNum <= 0) || (baseNum > NUM_GORN_BASES)) {
+			log.error("Invalid Gorn base number: " + baseNum);
+			return;
+		}
+		
+		GornBase gorn = new GornBase("Gorn Base " + baseNum);
+
+		// Determine its position on the ring of Gorn bases.
+		double theta = 90.0 - ((360.0 / NUM_GORN_BASES) * (baseNum - 1));
+		Vector position = Vector.polarDegrees(GORN_BASE_RADIUS, theta);
+		gorn.setPosition(position);
+		
+		int shipNumber = 20 + baseNum;
+		
+		addCombatant(shipNumber, gorn);
+	}
+	
+	public PlayerShip createPlayerShip(String commander)
+	{
+		PlayerShip ship = new PlayerShip(commander);
+		ship.setPosition( randomPosition());
 		
 		if ( addCombatant(ship) == 0) {
 			return null;
 		}
 		
+		ship.generateShipRoster();
 		ship.generateDataReadout();
 		
 		return ship;
+	}
+
+	private void createBotShip()
+	{
+		Vector position = randomPosition();
+		Vector velocity = randomVelocity();
+		double heading = velocity.theta();
+	
+		BotShip botShip = new BotShip("Bot Ship #" + nextBotShipNum++);
+		botShip.setPosition(position);
+		botShip.setVelocity(velocity);
+		botShip.setHeading(heading);
+	
+		addCombatant(botShip);
 	}
 	
 	public int addCombatant(Combatant combatant)

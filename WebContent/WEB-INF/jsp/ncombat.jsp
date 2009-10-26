@@ -26,8 +26,13 @@
 					teletype.println(messages[i]);
 				}
 				teletype.callWhenDone( function() {
-					$('#commandConsole').css('display', 'inline');
-					$('#cmds').val('').focus();
+					if (data.alive) {
+						$('#commandConsole').css('display', 'inline');
+						$('#cmds').val('').focus();
+					}
+					else {
+						$('#restartPane').css('display', 'inline-block');
+					}
 				});
 			}
 			if (data.prompt) {
@@ -85,6 +90,10 @@
 				   <input id="cmds" type="text" name="cmds" size="60" /> 
 				   <input id="submit" type="submit" value="send""/> 
 				</form>
+			</div>
+			<div id="restartPane">
+				Thank you for playing N * C * O * M * B * A * T.<br>
+				<div id="restartLink"><a href="game.do">Play Again</a></div>
 			</div>
 		</div>
 	</div>

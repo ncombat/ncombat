@@ -1,13 +1,12 @@
 package org.ncombat.combatants;
 
 import org.ncombat.GornShieldArray;
-import org.ncombat.utils.Vector;
 
 public class GornBase extends Combatant
 {
-	public GornBase(Vector position) {
-		super(position);
-		setShields( new GornShieldArray());
+	public GornBase(String commander) {
+		super(commander);
+		this.shields = new GornShieldArray();
 	}
 
 	@Override
@@ -18,5 +17,15 @@ public class GornBase extends Combatant
 	@Override
 	public void completeGameCycle() {
 		// TODO Auto-generated method stub
+	}
+
+	@Override
+	protected AttackResult onLaserHit(Combatant attacker, double power) {
+		return new AttackResult();
+	}
+
+	@Override
+	protected AttackResult onMissileHit(Combatant attacker) {
+		return new AttackResult();
 	}
 }

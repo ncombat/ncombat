@@ -16,6 +16,12 @@ import org.ncombat.utils.Vector;
 
 public abstract class Combatant
 {
+	// Repairs begin REPAIR_WAIT_TIME seconds after damage is inflicted. 
+	private static final double REPAIR_WAIT_TIME = 40.0;
+	
+	// Default damage repair rate (in % per second).
+	private static final double DEFAULT_REPAIR_RATE = 0.50;
+	
 	private static int nextId = 1;
 	
 	private static synchronized int getNextId() {
@@ -26,43 +32,54 @@ public abstract class Combatant
 	
 	private int id;
 	
+	protected String commander;
+	
+	protected int numKills;
+	
 	private long lastUpdateTime;
 	
-	private boolean alive = true;
+	protected boolean alive = true;
+	
+	private String status = "";
 	
 	private List<String> messages = new ArrayList<String>();
 	
-	private GameServer gameServer;
+	protected GameServer gameServer;
 	
 	private Map<Class,Method> commandMethods = new HashMap<Class,Method>();
 	
 	private int shipNumber;
 	
-	private Vector position;
+	protected Vector position;
 	
-	private double damage;
+	protected Vector velocity = Vector.ZERO;
 	
-	private double damageRepairRate;
+	protected double energy;
 	
-	private double damageRepairStartTime;
+	protected double damage;
+	protected double repairRate = DEFAULT_REPAIR_RATE;
+	protected double repairWaitTime = REPAIR_WAIT_TIME;
 	
-	private ShieldArray shields;
+	protected ShieldArray shields;
 	
-	private double energy;
-	
-	public Combatant(Vector position) {
+	public Combatant(String commander) {
 		this.id = getNextId();
-		this.position = position;
+		this.commander = commander;
 	}
 	
 	public abstract void update(long updateTime);
 	
-	public void processCommands(CommandBatch commandBatch) {
+	public void processCommands(CommandBatch commandBatch)
+	{
 		for (Command command : commandBatch.getCommands()) {
+			if (!alive) return;
+			
 			Class commandClass = command.getClass();
 			Method commandMethod = commandMethods.get(commandClass);
+			
 			if (commandMethod == null) {
 				String methodName = "process" + commandClass.getSimpleName();
+				
 				try {
 					Class combatantClass = this.getClass();
 					commandMethod = combatantClass.getMethod(methodName, commandClass);
@@ -70,6 +87,7 @@ public abstract class Combatant
 				catch (Exception e) {
 					log.error("Caught exception looking up command method " + methodName + "().");
 				}
+				
 				commandMethods.put(commandClass, commandMethod);
 			}
 			try {
@@ -103,14 +121,22 @@ public abstract class Combatant
 		this.lastUpdateTime = lastUpdateTime;
 	}
 
-	public boolean isAlive() {
-		return alive;
-	}
-
-	public void setAlive(boolean alive) {
-		this.alive = alive;
+	/**
+	 * Allows the game server or other designated authorities to set the initial
+	 * position of the combatant when it enters the combat zone.
+	 */
+	public void setPosition(Vector position) {
+		this.position = position;
 	}
 	
+	/**
+	 * Allows the game server or other designated authorities to set the initial
+	 * velocity of the combatant when it enters the combat zone.
+	 */
+	public void setVelocity(Vector velocity) {
+		this.velocity = velocity;
+	}
+
 	public void addMessage(String message) {
 		synchronized (messages) {
 			messages.add(message);
@@ -144,6 +170,42 @@ public abstract class Combatant
 		}
 	}
 	
+	public void markExhausted() {
+		addMessage("Your ship has lost all power.");
+		markDead("LPR");
+	}
+	
+	public void markDestroyedByEngineOverload() {
+		addMessage("Your ship has been destroyed.");		
+		markDead("DEO");
+	}
+	
+	public void markDestroyed(Combatant killer)
+	{
+		addMessage("Your ship has been destroyed.");
+		
+		String status = null;
+		
+		if (killer instanceof GornBase) {
+			status = "DG" + (killer.shipNumber - 20);
+		}
+		else {
+			status = "DD" + killer.shipNumber;
+		}
+		
+		markDead(status);
+	}
+	
+	private void markDead(String status)
+	{
+		this.status = status;
+		this.alive = false;
+		
+		if (gameServer != null) {
+			gameServer.removeCombatant(this);
+		}
+	}
+	
 	public int getShipNumber() {
 		return shipNumber;
 	}
@@ -152,27 +214,57 @@ public abstract class Combatant
 		this.shipNumber = shipNumber;
 	}
 
-	public ShieldArray getShields() {
-		return shields;
+	public boolean isAlive() {
+		return alive;
 	}
 
-	public void setShields(ShieldArray shields) {
-		this.shields = shields;
+	public String getStatus() {
+		return status;
 	}
 
-	public Vector getPosition() {
-		return position;
+	public void setStatus(String status) {
+		this.status = status;
 	}
-
-	public void setPosition(Vector position) {
-		this.position = position;
+	
+	protected double addDamage(double damage)
+	{
+		double existingDamage = this.damage;
+		double newDamage = Math.min( damage, 100.0 - existingDamage);
+		
+		this.damage += newDamage;
+		
+		if (this.damage >= 100.0) {
+			alive = false;
+		}
+		else {
+			this.repairWaitTime = REPAIR_WAIT_TIME;
+		}
+		
+		return newDamage;
 	}
-
-	public double getDamage() {
-		return damage;
+	
+	protected static class AttackResult
+	{
+		public int shieldHit;
+		public double damage;
 	}
-
-	public void setDamage(double damage) {
-		this.damage = damage;
+	
+	protected abstract AttackResult onLaserHit(Combatant attacker, double power);
+	
+	protected abstract AttackResult onMissileHit(Combatant attacker);
+	
+	public void processKill(Combatant killed)
+	{
+		String fmt = "Ship %d - %s commanding, was just destroyed";
+		String msg = String.format(fmt, killed.shipNumber, killed.commander);
+		gameServer.sendMessage(msg);
+		
+		fmt = "by ship %d - %s commanding.";
+		msg = String.format(fmt, this.shipNumber, this.commander);
+		gameServer.sendMessage(msg);
+		
+		this.numKills++;
+		
+		killed.markDestroyed(this);
 	}
 }
