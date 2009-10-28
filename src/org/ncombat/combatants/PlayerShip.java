@@ -65,7 +65,7 @@ public class PlayerShip extends Ship
 		case 3: generateShipRoster( cmd.getShip()); break;
 		case 4:
 		case 5:
-		case 6:
+		case 6: generateGornReadout(); break;
 		}
 	}
 	
@@ -269,4 +269,30 @@ public class PlayerShip extends Ship
 		
 		this.regenDataReadout = false;
 	}
+	
+	private void generateGornReadout()
+	{
+		if (!briefMode) {
+			addMessage("GN DMG AZMUTH   RANGE");
+		}
+		
+		for (Combatant combatant : gameServer.getCombatants()) {
+			if (combatant instanceof GornBase) {
+				if (combatant.isAlive()) {
+					double range = range(combatant);
+					double azimuth = azimuth(combatant);
+					if ((range < sensorRange) || Math.abs(azimuth) < 15.0) {
+						String fmt = "%2d %2d%% %6.1f %7d";
+						addMessage( String.format( fmt,
+										combatant.getShipNumber() - 20,
+										(int) combatant.damage,
+										azimuth,
+										(int) range));
+					}
+				}
+			}
+		}
+	}
+	
+	
 }
