@@ -263,7 +263,8 @@ public class GameController extends MultiActionController
 		
 		if ((msgText != null) && (msgText.length() > 0)) {
 			// Echo the message back to the user for his records.
-			model.addMessage("MESSAGE: " + msgText);
+			model.addMessage("MESSAGE: ");
+			model.addMessage("? " + msgText);
 			
 			// Build a proper message command out of the users input and
 			// stick it into a nicely formed command batch.

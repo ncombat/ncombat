@@ -112,7 +112,11 @@ public class PlayerShip extends Ship
 	public void processMessageCommand(MessageCommand cmd)
 	{
 		int shipNum = cmd.getDestination();
+		
 		String message = cmd.getMessage();
+		if (message == null) return;
+		message = message.trim();
+		if (message.length() == 0) return;
 		
 		if (shipNum > 0) {
 			message = "/" + getShipNumber() + " " + message;
@@ -120,7 +124,7 @@ public class PlayerShip extends Ship
 		}
 		else {
 			message = "#" + getShipNumber() + " " + message;
-			getGameServer().sendMessage(message);
+			getGameServer().sendMessage(message, getShipNumber());
 		}
 	}
 

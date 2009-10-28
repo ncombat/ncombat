@@ -311,9 +311,15 @@ public class GameServer implements DisposableBean
 	}
 	
 	public void sendMessage(String message) {
+		sendMessage(message, 0);
+	}
+	
+	public void sendMessage(String message, int excludedShip) {
 		synchronized (cycleMonitor) {
 			for (Combatant combatant : combatants.values()) {
-				combatant.addMessage(message);
+				if (combatant.getShipNumber() != excludedShip) {
+					combatant.addMessage(message);
+				}
 			}
 		}
 	}
