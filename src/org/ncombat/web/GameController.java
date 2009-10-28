@@ -157,63 +157,65 @@ public class GameController extends MultiActionController
 		
 		String cmdLine = request.getParameter("text");
 		
-		if ((cmdLine != null)) cmdLine = cmdLine.trim().toUpperCase();
+		if (cmdLine == null) cmdLine = "";
+		cmdLine = cmdLine.trim().toUpperCase();
 		
-		if ((cmdLine != null) && (cmdLine.length() > 0)) {
-			// Echo the command line back to the user for his records.
-			model.addMessage("CMDS? " + cmdLine);
+		// Echo the command line back to the user for his records.
+		model.addMessage("CMDS? " + cmdLine);
+		
+		// If the user gave us a blank line, we'll give him a null command.
+		if (cmdLine.equals("")) cmdLine = "N";
 			
-			// Parse the player's text into a properly structured
-			// and verified command batch.
-			long now = System.currentTimeMillis();
-			CommandParser parser = new CommandParser(combatant);
-			CommandBatch batch = parser.parse(cmdLine, now);
-			
-			// If the user submitted message commands with no messages,
-			// remember how many.  We need to prompt the user for the
-			// messages to be sent.
-			int numMessages = 0;
-			for (Command cmd : batch.getCommands()) {
-				if (cmd instanceof MessageCommand) {
-					if (((MessageCommand) cmd).getMessage() == null) {
-						numMessages++;
-					}
+		// Parse the player's text into a properly structured
+		// and verified command batch.
+		long now = System.currentTimeMillis();
+		CommandParser parser = new CommandParser(combatant);
+		CommandBatch batch = parser.parse(cmdLine, now);
+		
+		// If the user submitted message commands with no messages,
+		// remember how many.  We need to prompt the user for the
+		// messages to be sent.
+		int numMessages = 0;
+		for (Command cmd : batch.getCommands()) {
+			if (cmd instanceof MessageCommand) {
+				if (((MessageCommand) cmd).getMessage() == null) {
+					numMessages++;
 				}
 			}
-			
-			// Submit the commands for processing.  If a game server cannot
-			// be found, we are no longer alive and cannot submit any more 
-			// commands.
-			
-			GameServer gameServer = combatant.getGameServer();
-			if (gameServer != null) {
-				gameServer.addCommandBatch(batch);
-			
-				// If we need to get messages from the user, there's no
-				// need to make the user wait for the next game cycle
-				// update.
-				if (numMessages > 0) {
-					setNumMessages(session, numMessages);
-					return model.promptForMessage();
-				}
-				
-				// Otherwise, wait for the next game cycle to
-				// complete.
-				gameServer.playerSync();
+		}
+		
+		// Submit the commands for processing.  If a game server cannot
+		// be found, we are no longer alive and cannot submit any more 
+		// commands.
+		
+		GameServer gameServer = combatant.getGameServer();
+		if (gameServer != null) {
+			gameServer.addCommandBatch(batch);
+		
+			// If we need to get messages from the user, there's no
+			// need to make the user wait for the next game cycle
+			// update.
+			if (numMessages > 0) {
+				setNumMessages(session, numMessages);
+				return model.promptForMessage();
 			}
 			
-			// Pass on the user's messages to the UI.
-			for (String message : combatant.drainMessages()) {
-				model.addMessage(message);
-			}
-			
-			if (combatant.isAlive()) {
-				model.promptForCommands();
-			}
-			else {
-				session.invalidate();
-				model.markForDeath();
-			}
+			// Otherwise, wait for the next game cycle to
+			// complete.
+			gameServer.playerSync();
+		}
+		
+		// Pass on the user's messages to the UI.
+		for (String message : combatant.drainMessages()) {
+			model.addMessage(message);
+		}
+		
+		if (combatant.isAlive()) {
+			model.promptForCommands();
+		}
+		else {
+			session.invalidate();
+			model.markForDeath();
 		}
 		
 		return model;
