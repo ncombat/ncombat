@@ -353,15 +353,12 @@ public abstract class Ship extends Combatant
 		int shipNum = cmd.getTarget();
 		Combatant target = gameServer.getCombatant(shipNum);
 		if (target == null) {
-			addMessage(shipNum + " is not a valid ship number.");
 			return;
 		}
 		
-		double range = range(target);
-		if (range > MISSILE_MAX_RANGE) {
-			addMessage("Ship " + shipNum + " is out of range.");
-			return;
-		}
+		if ( range(target) > MISSILE_MAX_RANGE) return;
+		
+		if ( Math.abs( azimuth(target)) > 5.0) return;
 
 		numMissiles--;
 		missileLoadTime[tube] = MISSILE_RELOAD_TIME;
