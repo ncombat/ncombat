@@ -33,6 +33,8 @@ public class GameServer implements DisposableBean
 	
 	private static final long DEFAULT_CYCLE_PERIOD = 1000; // milliseconds
 	
+	private static final long BOT_SHIP_REGEN_TIME = 60000; // milliseconds
+	
 	private static int nextBotShipNum = 1; 
 	
 	private static Vector randomPosition()
@@ -257,10 +259,23 @@ public class GameServer implements DisposableBean
 		synchronized (cycleMonitor) {
 			if ( combatant.getGameServer() == this) {
 				int shipNumber = combatant.getShipNumber();
+				
 				if (combatants.containsKey(shipNumber)) {
 					combatants.remove(shipNumber);
 					combatant.setGameServer(null);
 					combatant.setShipNumber(0);
+				}
+				
+				if (combatant instanceof BotShip) {
+					TimerTask regenTask = new TimerTask() {
+						public void run() {
+							synchronized (cycleMonitor) {
+								createBotShip();
+							}
+						}
+					};
+					
+					timer.schedule(regenTask, BOT_SHIP_REGEN_TIME);
 				}
 			}
 		}
