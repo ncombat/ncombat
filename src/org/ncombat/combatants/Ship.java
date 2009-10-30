@@ -413,14 +413,6 @@ public abstract class Ship extends Combatant
 		shields.setPower( cmd.getShieldNum(), cmd.getPower());
 	}
 	
-	public double range(Combatant combatant) {
-		return position.subtract(combatant.position).r();
-	}
-	
-	public double speed(Ship ship) {
-		return ship.velocity.r();
-	}
-	
 	public double azimuth(Combatant combatant) {
 		return NcombatMath.degreeAzimuth(this.position, heading, combatant.position);
 	}

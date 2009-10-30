@@ -245,6 +245,10 @@ public class GameServer implements DisposableBean
 			combatant.setGameServer(this);
 			combatant.setLastUpdateTime(System.currentTimeMillis());
 			combatants.put(shipNumber, combatant);
+			
+			String fmt = "Ship %d - %s commanding, just appeared.";
+			sendMessage( String.format(fmt, shipNumber, 
+							combatant.getCommander()), shipNumber);
 		}
 	}
 	
@@ -341,6 +345,23 @@ public class GameServer implements DisposableBean
 		synchronized (playerSyncMonitor) {
 			playerSyncMonitor.notifyAll();
 		}
+	}
+	
+	public Combatant nearest(Combatant theCombatant)
+	{
+		Combatant nearest = null;
+		double nearestRange = 0.0;
+		
+		for (Combatant aCombatant : getCombatants()) {
+			if (aCombatant == theCombatant) continue;
+			double range = theCombatant.range(aCombatant);
+			if ((nearest == null) || (range < nearestRange)) {
+				nearest = aCombatant;
+				nearestRange = range;
+			}
+		}
+		
+		return nearest;
 	}
 	
 	public synchronized void start()

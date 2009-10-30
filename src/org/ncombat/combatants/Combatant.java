@@ -226,6 +226,10 @@ public abstract class Combatant
 		this.status = status;
 	}
 	
+	public String getCommander() {
+		return commander;
+	}
+
 	protected double addDamage(double damage)
 	{
 		double existingDamage = this.damage;
@@ -266,5 +270,13 @@ public abstract class Combatant
 		this.numKills++;
 		
 		killed.markDestroyed(this);
+	}
+	
+	public double range(Combatant combatant) {
+		return position.subtract(combatant.position).r();
+	}
+	
+	public double speed(Combatant ship) {
+		return ship.velocity.r();
 	}
 }
