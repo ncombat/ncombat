@@ -20,6 +20,8 @@ import org.springframework.beans.factory.DisposableBean;
 
 public class GameServer implements DisposableBean
 {
+	public static final int NUM_BOT_SHIPS = 2;
+	
 	public static final int NUM_GORN_BASES = 4;
 	
 	/** 
@@ -29,11 +31,15 @@ public class GameServer implements DisposableBean
 	 */
 	public static final double GORN_BASE_RADIUS = 100000.0;
 	
-	public static final int NUM_BOT_SHIPS = 2;
-	
 	private static final long DEFAULT_CYCLE_PERIOD = 1000; // milliseconds
 	
 	private static final long BOT_SHIP_REGEN_TIME = 60000; // milliseconds
+	
+	/*
+	 * Shields snap on automatically when joining the game if there is another
+	 * combatant within SHIELD_SNAP_RANGE kilometers.
+	 */
+	private static final double SHIELD_SNAP_RANGE = 20000;
 	
 	private static int nextBotShipNum = 1; 
 	
@@ -109,8 +115,6 @@ public class GameServer implements DisposableBean
 			createBotShip();
 		}
 		
-		// TODO: Bot ship regeneration
-
 		timer = new Timer("GameServer" + serverNumber, true);
 		timerTask = new GameServerTimerTask();
 	}
@@ -205,6 +209,12 @@ public class GameServer implements DisposableBean
 		
 		if ( addCombatant(ship) == 0) {
 			return null;
+		}
+		
+		if ( ship.nearestRange() <= SHIELD_SNAP_RANGE) {
+			ShipShieldArray shields = (ShipShieldArray) ship.getShields();
+			shields.setPower(1, 25.0);
+			shields.setPower(2, 25.0);
 		}
 		
 		ship.generateShipRoster();
@@ -362,14 +372,14 @@ public class GameServer implements DisposableBean
 		}
 	}
 	
-	public Combatant nearest(Combatant theCombatant)
+	public Combatant nearest(Combatant combatant)
 	{
 		Combatant nearest = null;
 		double nearestRange = 0.0;
 		
 		for (Combatant aCombatant : getCombatants()) {
-			if (aCombatant == theCombatant) continue;
-			double range = theCombatant.range(aCombatant);
+			if (aCombatant == combatant) continue;
+			double range = combatant.range(aCombatant);
 			if ((nearest == null) || (range < nearestRange)) {
 				nearest = aCombatant;
 				nearestRange = range;
@@ -377,6 +387,13 @@ public class GameServer implements DisposableBean
 		}
 		
 		return nearest;
+	}
+	
+	public double nearestRange(Combatant combatant)
+	{
+		Combatant nearest = nearest(combatant);
+		if (nearest == null) return Double.NaN;
+		return combatant.range(nearest);
 	}
 	
 	public synchronized void start()

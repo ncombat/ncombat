@@ -120,7 +120,7 @@ public abstract class Combatant
 	public void setLastUpdateTime(long lastUpdateTime) {
 		this.lastUpdateTime = lastUpdateTime;
 	}
-
+	
 	/**
 	 * Allows the game server or other designated authorities to set the initial
 	 * position of the combatant when it enters the combat zone.
@@ -135,6 +135,10 @@ public abstract class Combatant
 	 */
 	public void setVelocity(Vector velocity) {
 		this.velocity = velocity;
+	}
+	
+	public ShieldArray getShields() {
+		return shields;
 	}
 
 	public void addMessage(String message) {
@@ -278,5 +282,15 @@ public abstract class Combatant
 	
 	public double speed(Combatant ship) {
 		return ship.velocity.r();
+	}
+	
+	public Combatant nearest() {
+		if (gameServer == null) return null;
+		return gameServer.nearest(this);
+	}
+	
+	public double nearestRange() {
+		if (gameServer == null) return Double.NaN;
+		return gameServer.nearestRange(this);
 	}
 }

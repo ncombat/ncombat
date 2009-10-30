@@ -251,7 +251,7 @@ public class PlayerShip extends Ship
 		int deg = (int)( NcombatMath.degreeAngle( getRotationRate() * getRotationTime()));
 		int degTim = (int) getRotationTime();
 		
-		buf.add( String.format("%6d %4d %4d %2d/%2d/%2d %2d %4d/%3d %4d/%3d %4d",
+		buf.add( String.format("%6d %4d %4d %2d/%2d/%2d %2d %4s/%3d %4s/%3d %4d",
 						(int) energy, // ENERGY 
 						(int) shields.getDamage(1), // DMG1
 						(int) shields.getDamage(2), // DMG2
@@ -259,7 +259,7 @@ public class PlayerShip extends Ship
 						numMissiles, // M1
 						(int) missileLoadTime[1], // T2
 						(int) laserCoolingTime, // T3
-						(int)( getAccelRate() * getAccelTime()), // ACEL
+						(int) getAccelRate(), // ACEL
 						(int) getAccelTime(), // TIM
 						deg, // DEG
 						degTim, // TIM
