@@ -275,9 +275,13 @@ public abstract class Ship extends Combatant
 		accelTime = cmd.getTime();
 	}
 	
+	public boolean laserReady() {
+		return (laserCoolingTime <= 0.0);
+	}
+	
 	public void processLaserCommand(LaserCommand cmd)
 	{
-		if (laserCoolingTime > 0.0) {
+		if (!laserReady()) {
 			addMessage("Laser too hot to fire.");
 			return;
 		}
@@ -328,6 +332,19 @@ public abstract class Ship extends Combatant
 		results.damage = shipDamage;
 		
 		return results;
+	}
+	
+	public boolean missileReady()
+	{
+		if (numMissiles < 1) return false;
+		
+		for (int i = 0 ; i < numMissileTubes ; i++) {
+			if (missileLoadTime[i] <= 0.0) {
+				return true;
+			}
+		}
+		
+		return false;
 	}
 
 	public void processMissileCommand(MissileCommand cmd)
@@ -396,8 +413,15 @@ public abstract class Ship extends Combatant
 		return results;
 	}
 
-	public void processRepairCommand(RepairCommand cmd) {
-		addMessage("Processing " + cmd);
+	public void processRepairCommand(RepairCommand cmd)
+	{
+		double s1rate = cmd.getShieldRepair1Pct();
+		double s2rate = cmd.getShieldRepair2Pct();
+		
+		repairRate = 1.5 - s1rate - s2rate;
+		
+		shields.setRepairRate(1, s1rate);
+		shields.setRepairRate(2, s2rate);
 	}
 
 	public void processRotateCommand(RotateCommand cmd)

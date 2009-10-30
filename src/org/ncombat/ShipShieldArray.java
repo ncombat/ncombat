@@ -8,8 +8,15 @@ public class ShipShieldArray extends ShieldArray
 	
 	public static final double REPAIR_DELAY = 30.0;
 	
-	public ShipShieldArray() {
+	public static final double DEFAULT_REPAIR_RATE = 0.5;
+	
+	public ShipShieldArray()
+	{
 		super(NUM_SHIELDS, MAX_SHIELD_POWER);
+		
+		for (int i = 1 ; i <= NUM_SHIELDS ; i++) {
+			setRepairRate(i, DEFAULT_REPAIR_RATE);
+		}
 	}
 
 	@Override

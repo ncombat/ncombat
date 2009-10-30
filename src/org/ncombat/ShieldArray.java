@@ -85,6 +85,10 @@ public abstract class ShieldArray
 		}
 	}
 	
+	public void setRepairRate(int shieldNum, double repairRate) {
+		this.repairRate[shieldNum-1] = repairRate;
+	}
+	
 	public double addDamage(int shieldNum, double damage)
 	{
 		int idx = shieldNum - 1;
