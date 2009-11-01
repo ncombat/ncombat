@@ -211,7 +211,7 @@ public class PlayerShip extends Ship
 			int range = (int) range(ship);
 			double heading = ship.azimuth(this);
 			
-			buf.add( String.format("%2d %3d %2d %2d  %5d %6.1f %6.1f %6d  %6.1f",
+			buf.add( String.format("%2d%3d%% %2d %2d  %5d %6.1f %6.1f %6d  %6.1f",
 						shipNum, damage, p1, p2, speed, course, azimuth, range, heading));
 		}
 		
@@ -223,7 +223,7 @@ public class PlayerShip extends Ship
 		int speed = (int) this.velocity.r();
 		double course = course();
 		
-		buf.add( String.format("%2d %3d %2d %2d  %5d %6.1f", shipNum, damage, p1, p2, speed, course));
+		buf.add( String.format("%2d%3d%% %2d %2d  %5d %6.1f", shipNum, damage, p1, p2, speed, course));
 		
 		// Now abbreviated data for all the other ships if we are in tracking mode.
 		if (trackedShip != 0) {
