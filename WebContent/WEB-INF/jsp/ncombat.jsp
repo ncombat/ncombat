@@ -87,7 +87,7 @@
 			<div id="commandConsole">
 				<form id="cmdString" action="#" method="post" onsubmit="sendRequest(); return false"> 
 				   <span id="prompt"></span>
-				   <input id="cmds" type="text" name="cmds" size="60" /> 
+				   <input id="cmds" type="text" name="cmds" size="69" maxlength="69"/> 
 				   <input id="submit" type="submit" value="send""/> 
 				</form>
 			</div>
