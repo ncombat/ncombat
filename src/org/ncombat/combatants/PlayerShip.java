@@ -3,6 +3,7 @@ package org.ncombat.combatants;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.log4j.Logger;
 import org.ncombat.command.BriefModeCommand;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.command.HelpCommand;
@@ -18,6 +19,8 @@ import org.ncombat.utils.Vector;
 public class PlayerShip extends Ship
 {
 	public static final double DEFAULT_SENSOR_RANGE = 30000.0;
+	
+	private Logger log = Logger.getLogger(PlayerShip.class);
 	
 	private boolean briefMode;
 	
@@ -64,7 +67,7 @@ public class PlayerShip extends Ship
 		case 2: computeCentralCourse();	break;
 		case 3: generateShipRoster( cmd.getShip()); break;
 		case 4:
-		case 5:
+		case 5: generateMap(); break;
 		case 6: generateGornReadout(); break;
 		}
 	}
@@ -268,6 +271,75 @@ public class PlayerShip extends Ship
 		addMessages(buf);
 		
 		this.regenDataReadout = false;
+	}
+	
+	private void generateMap()
+	{
+		int width = 15;
+		int height = 15;
+		double minx = position.x() - sensorRange;
+		double miny = position.y() - sensorRange;
+		double xBoxSize = (2 * sensorRange) / width;
+		double yBoxSize = (2 * sensorRange) / height;
+		
+		String[][] map = new String[width][height];
+		for (int x = 0 ; x < width ; x++) {
+			for (int y = 0 ; y < height ; y++) {
+				map[x][y] = "  ";
+			}
+		}
+		
+		String shipChars = "0123456789+-*/()";
+		
+		for (Combatant combatant : gameServer.getCombatants())
+		{
+			if ( range(combatant) > sensorRange) continue;
+			
+			Vector pos = combatant.position;
+			int x = (int)(( pos.x() - minx) / xBoxSize);
+			int y = (int)(( pos.y() - miny) / yBoxSize);
+			x = (int) Math.max(0, Math.min(x, xBoxSize - 1));
+			y = (int) Math.max(0, Math.min(y, yBoxSize - 1));
+			
+			int shipNum = combatant.getShipNumber();
+			
+			if ( map[x][y].equals("  ")) {
+				// This is the only combatant in this box so far.
+				
+				String sym = null;
+				if (combatant instanceof GornBase) {
+					sym = "G" + shipChars.charAt(shipNum - 20);  
+				}
+				else {
+					sym = "S" + shipChars.charAt(shipNum);
+				}
+				
+				map[x][y] = sym;
+				log.debug("Map: [" + sym + "] : " + pos);
+			}
+			else {
+				// There is at least one combatant already in this box.
+				map[x][y] = "**";
+			}
+		}
+		
+		StringBuilder buf = new StringBuilder();
+		buf.append('|');
+		for (int i = 0 ; i < width ; i++) buf.append("--");
+		buf.append('|');
+		String boundary = buf.toString();
+		
+		addMessage(boundary);
+		for (int y = height - 1 ; y >= 0 ; y--) {
+			buf.setLength(0);
+			buf.append('|');
+			for (int x = 0 ; x < width ; x++) {
+				buf.append( map[x][y]);
+			}
+			buf.append('|');
+			addMessage( buf.toString());
+		}
+		addMessage(boundary);
 	}
 	
 	private void generateGornReadout()
