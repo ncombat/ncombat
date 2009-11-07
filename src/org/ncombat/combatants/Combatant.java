@@ -62,15 +62,21 @@ public abstract class Combatant
 	
 	protected ShieldArray shields;
 	
-	public Combatant(String commander) {
+	private long lastContactTime;
+	
+	public Combatant(String commander)
+	{
 		this.id = getNextId();
 		this.commander = commander;
+		this.lastContactTime = System.currentTimeMillis();
 	}
 	
 	public abstract void update(long updateTime);
 	
 	public void processCommands(CommandBatch commandBatch)
 	{
+		setLastContactTime( commandBatch.getTimestamp());
+		
 		for (Command command : commandBatch.getCommands()) {
 			if (!alive) return;
 			
@@ -140,7 +146,15 @@ public abstract class Combatant
 	public ShieldArray getShields() {
 		return shields;
 	}
+	
+	public long getLastContactTime() {
+		return lastContactTime;
+	}
 
+	public void setLastContactTime(long lastContactTime) {
+		this.lastContactTime = lastContactTime;
+	}
+	
 	public void addMessage(String message) {
 		synchronized (messages) {
 			messages.add(message);
@@ -174,7 +188,11 @@ public abstract class Combatant
 		}
 	}
 	
-	public void markExhausted() {
+	public void markExhausted()
+	{
+		String msg = "Ship " + shipNumber + " - " + commander
+						+ " commanding, just lost all power.";
+		gameServer.sendMessage(msg, shipNumber);
 		addMessage("Your ship has lost all power.");
 		markDead("LPR");
 	}
@@ -198,6 +216,14 @@ public abstract class Combatant
 		}
 		
 		markDead(status);
+	}
+	
+	public void markHungUp()
+	{
+		String msg = "The crew of ship " + shipNumber + " - " + commander
+						+ " commanding, just abandoned ship.";
+		gameServer.sendMessage(msg);
+		markDead("HNG");
 	}
 	
 	private void markDead(String status)

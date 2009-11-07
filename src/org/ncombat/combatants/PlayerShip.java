@@ -20,6 +20,10 @@ public class PlayerShip extends Ship
 {
 	public static final double DEFAULT_SENSOR_RANGE = 30000.0;
 	
+	// If we have no contact from a player for NO_CONTACT_TIMEOUT milliseconds or more,
+	// he is assumed to have left the game, i.e. "hung up the phone".
+	public static final long NO_CONTACT_TIMEOUT = 120000;
+	
 	private Logger log = Logger.getLogger(PlayerShip.class);
 	
 	private boolean briefMode;
@@ -38,6 +42,18 @@ public class PlayerShip extends Ship
 	public void processCommands(CommandBatch commandBatch) {
 		super.processCommands(commandBatch);
 		this.regenDataReadout = commandBatch.getRegenStatusReadout();
+	}
+	
+	@Override
+	public void update(long updateTime)
+	{
+		long noContactTime = updateTime - getLastContactTime();
+		if (noContactTime >= NO_CONTACT_TIMEOUT) {
+			markHungUp();
+			return;
+		}
+		
+		super.update(updateTime);
 	}
 
 	@Override
@@ -365,6 +381,4 @@ public class PlayerShip extends Ship
 			}
 		}
 	}
-	
-	
 }

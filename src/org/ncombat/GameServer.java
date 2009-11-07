@@ -141,7 +141,12 @@ public class GameServer implements DisposableBean
 			
 			for (Combatant combatant : updateCombatants) {
 				if (combatant.isAlive()) {
-					if (!paused) {
+					if (paused) {
+						// While we're paused, we don't want all our combatants
+						// to time out.
+						combatant.setLastContactTime(updateTime);
+					}
+					else {
 						combatant.update(updateTime);
 					}
 					combatant.setLastUpdateTime(updateTime);

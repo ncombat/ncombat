@@ -60,6 +60,10 @@
 		}
 
 		$(document).ready( function() {
+		
+			setInterval( function() {
+				$.getJSON("gamePing.json");
+			}, 30000);
 
 			$("#dd").load("html/content/docs/COMINFO.txt");
 			// allow click to expand dd tag

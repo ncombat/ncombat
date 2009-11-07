@@ -305,6 +305,28 @@ public class GameController extends MultiActionController
 		return model;
 	}
 	
+	public Map gamePing(HttpServletRequest request, HttpServletResponse response)
+	{
+		GameStatusModel model = new GameStatusModel();
+		model.setSuccess(false);
+		
+		HttpSession session = request.getSession(false);
+		if (session == null) return model;
+		
+		Combatant combatant = getCombatant(session);
+		if (combatant == null) return model;
+		if (!combatant.isAlive()) {
+			model.markForDeath();
+			return model;
+		}
+		
+		long now = System.currentTimeMillis();
+		combatant.setLastContactTime(now);
+		
+		model.setSuccess(true);
+		return model;
+	}
+	
 	private Combatant getCombatant(HttpSession session)
 	{
 		if (session == null) return null;
