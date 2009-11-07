@@ -1,8 +1,10 @@
 package org.ncombat.combatants;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import org.apache.log4j.Logger;
+import org.ncombat.command.AccelerateCommand;
 import org.ncombat.command.Command;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.command.LaserCommand;
@@ -29,10 +31,28 @@ public class BotShip extends Ship
 	 * kilometers.
 	 */
 	private static final double ENGAGEMENT_RANGE = 15000.0;
+
+	/*
+	 * When the bot ship gets NORMAL_RADIUS kilometers or more from the center
+	 * of the combat zone, it turns back the way it came.
+	 */
+	private static final double NORMAL_RADIUS = 20000.0;
+	
+	private enum State {
+		NORMAL,
+		STARTING_TO_STOP,
+		STOPPING,
+		STARTING_TO_HEAD_IN,
+		HEADING_IN
+	}
+	
+	private State state = State.NORMAL;
 	
 	private Logger log = Logger.getLogger(BotShip.class);
 	
 	private double cycleTimeLeft = CYCLE_LEN;
+	
+	private LinkedList<Command> commandQueue = new LinkedList<Command>();
 	
 	public BotShip(String commander) {
 		super(commander);
@@ -63,40 +83,123 @@ public class BotShip extends Ship
 			batch.addCommand( new ShieldCommand(1, shieldPower));
 			batch.addCommand( new ShieldCommand(2, shieldPower));
 		}
+		
+		double myRadius = position.r();
+		double mySpeed = velocity.r();
+		double myHeading = NcombatMath.degreeHeading(heading);		
+		
+		if ((state == State.NORMAL) && (myRadius >= NORMAL_RADIUS)) {
+			state = State.STARTING_TO_STOP;
+			commandQueue.clear();
+		}
+		
+		switch (state) {
+			case NORMAL:
+				
+				if ((cycleTimeLeft <= 0.0) && (nearestRange <= ENGAGEMENT_RANGE)) {
+					Combatant nearest = nearest();
+					double azimuth = azimuth(nearest);
+					
+					// Guess at the rotation required to keep us pointed at
+					// our target.
+					if ( azimuth != 0.0) {
+						Vector pDiff = nearest.position.subtract(this.position);
+						Vector vDiff = nearest.velocity.subtract(this.velocity);
+						Vector pDiff2 = pDiff.add( vDiff.multiply(CYCLE_LEN));
+						double hDiff = pDiff2.theta() - heading;
+						double angle = NcombatMath.degreeAngle(hDiff);
+						RotateCommand rotCmd = new RotateCommand(angle, 6.0);
+						batch.addCommand(rotCmd);
+					}
+					
+					if ((Math.abs(azimuth) <= 1.0) && laserReady()) {
+						LaserCommand laserCmd = new LaserCommand(1000.0);
+						batch.addCommand(laserCmd);
+					}
+					else if (( Math.abs(azimuth) <= 5.0) && missileReady()) {
+						MissileCommand missileCmd = new MissileCommand(nearest.getShipNumber());
+						batch.addCommand(missileCmd);
+					}
+					
+					cycleTimeLeft = CYCLE_LEN;
+				}
+					
+				break;
+					
+			case STARTING_TO_STOP:
 
-		if ((cycleTimeLeft <= 0.0) && (nearestRange <= ENGAGEMENT_RANGE)) {
-			Combatant nearest = nearest();
-			double azimuth = azimuth(nearest);
-			
-			// Guess at the rotation required to keep us pointed at
-			// our target.
-			if ( azimuth != 0.0) {
-				Vector pDiff = nearest.position.subtract(this.position);
-				Vector vDiff = nearest.velocity.subtract(this.velocity);
-				Vector pDiff2 = pDiff.add( vDiff.multiply(CYCLE_LEN));
-				double hDiff = pDiff2.theta() - heading;
-				double angle = NcombatMath.degreeAngle(hDiff);
-				RotateCommand rotCmd = new RotateCommand(angle, 6.0);
-				batch.addCommand(rotCmd);
-			}
-			
-			if ((Math.abs(azimuth) <= 1.0) && laserReady()) {
-				LaserCommand laserCmd = new LaserCommand(1000.0);
-				batch.addCommand(laserCmd);
-			}
-			else if (( Math.abs(azimuth) <= 5.0) && missileReady()) {
-				MissileCommand missileCmd = new MissileCommand(nearest.getShipNumber());
-				batch.addCommand(missileCmd);
-			}
-			
-			cycleTimeLeft = CYCLE_LEN;
+				log.debug("[" + commander + "]: stopping from radius " + myRadius + ".");
+				
+				// First we rotate so we're pointing opposite to our direction of motion.
+				double rotNeeded = Vector.stdAngleDegrees( 180.0 - course());					
+				commandQueue.add( new RotateCommand(rotNeeded, 6.0));
+				
+				// Then we come to a full stop.
+				commandQueue.add( new AccelerateCommand(5.0, mySpeed / 5.0));
+				
+				state = State.STOPPING;
+				
+			case STOPPING:
+				
+				if (quiet()) {
+					if ( commandQueue.isEmpty()) {
+						if ( Math.abs(mySpeed) <= 0.0001 ) {
+							log.debug("[" + commander + "]: done stopping.");
+							state = State.STARTING_TO_HEAD_IN;
+						}
+					}
+					else {
+						log.debug( String.format("[%s]: heading=%6.1f, speed=%4.1f, radius=%7.1f", commander, 
+													myHeading, mySpeed, myRadius));
+						
+						Command cmd = commandQueue.removeFirst();
+						batch.addCommand(cmd);
+					}
+				}
+				
+				break;
+				
+			case STARTING_TO_HEAD_IN:
+
+				log.debug("[" + commander + "]: starting to head in from radius " + myRadius + ".");
+				
+				// First rotate towards the center of the combat zone.
+				rotNeeded = NcombatMath.degreeAngle( position.negate().theta() - heading);					
+				commandQueue.add( new RotateCommand(rotNeeded, 6.0));
+				
+				// Then accelerate to a new speed (randomly).
+				double newSpeed = Math.floor( Math.random() * 10.0);
+				commandQueue.add( new AccelerateCommand(5.0, newSpeed / 5.0));
+				
+				state = State.HEADING_IN;
+				
+			case HEADING_IN:
+				
+				if (quiet()) {
+					if ( commandQueue.isEmpty()) {
+						if (myRadius < NORMAL_RADIUS) {
+							log.debug("[" + commander + "]: done heading in.");
+							state = State.NORMAL;
+						}
+					}
+					else {
+						log.debug( String.format("[%s]: heading=%6.1f, speed=%4.1f, radius=%7.1f", commander, 
+													myHeading, mySpeed, myRadius));
+						
+						Command cmd = commandQueue.removeFirst();
+						batch.addCommand(cmd);
+					}
+				}
+				
+				break;
+				
 		}
 		
 		List<Command> cmds = batch.getCommands();
 		
 		if (! cmds.isEmpty()) {
 			StringBuilder msg = new StringBuilder();
-			msg.append("Bot commands: [" + commander + "]:");
+			msg.append("[" + commander + "]:");
 			for (Command cmd : cmds) {
 				msg.append(" ");
 				msg.append(cmd.toString());
@@ -105,5 +208,14 @@ public class BotShip extends Ship
 			
 			gameServer.addCommandBatch(batch);
 		}
+	}
+	
+	private boolean quiet()
+	{
+		boolean noRotation = ( getRotationTime() <= 0.0);
+		boolean noAcceleration = ( getAccelTime() <= 0.0);
+		boolean noHeat = (engineHeat <= 0.0);
+		
+		return noRotation && noAcceleration && noHeat;
 	}
 }
