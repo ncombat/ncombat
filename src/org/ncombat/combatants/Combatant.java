@@ -64,6 +64,8 @@ public abstract class Combatant
 	
 	private long lastContactTime;
 	
+	private Combatant lastAttacker;
+	
 	public Combatant(String commander)
 	{
 		this.id = getNextId();
@@ -204,6 +206,14 @@ public abstract class Combatant
 	
 	public void markDestroyed(Combatant killer)
 	{
+		String fmt = "Ship %d - %s commanding, was just destroyed";
+		String msg = String.format(fmt, shipNumber, commander);
+		gameServer.sendMessage(msg, shipNumber);
+		
+		fmt = "by ship %d - %s commanding.";
+		msg = String.format(fmt, killer.shipNumber, killer.commander);
+		gameServer.sendMessage(msg, shipNumber);
+		
 		addMessage("Your ship has been destroyed.");
 		
 		String status = null;
@@ -259,6 +269,14 @@ public abstract class Combatant
 	public String getCommander() {
 		return commander;
 	}
+	
+	public Combatant getLastAttacker() {
+		return lastAttacker;
+	}
+
+	public void setLastAttacker(Combatant lastAttacker) {
+		this.lastAttacker = lastAttacker;
+	}
 
 	protected double addDamage(double damage)
 	{
@@ -287,19 +305,8 @@ public abstract class Combatant
 	
 	protected abstract AttackResult onMissileHit(Combatant attacker);
 	
-	public void processKill(Combatant killed)
-	{
-		String fmt = "Ship %d - %s commanding, was just destroyed";
-		String msg = String.format(fmt, killed.shipNumber, killed.commander);
-		gameServer.sendMessage(msg);
-		
-		fmt = "by ship %d - %s commanding.";
-		msg = String.format(fmt, this.shipNumber, this.commander);
-		gameServer.sendMessage(msg);
-		
+	public void processKill(Combatant killed) {
 		this.numKills++;
-		
-		killed.markDestroyed(this);
 	}
 	
 	public double range(Combatant combatant) {

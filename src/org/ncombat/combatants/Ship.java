@@ -302,6 +302,7 @@ public abstract class Ship extends Combatant
 				
 				if (!combatant.isAlive()) {
 					processKill(combatant);
+					combatant.markDestroyed(this);
 				}
 			}
 		}
@@ -314,6 +315,8 @@ public abstract class Ship extends Combatant
 	@Override
 	protected AttackResult onLaserHit(Combatant attacker, double power)
 	{
+		setLastAttacker(attacker);
+		
 		int shieldHit = shields.coveringShield( azimuth(attacker));
 		double shieldPower = shields.getEffectivePower(shieldHit);
 		double range = range(attacker);
@@ -388,12 +391,15 @@ public abstract class Ship extends Combatant
 		
 		if (!target.isAlive()) {
 			processKill(target);
+			target.markDestroyed(this);
 		}
 	}
 	
 	@Override
 	protected AttackResult onMissileHit(Combatant attacker)
 	{
+		setLastAttacker(attacker);
+		
 		int shieldHit = shields.coveringShield( azimuth(attacker));
 		double shieldPower = shields.getEffectivePower(shieldHit);
 		

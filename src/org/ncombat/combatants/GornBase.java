@@ -20,12 +20,16 @@ public class GornBase extends Combatant
 	}
 
 	@Override
-	protected AttackResult onLaserHit(Combatant attacker, double power) {
+	protected AttackResult onLaserHit(Combatant attacker, double power)
+	{
+		setLastAttacker(attacker);
 		return new AttackResult();
 	}
 
 	@Override
-	protected AttackResult onMissileHit(Combatant attacker) {
+	protected AttackResult onMissileHit(Combatant attacker)
+	{
+		setLastAttacker(attacker);
 		return new AttackResult();
 	}
 }

@@ -48,7 +48,12 @@ public class PlayerShip extends Ship
 	public void update(long updateTime)
 	{
 		long noContactTime = updateTime - getLastContactTime();
+		
 		if (noContactTime >= NO_CONTACT_TIMEOUT) {
+			Combatant lastAttacker = getLastAttacker();
+			if ((lastAttacker != null) && (lastAttacker.isAlive())) {
+				lastAttacker.processKill(this);
+			}
 			markHungUp();
 			return;
 		}
