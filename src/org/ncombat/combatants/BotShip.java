@@ -36,7 +36,7 @@ public class BotShip extends Ship
 	 * When the bot ship gets NORMAL_RADIUS kilometers or more from the center
 	 * of the combat zone, it turns back the way it came.
 	 */
-	private static final double NORMAL_RADIUS = 20000.0;
+	private static final double NORMAL_RADIUS = 30000.0;
 	
 	private enum State {
 		NORMAL,
