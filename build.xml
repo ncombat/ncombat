@@ -5,7 +5,9 @@
 <property name="stage.dir" location="${build.dir}/stage"/>
 <property name="deploy.dir" location="${build.dir}/deploy"/>
 <property name="dist.dir" location="dist"/>
+<property name="test.dir" location="test"/>
 
+	
 <taskdef file="tomcatTasks.properties" description="tomcat ant tasks for automated local deploys">
     <classpath>
         <pathelement path="${tomcat.antjmxlib}"/>
@@ -13,31 +15,44 @@
     </classpath>
 </taskdef>
 
+ <path id="classpath">
+	<pathelement location="lib/junit.jar" />
+ 	<pathelement location="lib/junit-ant.jar" />
+	<pathelement location="${build.dir}/classes"/>
+ 	<pathelement location="${stage.dir}/WEB-INF/classes"/>
+ 	<fileset dir=".">
+ 	                <include name="WebContent/WEB-INF/lib/*.jar"/>
+ 	                <include name="lib/*.jar"/>
+ 	</fileset>
+  </path>
+
+	
 <target name="all" depends="compile,stage,package">
     <antcall target="timestamp">
         <param name="message" value="build done at " />
     </antcall>
 </target>
 
+	
 <target name="init">
-    <mkdir dir="${build.dir}"/>
+	<mkdir dir="${build.dir}/classes"/>
+	<mkdir dir="${build.dir}/stage" />
     <mkdir dir="${dist.dir}"/>
+	<mkdir dir="${stage.dir}/WEB-INF/classes"/>
 </target>
 
 <target name="clean">
-    <delete dir="${build.dir}" failonerror="false"/>
+    <delete dir="${build.dir}/classes" failonerror="false"/>
+	<delete dir="${build.dir}/stage" failonerror="false"/>
     <delete dir="${dist.dir}" failonerror="false"/>
 </target>
 
 <target name="compile" depends="init">
-    <mkdir dir="${stage.dir}/WEB-INF/classes"/>
     <javac srcdir="src" destdir="${stage.dir}/WEB-INF/classes">
-        <classpath>
-            <fileset dir=".">
-                <include name="WebContent/WEB-INF/lib/*.jar"/>
-                <include name="lib/*.jar"/>
-            </fileset>
-        </classpath>
+    	<classpath refid="classpath" />
+    </javac>
+ 	<javac srcdir="test" destdir="${build.dir}/classes">
+       <classpath refid="classpath" />
     </javac>
 </target>
 
@@ -65,7 +80,7 @@
     </copy>
 </target>
 
-<target name="package" depends="init">
+<target name="package" depends="test">
     <zip destfile="${dist.dir}/${war.file}" basedir="${stage.dir}"/>
 </target>
 
@@ -106,7 +121,7 @@
     </ftp>
 </target>
 
-<target name="deploy_local" description="Install application in local Tomcat" depends="all, remove">
+<target name="deploy_local" description="Install application in local Tomcat" depends="all">
     <deploy url="${tomcat.manager.url}"
             username="${tomcat.username}"
             password="${tomcat.password}"
@@ -117,7 +132,7 @@
     </antcall>
 </target>
 
-<target name="remove" description="Remove application in Tomcat">
+<target name="undeploy_local" description="Remove application in Tomcat">
     <undeploy url="${tomcat.manager.url}"
               username="${tomcat.username}"
               password="${tomcat.password}"
@@ -127,33 +142,43 @@
 	</antcall>
 </target>
 
-<target name="reload" description="Reload application in Tomcat" depends="all">
+<target name="reload_local" description="Reload application in Tomcat" depends="all">
     <reload url="${tomcat.manager.url}"
             username="${tomcat.username}"
             password="${tomcat.password}"
             path="/${tomcat.path}"/>
 </target>
 
-<target name="start" description="Start Tomcat application">
+<target name="start_local" description="Start Tomcat application">
     <start url="${tomcat.manager.url}"
            username="${tomcat.username}"
            password="${tomcat.password}"
            path="/${tomcat.path}"/>
 </target>
 
-<target name="stop" description="Stop Tomcat application">
+<target name="stop_local" description="Stop Tomcat application">
     <stop url="${tomcat.manager.url}"
           username="${tomcat.username}"
           password="${tomcat.password}"
           path="/${tomcat.path}"/>
 </target>
 
-<target name="list" description="List Tomcat applications">
+<target name="list_local" description="List Tomcat applications">
     <list url="${tomcat.manager.url}"
           username="${tomcat.username}"
           password="${tomcat.password}"/>
 </target>
 
+<!-- run only specific tests -->
+<target name="test" depends="compile">
+	    <junit fork="no">
+	      <classpath refid="classpath" />
+	      <formatter type="brief" usefile="false" />
+	      <test name="org.ncombat.MotionComputerTest" />
+	      <test name="org.ncombat.command.CommandParserTest" />
+	    </junit>
+</target>
+	
 <!-- Helper targets -->
 <!-- The "sysInfo" target displays information about Ant's configuration. -->
 <target name="sysinfo" depends="currentTimestamp">
@@ -165,6 +190,7 @@
     <echo message = "JAVA_HOME is ${env.JAVA_HOME}"/>
     <echo message = "JDK version is ${ant.java.version}"/>
     <echo message = "app version is ${vnum}"/>
+	<echo message = "test.dir is ${test.dir}"/>
     <antcall target="timestamp">
         <param name="message" value="current time is " />
     </antcall>
