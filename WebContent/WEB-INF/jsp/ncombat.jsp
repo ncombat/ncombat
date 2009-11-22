@@ -107,5 +107,17 @@
 			<dd><pre><span id="originalDocs"></span></pre></dd>
 		</dl></div>
 	<div id="footer"><span id="about">about</span> <span id="contact">contact</span> <span id="help">help</span> <span id="license">license</span> </div>
+	<div id="googleanalytics">
+		<script type="text/javascript">
+			var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+			document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+		</script>
+		<script type="text/javascript">
+			try{
+				var pageTracker = _gat._getTracker("UA-10593313-2");
+				pageTracker._trackPageview();
+			} catch(err) {}
+		</script>
+	</div>
 </body>
 </html>
