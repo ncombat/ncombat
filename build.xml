@@ -16,8 +16,6 @@
 </taskdef>
 
  <path id="classpath">
-	<pathelement location="lib/junit.jar" />
- 	<pathelement location="lib/junit-ant.jar" />
 	<pathelement location="${build.dir}/classes"/>
  	<pathelement location="${stage.dir}/WEB-INF/classes"/>
  	<fileset dir=".">
@@ -27,7 +25,7 @@
   </path>
 
 	
-<target name="all" depends="compile,stage,package">
+<target name="all" depends="clean,compile,stage,package">
     <antcall target="timestamp">
         <param name="message" value="build done at " />
     </antcall>
@@ -176,6 +174,7 @@
 	      <formatter type="brief" usefile="false" />
 	      <test name="org.ncombat.MotionComputerTest" />
 	      <test name="org.ncombat.command.CommandParserTest" />
+	      <test name="org.ncombat.utils.VectorTest" />
 	    </junit>
 </target>
 	
