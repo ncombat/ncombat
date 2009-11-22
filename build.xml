@@ -5,7 +5,8 @@
 <property name="stage.dir" location="${build.dir}/stage"/>
 <property name="deploy.dir" location="${build.dir}/deploy"/>
 <property name="dist.dir" location="dist"/>
-<property name="test.dir" location="test"/>
+<property name="test.src.dir" location="test"/>
+<property name="test.classes.dir" location="${build.dir}/classes/tests"/>
 
 	
 <taskdef file="tomcatTasks.properties" description="tomcat ant tasks for automated local deploys">
@@ -16,7 +17,7 @@
 </taskdef>
 
  <path id="classpath">
-	<pathelement location="${build.dir}/classes"/>
+	<pathelement location="${test.classes.dir}"/>
  	<pathelement location="${stage.dir}/WEB-INF/classes"/>
  	<fileset dir=".">
  	                <include name="WebContent/WEB-INF/lib/*.jar"/>
@@ -33,7 +34,7 @@
 
 	
 <target name="init">
-	<mkdir dir="${build.dir}/classes"/>
+	<mkdir dir="${test.classes.dir}"/>
 	<mkdir dir="${build.dir}/stage" />
     <mkdir dir="${dist.dir}"/>
 	<mkdir dir="${stage.dir}/WEB-INF/classes"/>
@@ -43,13 +44,14 @@
     <delete dir="${build.dir}/classes" failonerror="false"/>
 	<delete dir="${build.dir}/stage" failonerror="false"/>
     <delete dir="${dist.dir}" failonerror="false"/>
+	<delete dir="${test.classes.dir}" failonerror="false"/>
 </target>
 
 <target name="compile" depends="init">
     <javac srcdir="src" destdir="${stage.dir}/WEB-INF/classes">
     	<classpath refid="classpath" />
     </javac>
- 	<javac srcdir="test" destdir="${build.dir}/classes">
+ 	<javac srcdir="test" destdir="${test.classes.dir}">
        <classpath refid="classpath" />
     </javac>
 </target>
