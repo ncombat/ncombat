@@ -246,6 +246,14 @@ public abstract class Combatant
 		}
 	}
 	
+	// if player logs out normally, no one gets credit for a kill.
+	public void markStopCommand()
+	{
+		String msg = "Commander " + commander + " quit the game.";
+		gameServer.sendMessage(msg);
+		markDead("STOP");
+	}
+	
 	public int getShipNumber() {
 		return shipNumber;
 	}

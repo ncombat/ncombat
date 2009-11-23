@@ -27,6 +27,8 @@ public class CommandParser
 	private static final Set NO_STATUS_REGEN_ACTIONS 
 								= new HashSet<String>(	Arrays.asList( new String[] { "B", "E", "G", "I" }));
 	
+	public static final double MIN_DISCONNECT_RANGE = 30000.0;
+	
 	// Maps action (usually one letter, like 'A' for accelerate) to parse method.
 	private static Map<String,Method> parseMethods;
 	
@@ -425,6 +427,11 @@ public class CommandParser
 		checkIntRange( cmd.getShieldNum(), 1, true, 2, true, "shield number");
 		checkDoubleRange( cmd.getPower(), 0.0, true, MAX_SHIELD_POWER, true, "shield power level");
 	}
+	
+	public void validateStopCommand (StopCommand cmd) {
+		if (combatant.nearestRange() < MIN_DISCONNECT_RANGE );
+	}
+	
 	
 	public void validateTrackCommand(TrackCommand cmd) {
 		if (cmd.getTarget() != 0) checkShipNum( cmd.getTarget());

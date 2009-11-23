@@ -45,7 +45,7 @@ public class GameServer implements DisposableBean
 	
 	private static Vector randomPosition()
 	{
-		double maxCoord = 20000.0;
+		double maxCoord = 25000000.0;
 		double x0 = (2.0 * (Math.random() - 0.5)) * maxCoord;
 		double y0 = (2.0 * (Math.random() - 0.5)) * maxCoord;
 		Vector position = new Vector(x0, y0);

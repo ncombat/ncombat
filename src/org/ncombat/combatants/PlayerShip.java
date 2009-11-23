@@ -49,7 +49,8 @@ public class PlayerShip extends Ship
 	{
 		long noContactTime = updateTime - getLastContactTime();
 		
-		if (noContactTime >= NO_CONTACT_TIMEOUT) {
+		// no credit awarded if player exited with STOP command
+		if ((noContactTime >= NO_CONTACT_TIMEOUT) && (super.getCombatantStatus() != "STOP")) {
 			Combatant lastAttacker = getLastAttacker();
 			if ((lastAttacker != null) && (lastAttacker.isAlive())) {
 				lastAttacker.processKill(this);
@@ -161,7 +162,7 @@ public class PlayerShip extends Ship
 	}
 
 	public void processStopCommand(StopCommand cmd) {
-		addMessage("Processing " + cmd);
+		markStopCommand();
 	}
 
 	public void processTrackCommand(TrackCommand cmd) {

@@ -78,6 +78,16 @@ public abstract class Ship extends Combatant
 		this.shields = new ShipShieldArray();
 	}
 	
+	// I need to get the combatant status in PlayerShip 
+	// and I am not smart enough to figure out how 
+	// to call a super of a super from an instance class 
+	// (need something like this.super.super.getStatus()) 
+	// so I just created a differently named method.
+	protected String getCombatantStatus() {
+		return super.getStatus();
+	}
+	
+	
 	@Override
 	public void update(long updateTime)
 	{
