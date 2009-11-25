@@ -41,15 +41,15 @@
 </target>
 
 <target name="clean">
-    <delete dir="${build.dir}/classes" failonerror="false"/>
-	<delete dir="${build.dir}/stage" failonerror="false"/>
-    <delete dir="${dist.dir}" failonerror="false"/>
+    <delete dir="${build.dir}" failonerror="false"/>
+	<delete dir="${dist.dir}" failonerror="false"/>
 	<delete dir="${test.classes.dir}" failonerror="false"/>
 </target>
 
 <target name="compile" depends="init">
     <javac srcdir="src" destdir="${stage.dir}/WEB-INF/classes">
     	<classpath refid="classpath" />
+    	<compilerarg value="-Xlint:unchecked"/>
     </javac>
  	<javac srcdir="test" destdir="${test.classes.dir}">
        <classpath refid="classpath" />
