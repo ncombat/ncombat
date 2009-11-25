@@ -1,6 +1,5 @@
 package org.ncombat.combatants;
 
-import org.apache.log4j.Logger;
 import org.ncombat.MotionComputer;
 import org.ncombat.ShipShieldArray;
 import org.ncombat.command.AccelerateCommand;
@@ -44,6 +43,8 @@ public abstract class Ship extends Combatant
 	
 	private static final int INITIAL_NUM_MISSILES = 25;
 	
+	private static final int NUM_MISSILE_TUBES = 2;
+	
 	// The time required to reload a missile tube after firing a missile (in seconds).
 	public static final double MISSILE_RELOAD_TIME = 60.0;
 
@@ -51,9 +52,7 @@ public abstract class Ship extends Combatant
 	public static final double MISSILE_MAX_RANGE = 20000.0;
 	
 	// The maximum angular deviation within which a missile attack is effective (in degrees).
-	private static final double MAX_MISSILE_AZIMUTH = 5.0;
-	
-	private Logger log = Logger.getLogger(Ship.class);
+	private static final double MISSILE_MAX_AZIMUTH = 5.0;
 	
 	protected double heading;
 	
@@ -68,7 +67,7 @@ public abstract class Ship extends Combatant
 	
 	protected double laserCoolingTime;
 	
-	protected final int numMissileTubes = 2;
+	protected final int numMissileTubes = NUM_MISSILE_TUBES;
 	protected final double[] missileLoadTime = new double[numMissileTubes];
 	protected int numMissiles = INITIAL_NUM_MISSILES;
 	
@@ -388,7 +387,7 @@ public abstract class Ship extends Combatant
 		
 		if ( range(target) > MISSILE_MAX_RANGE) return;
 		
-		if ( Math.abs( azimuth(target)) > 5.0) return;
+		if ( Math.abs( azimuth(target)) > MISSILE_MAX_AZIMUTH) return;
 
 		numMissiles--;
 		missileLoadTime[tube] = MISSILE_RELOAD_TIME;
