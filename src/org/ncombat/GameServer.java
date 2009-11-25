@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -67,6 +69,8 @@ public class GameServer implements DisposableBean
 	
 	private Logger log = Logger.getLogger(GameServer.class);
 	
+	private GameManager gameManager;
+	
 	private int serverNumber;
 	private Timer timer;
 	private GameServerTimerTask timerTask;
@@ -80,6 +84,7 @@ public class GameServer implements DisposableBean
 	private Object cycleMonitor = new Object();
 	private boolean paused;
 	private Map<Integer,Combatant> combatants = new HashMap<Integer,Combatant>();
+	private LinkedList<Combatant> formerPlayers = new LinkedList<Combatant>();
 	private List<CommandBatch> commandBatches = new ArrayList<CommandBatch>();
 	
 	//-------------------------------------------------
@@ -95,8 +100,10 @@ public class GameServer implements DisposableBean
 	 */
 	private Object playerSyncMonitor = new Object();
 	
-	public GameServer()
+	public GameServer(GameManager gameManager)
 	{
+		this.gameManager = gameManager;
+		
 		synchronized (GameServer.class) {
 			this.serverNumber = nextServerNumber++;
 		}
@@ -278,7 +285,19 @@ public class GameServer implements DisposableBean
 				if (combatants.containsKey(shipNumber)) {
 					combatants.remove(shipNumber);
 					combatant.setGameServer(null);
-					combatant.setShipNumber(0);
+				}
+				
+				if (combatant instanceof PlayerShip) {
+					formerPlayers.addFirst(combatant);
+					
+					int maxNumFormerPlayers = 30;
+					for ( int numFormerPlayers = formerPlayers.size() ;
+						  numFormerPlayers > maxNumFormerPlayers ;
+						  numFormerPlayers--)
+					{
+						formerPlayers.removeLast();
+						gameManager.removeCombatant(combatant);
+					}
 				}
 				
 				if (combatant instanceof BotShip) {
@@ -319,6 +338,13 @@ public class GameServer implements DisposableBean
 		});
 		
 		return results;
+	}
+	
+	public List<Combatant> getFormerPlayers()
+	{
+		synchronized (cycleMonitor) {
+			return new ArrayList<Combatant>(formerPlayers);
+		}
 	}
 	
 	public void addCommandBatch(CommandBatch commandBatch) {

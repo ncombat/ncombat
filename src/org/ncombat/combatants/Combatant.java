@@ -3,6 +3,7 @@ package org.ncombat.combatants;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,11 +67,15 @@ public abstract class Combatant
 	
 	private Combatant lastAttacker;
 	
+	protected Date timeOn;
+	protected Date timeOff;
+	
 	public Combatant(String commander)
 	{
 		this.id = getNextId();
 		this.commander = commander;
 		this.lastContactTime = System.currentTimeMillis();
+		this.timeOn = new Date();
 	}
 	
 	public abstract void update(long updateTime);
@@ -240,6 +245,7 @@ public abstract class Combatant
 	{
 		this.status = status;
 		this.alive = false;
+		this.timeOff = new Date();
 		
 		if (gameServer != null) {
 			gameServer.removeCombatant(this);
@@ -251,7 +257,7 @@ public abstract class Combatant
 	{
 		String msg = "Commander " + commander + " quit the game.";
 		gameServer.sendMessage(msg);
-		markDead("STOP");
+		markDead("DDS");
 	}
 	
 	public int getShipNumber() {
@@ -285,7 +291,7 @@ public abstract class Combatant
 	public void setLastAttacker(Combatant lastAttacker) {
 		this.lastAttacker = lastAttacker;
 	}
-
+	
 	protected double addDamage(double damage)
 	{
 		double existingDamage = this.damage;

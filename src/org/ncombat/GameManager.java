@@ -23,7 +23,7 @@ public class GameManager implements InitializingBean
 	{
 		logger.info("GameManager is starting.");
 		
-		gameServer = new GameServer();
+		gameServer = new GameServer(this);
 		gameServer.start();
 		
 		logger.info("GameManager has started.");
@@ -52,6 +52,13 @@ public class GameManager implements InitializingBean
 	{
 		synchronized (combatants) {
 			combatants.put( combatant.getId(), combatant);
+		}
+	}
+	
+	public void removeCombatant(Combatant combatant)
+	{
+		synchronized (combatants) {
+			combatants.remove(combatant.getId());
 		}
 	}
 }

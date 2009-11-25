@@ -1,6 +1,11 @@
 package org.ncombat.combatants;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -88,7 +93,7 @@ public class PlayerShip extends Ship
 		case 1:	computeParallelCourse(cmd.getShip()); break;
 		case 2: computeCentralCourse();	break;
 		case 3: generateShipRoster( cmd.getShip()); break;
-		case 4:
+		case 4: generatePlayerHistory(); break;
 		case 5: generateMap(); break;
 		case 6: generateGornReadout(); break;
 		}
@@ -200,6 +205,67 @@ public class PlayerShip extends Ship
 				}
 			}
 		}
+	}
+	
+	public void generatePlayerHistory()
+	{
+		List<Combatant> players = gameServer.getCombatants();
+		
+		for (Iterator<Combatant> it = players.iterator() ; it.hasNext() ; ) {
+			Combatant combatant = it.next();
+			if (!(combatant instanceof Ship)) {
+				it.remove();
+			}
+		}
+		
+		players.addAll( gameServer.getFormerPlayers());
+		
+		Comparator<Combatant> comp = new Comparator<Combatant>() {
+			public int compare(Combatant o1, Combatant o2) {
+				int result = 0;
+				if (result == 0) {
+					result = safeCompare( o1.timeOn, o2.timeOn);
+				}
+				if (result == 0) {
+					result = safeCompare( o1.timeOff, o2.timeOff);
+				}
+				if (result == 0) {
+					Integer s1 = o1.getShipNumber();
+					Integer s2 = o2.getShipNumber();
+					result = s1.compareTo(s2);
+				}
+				return result;
+			}
+		};
+		
+		Collections.sort(players, comp);
+		
+		int numItems = 0;
+		
+		if (!briefMode) {
+			addMessage( String.format("SP %-20s STATUS KL   TIME ON    TIME OFF",
+										"COMMANDER"));
+		}
+		
+		SimpleDateFormat dateFmt = new SimpleDateFormat("MM/dd HH:mm");
+		
+		for (Combatant player : players) {
+			if (numItems++ > 30) break;
+			String timeOn = dateFmt.format(player.timeOn);
+			String timeOff = ( player.timeOff == null ? "" : dateFmt.format(player.timeOff));
+			addMessage( String.format("%2d %-20s %6s %2d %11s %11s", 
+							player.getShipNumber(), player.commander, player.getStatus(), 
+							player.numKills, timeOn, timeOff));
+		}
+	}
+	
+	private static int safeCompare(Date d1, Date d2)
+	{
+		if (d1 == d2) return 0;
+		if ((d1 == null) && (d2 == null)) return 0;
+		if (d1 == null) return 1;
+		if (d2 == null) return -1;
+		return d1.compareTo(d2);
 	}
 	
 	public void generateDataReadout()
