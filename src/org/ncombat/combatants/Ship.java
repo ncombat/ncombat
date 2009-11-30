@@ -454,7 +454,7 @@ public abstract class Ship extends Combatant
 	}
 	
 	public double course() {
-		return NcombatMath.degreeCourse(velocity, heading);
+		return -NcombatMath.degreeCourse(velocity, heading);
 	}
 	
 	public double course(Ship ship) {
