@@ -2,6 +2,7 @@ package org.ncombat.web;
 
 import java.util.HashMap;
 
+@SuppressWarnings("unchecked")
 public class GameStatusModel extends HashMap
 {
 	private static final String NAME_PROMPT = "ENTER YOUR NAME?";

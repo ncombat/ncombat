@@ -6,7 +6,7 @@ import java.util.List;
 public class GameStatus
 {
 	private boolean alive = true;
-	private List<String> messages = new ArrayList();
+	private List<String> messages = new ArrayList<String>();
 	private String prompt;
 	private String url;
 	

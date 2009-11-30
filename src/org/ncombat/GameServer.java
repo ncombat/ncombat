@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,10 +15,12 @@ import org.ncombat.combatants.BotShip;
 import org.ncombat.combatants.Combatant;
 import org.ncombat.combatants.GornBase;
 import org.ncombat.combatants.PlayerShip;
+import org.ncombat.combatants.Ship;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.utils.Vector;
 import org.springframework.beans.factory.DisposableBean;
 
+@SuppressWarnings("unchecked")
 public class GameServer implements DisposableBean
 {
 	public static final int NUM_BOT_SHIPS = 2;
@@ -287,7 +288,7 @@ public class GameServer implements DisposableBean
 					combatant.setGameServer(null);
 				}
 				
-				if (combatant instanceof PlayerShip) {
+				if (combatant instanceof Ship) {
 					formerPlayers.addFirst(combatant);
 					
 					int maxNumFormerPlayers = 30;

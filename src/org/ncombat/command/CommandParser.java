@@ -15,6 +15,7 @@ import java.util.regex.Pattern;
 import org.apache.log4j.Logger;
 import org.ncombat.combatants.Combatant;
 
+@SuppressWarnings("unchecked")
 public class CommandParser
 {
 	public static final double MAX_SHIELD_POWER = 25.0;
@@ -110,8 +111,6 @@ public class CommandParser
 		
 		CommandTokenizer ctok = new CommandTokenizer();
 		List<CommandText> commandTextList = ctok.parse(line);
-		
-		boolean noRegenNeeded = true;
 		
 		commandTextLoop:
 		for (CommandText cmdText : commandTextList) {

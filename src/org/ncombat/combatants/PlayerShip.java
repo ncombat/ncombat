@@ -82,9 +82,6 @@ public class PlayerShip extends Ship
 
 	public void processHelpCommand(HelpCommand cmd)
 	{
-		String[] helpText = new String[] {
-				
-		};
 	}
 
 	public void processIntelCommand(IntelCommand cmd)

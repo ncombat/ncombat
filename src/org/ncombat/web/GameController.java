@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Required;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+@SuppressWarnings("unchecked")
 public class GameController extends MultiActionController
 {
 	public static final String LOGIN_URL = "gameLogin.json";

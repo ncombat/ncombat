@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+@SuppressWarnings("unchecked")
 public class AdminController extends MultiActionController
 {
 	public ModelAndView admin(HttpServletRequest request, HttpServletResponse response) {

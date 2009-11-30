@@ -15,6 +15,7 @@ import org.ncombat.command.Command;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.utils.Vector;
 
+@SuppressWarnings("unchecked")
 public abstract class Combatant
 {
 	// Repairs begin REPAIR_WAIT_TIME seconds after damage is inflicted. 

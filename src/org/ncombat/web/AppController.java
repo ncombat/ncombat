@@ -8,6 +8,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
+@SuppressWarnings("unchecked")
 public class AppController extends MultiActionController
 {
 	public Map appTest(HttpServletRequest request, HttpServletResponse response) {
