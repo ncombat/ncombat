@@ -202,7 +202,9 @@ public abstract class Ship extends Combatant
 			
 			if (energy <= 0.0) {
 				onEnergyExhaustion();
-				return;
+				if (!alive) {
+					return;
+				}
 			}
 
 			timeLeft -= subIntervalLen;

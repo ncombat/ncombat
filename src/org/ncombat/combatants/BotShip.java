@@ -218,4 +218,22 @@ public class BotShip extends Ship
 		
 		return noRotation && noAcceleration && noHeat;
 	}
+
+	/**
+	 * It is truly and deeply annoying to go through 50 bot ships a day just
+	 * because they keep running out of power, so this override will boost the
+	 * energy of all undamaged bot ships whenever they run out. By making sure
+	 * they're undamaged, we avoid giving them the advantage of extra staying
+	 * power in a fight.
+	 */
+	@Override
+	protected void onEnergyExhaustion()
+	{
+		if (damage < 0.1) {
+			energy = 10000;
+		}
+		else {
+			super.onEnergyExhaustion();
+		}
+	}
 }
