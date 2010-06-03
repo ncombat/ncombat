@@ -18,6 +18,12 @@ import org.ncombat.utils.Vector;
 @SuppressWarnings("unchecked")
 public abstract class Combatant
 {
+	protected static class AttackResult
+	{
+		public int shieldHit;
+		public double damage;
+	}
+	
 	// Repairs begin REPAIR_WAIT_TIME seconds after damage is inflicted. 
 	private static final double REPAIR_WAIT_TIME = 40.0;
 	
@@ -52,14 +58,14 @@ public abstract class Combatant
 	
 	private int shipNumber;
 	
-	protected Vector position;
+	protected Vector position = Vector.ZERO;
 	
 	protected Vector velocity = Vector.ZERO;
 	
 	protected double energy;
-	
 	protected double damage;
 	protected double repairRate = DEFAULT_REPAIR_RATE;
+	
 	protected double repairWaitTime = REPAIR_WAIT_TIME;
 	
 	protected ShieldArray shields;
@@ -67,8 +73,8 @@ public abstract class Combatant
 	private long lastContactTime;
 	
 	private Combatant lastAttacker;
-	
 	protected Date timeOn;
+	
 	protected Date timeOff;
 	
 	public Combatant(String commander)
@@ -79,88 +85,21 @@ public abstract class Combatant
 		this.timeOn = new Date();
 	}
 	
-	public abstract void update(long updateTime);
-	
-	public void processCommands(CommandBatch commandBatch)
+	protected double addDamage(double damage)
 	{
-		setLastContactTime( commandBatch.getTimestamp());
+		double existingDamage = this.damage;
+		double newDamage = Math.min( damage, 100.0 - existingDamage);
 		
-		for (Command command : commandBatch.getCommands()) {
-			if (!alive) return;
-			
-			Class commandClass = command.getClass();
-			Method commandMethod = commandMethods.get(commandClass);
-			
-			if (commandMethod == null) {
-				String methodName = "process" + commandClass.getSimpleName();
-				
-				try {
-					Class combatantClass = this.getClass();
-					commandMethod = combatantClass.getMethod(methodName, commandClass);
-				}
-				catch (Exception e) {
-					log.error("Caught exception looking up command method " + methodName + "().");
-				}
-				
-				commandMethods.put(commandClass, commandMethod);
-			}
-			try {
-				commandMethod.invoke(this, command);
-			}
-			catch (Exception e) {
-				log.error("Caught exception invoking command method.", e);
-			}
+		this.damage += newDamage;
+		
+		if (this.damage >= 100.0) {
+			alive = false;
 		}
-	}
-	
-	public abstract void completeGameCycle();
-	
-	public int getId() {
-		return id;
-	}
-
-	public GameServer getGameServer() {
-		return gameServer;
-	}
-
-	public void setGameServer(GameServer gameServer) {
-		this.gameServer = gameServer;
-	}
-
-	public long getLastUpdateTime() {
-		return lastUpdateTime;
-	}
-
-	public void setLastUpdateTime(long lastUpdateTime) {
-		this.lastUpdateTime = lastUpdateTime;
-	}
-	
-	/**
-	 * Allows the game server or other designated authorities to set the initial
-	 * position of the combatant when it enters the combat zone.
-	 */
-	public void setPosition(Vector position) {
-		this.position = position;
-	}
-	
-	/**
-	 * Allows the game server or other designated authorities to set the initial
-	 * velocity of the combatant when it enters the combat zone.
-	 */
-	public void setVelocity(Vector velocity) {
-		this.velocity = velocity;
-	}
-	
-	public ShieldArray getShields() {
-		return shields;
-	}
-	
-	public long getLastContactTime() {
-		return lastContactTime;
-	}
-
-	public void setLastContactTime(long lastContactTime) {
-		this.lastContactTime = lastContactTime;
+		else {
+			this.repairWaitTime = REPAIR_WAIT_TIME;
+		}
+		
+		return newDamage;
 	}
 	
 	public void addMessage(String message) {
@@ -174,7 +113,15 @@ public abstract class Combatant
 			this.messages.addAll(messages);
 		}
 	}
-	
+
+	public void clearMessages() {
+		synchronized (messages) {
+			messages.clear();
+		}
+	}
+
+	public abstract void completeGameCycle();
+
 	public List<String> drainMessages() {
 		ArrayList<String> drainedMessages = null;
 		synchronized (messages) {
@@ -183,31 +130,56 @@ public abstract class Combatant
 		}
 		return drainedMessages;
 	}
-	
-	public void clearMessages() {
-		synchronized (messages) {
-			messages.clear();
-		}
+
+	public String getCommander() {
+		return commander;
 	}
 	
-	public int numMessages() {
-		synchronized (messages) {
-			return messages.size();
-		}
+	public GameServer getGameServer() {
+		return gameServer;
 	}
 	
-	public void markExhausted()
+	public int getId() {
+		return id;
+	}
+	
+	public Combatant getLastAttacker() {
+		return lastAttacker;
+	}
+	
+	public long getLastContactTime() {
+		return lastContactTime;
+	}
+
+	public long getLastUpdateTime() {
+		return lastUpdateTime;
+	}
+	
+	public ShieldArray getShields() {
+		return shields;
+	}
+	
+	public int getShipNumber() {
+		return shipNumber;
+	}
+	
+	public String getStatus() {
+		return status;
+	}
+	
+	public boolean isAlive() {
+		return alive;
+	}
+	
+	private void markDead(String status)
 	{
-		String msg = "Ship " + shipNumber + " - " + commander
-						+ " commanding, just lost all power.";
-		gameServer.sendMessage(msg, shipNumber);
-		addMessage("Your ship has lost all power.");
-		markDead("LPR");
-	}
-	
-	public void markDestroyedByEngineOverload() {
-		addMessage("Your ship has been destroyed.");		
-		markDead("DEO");
+		this.status = status;
+		this.alive = false;
+		this.timeOff = new Date();
+		
+		if (gameServer != null) {
+			gameServer.removeCombatant(this);
+		}
 	}
 	
 	public void markDestroyed(Combatant killer)
@@ -234,6 +206,20 @@ public abstract class Combatant
 		markDead(status);
 	}
 	
+	public void markDestroyedByEngineOverload() {
+		addMessage("Your ship has been destroyed.");		
+		markDead("DEO");
+	}
+	
+	public void markExhausted()
+	{
+		String msg = "Ship " + shipNumber + " - " + commander
+						+ " commanding, just lost all power.";
+		gameServer.sendMessage(msg, shipNumber);
+		addMessage("Your ship has lost all power.");
+		markDead("LPR");
+	}
+	
 	public void markHungUp()
 	{
 		String msg = "The crew of ship " + shipNumber + " - " + commander
@@ -242,94 +228,12 @@ public abstract class Combatant
 		markDead("HNG");
 	}
 	
-	private void markDead(String status)
-	{
-		this.status = status;
-		this.alive = false;
-		this.timeOff = new Date();
-		
-		if (gameServer != null) {
-			gameServer.removeCombatant(this);
-		}
-	}
-	
 	// if player logs out normally, no one gets credit for a kill.
 	public void markStopCommand()
 	{
 		String msg = "Commander " + commander + " quit the game.";
 		gameServer.sendMessage(msg);
 		markDead("DDS");
-	}
-	
-	public int getShipNumber() {
-		return shipNumber;
-	}
-
-	public void setShipNumber(int shipNumber) {
-		this.shipNumber = shipNumber;
-	}
-
-	public boolean isAlive() {
-		return alive;
-	}
-
-	public String getStatus() {
-		return status;
-	}
-
-	public void setStatus(String status) {
-		this.status = status;
-	}
-	
-	public String getCommander() {
-		return commander;
-	}
-	
-	public Combatant getLastAttacker() {
-		return lastAttacker;
-	}
-
-	public void setLastAttacker(Combatant lastAttacker) {
-		this.lastAttacker = lastAttacker;
-	}
-	
-	protected double addDamage(double damage)
-	{
-		double existingDamage = this.damage;
-		double newDamage = Math.min( damage, 100.0 - existingDamage);
-		
-		this.damage += newDamage;
-		
-		if (this.damage >= 100.0) {
-			alive = false;
-		}
-		else {
-			this.repairWaitTime = REPAIR_WAIT_TIME;
-		}
-		
-		return newDamage;
-	}
-	
-	protected static class AttackResult
-	{
-		public int shieldHit;
-		public double damage;
-	}
-	
-	protected abstract AttackResult onLaserHit(Combatant attacker, double power);
-	
-	protected abstract AttackResult onMissileHit(Combatant attacker);
-	
-	public void processKill(Combatant killed) {
-		this.numKills++;
-	}
-	
-	public double range(Combatant combatant) {
-		return position.subtract(combatant.position).r();
-	}
-	
-	public double speed(Combatant ship) {
-		return ship.velocity.r();
 	}
 	
 	public Combatant nearest() {
@@ -341,4 +245,101 @@ public abstract class Combatant
 		if (gameServer == null) return Double.NaN;
 		return gameServer.nearestRange(this);
 	}
+
+	public int numMessages() {
+		synchronized (messages) {
+			return messages.size();
+		}
+	}
+
+	protected abstract AttackResult onLaserHit(Combatant attacker, double power);
+
+	protected abstract AttackResult onMissileHit(Combatant attacker);
+
+	public void processCommands(CommandBatch commandBatch)
+	{
+		setLastContactTime( commandBatch.getTimestamp());
+		
+		for (Command command : commandBatch.getCommands()) {
+			if (!alive) return;
+			
+			Class commandClass = command.getClass();
+			
+			Method commandMethod = commandMethods.get(commandClass);
+			
+			if (commandMethod == null) {
+				String methodName = "process" + commandClass.getSimpleName();
+				try {
+					Class combatantClass = this.getClass();
+					commandMethod = combatantClass.getMethod(methodName, commandClass);
+				}
+				catch (Exception e) {
+					log.error("Caught exception looking up command method " + methodName + "().");
+				}
+				
+				commandMethods.put(commandClass, commandMethod);
+			}
+			try {
+				commandMethod.invoke(this, command);
+			}
+			catch (Exception e) {
+				log.error("Caught exception invoking command method.", e);
+			}
+		}
+	}
+	
+	public void processKill(Combatant killed) {
+		this.numKills++;
+	}
+	
+	public double range(Combatant combatant) {
+		return position.subtract(combatant.position).r();
+	}
+
+	public void setGameServer(GameServer gameServer) {
+		this.gameServer = gameServer;
+	}
+	
+	public void setLastAttacker(Combatant lastAttacker) {
+		this.lastAttacker = lastAttacker;
+	}
+	
+	public void setLastContactTime(long lastContactTime) {
+		this.lastContactTime = lastContactTime;
+	}
+	
+	public void setLastUpdateTime(long lastUpdateTime) {
+		this.lastUpdateTime = lastUpdateTime;
+	}
+	
+	/**
+	 * Allows the game server or other designated authorities to set the initial
+	 * position of the combatant when it enters the combat zone.
+	 */
+	public void setPosition(Vector pos) {
+		this.position = pos;
+		log.debug("# " + this.id + " / " + this.commander + " position set to " + this.position.x() + " / " + this.position.y());
+	}
+	
+	public void setShipNumber(int shipNumber) {
+		this.shipNumber = shipNumber;
+	}
+	
+	public void setStatus(String status) {
+		this.status = status;
+	}
+	
+	/**
+	 * Allows the game server or other designated authorities to set the initial
+	 * velocity of the combatant when it enters the combat zone.
+	 */
+	public void setVelocity(Vector velocity) {
+		this.velocity = velocity;
+	}
+	
+	public double speed(Combatant ship) {
+		return ship.velocity.r();
+	}
+	
+	public abstract void update(long updateTime);
 }

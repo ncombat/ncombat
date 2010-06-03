@@ -2,12 +2,14 @@ package org.ncombat.combatants;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Random;
 
 import org.apache.log4j.Logger;
 import org.ncombat.command.AccelerateCommand;
 import org.ncombat.command.Command;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.command.LaserCommand;
+import org.ncombat.command.MessageCommand;
 import org.ncombat.command.MissileCommand;
 import org.ncombat.command.RotateCommand;
 import org.ncombat.command.ShieldCommand;
@@ -17,14 +19,16 @@ import org.ncombat.utils.Vector;
 
 public class BotShip extends Ship
 {
+	private enum State {
+		HEADING_IN,
+		NORMAL,
+		STARTING_TO_HEAD_IN,
+		STARTING_TO_STOP,
+		STOPPING
+	}
+	
 	// Length of time between command generation cycles (seconds).
 	private static final double CYCLE_LEN = 60.0;
-	
-	/*
-	 * Shields will snap on if any combatants come within SHIELD_SNAP_RANGE
-	 * kilometers.
-	 */
-	private static final double SHIELD_SNAP_RANGE = 20000.0;
 	
 	/*
 	 * Bot ship will attack a vessel that comes within ENGAGEMENT_RANGE
@@ -38,35 +42,24 @@ public class BotShip extends Ship
 	 */
 	private static final double NORMAL_RADIUS = 30000.0;
 	
-	private enum State {
-		NORMAL,
-		STARTING_TO_STOP,
-		STOPPING,
-		STARTING_TO_HEAD_IN,
-		HEADING_IN
-	}
+	/*
+	 * Shields will snap on if any combatants come within SHIELD_SNAP_RANGE
+	 * kilometers.
+	 */
+	private static final double SHIELD_SNAP_RANGE = 20000.0;
 	
-	private State state = State.NORMAL;
-	
-	private Logger log = Logger.getLogger(BotShip.class);
+	private LinkedList<Command> commandQueue = new LinkedList<Command>();
 	
 	private double cycleTimeLeft = CYCLE_LEN;
 	
-	private LinkedList<Command> commandQueue = new LinkedList<Command>();
+	private Logger log = Logger.getLogger(BotShip.class);
+	
+	private State state = State.NORMAL;
 	
 	public BotShip(String commander) {
 		super(commander);
 	}
 	
-	@Override
-	public void update(long updateTime) {
-		super.update(updateTime);
-		
-		long intervalLong = updateTime - getLastUpdateTime();
-		double intervalLen = (double)(intervalLong / 1000);
-		cycleTimeLeft = Math.max(cycleTimeLeft - intervalLen, 0.0);
-	}
-
 	@Override
 	public void completeGameCycle()
 	{
@@ -120,6 +113,8 @@ public class BotShip extends Ship
 						MissileCommand missileCmd = new MissileCommand(nearest.getShipNumber());
 						batch.addCommand(missileCmd);
 					}
+					
+					trashTalk(nearest);
 					
 					cycleTimeLeft = CYCLE_LEN;
 				}
@@ -209,15 +204,6 @@ public class BotShip extends Ship
 			gameServer.addCommandBatch(batch);
 		}
 	}
-	
-	private boolean quiet()
-	{
-		boolean noRotation = ( getRotationTime() <= 0.0);
-		boolean noAcceleration = ( getAccelTime() <= 0.0);
-		boolean noHeat = (engineHeat <= 0.0);
-		
-		return noRotation && noAcceleration && noHeat;
-	}
 
 	/**
 	 * It is truly and deeply annoying to go through 50 bot ships a day just
@@ -235,5 +221,47 @@ public class BotShip extends Ship
 		else {
 			super.onEnergyExhaustion();
 		}
+	}
+	public void processMessageCommand(MessageCommand cmd)
+	{
+		// thanks for the share but the bot does not care
+		;
+	}
+	
+	private boolean quiet()
+	{
+		boolean noRotation = ( getRotationTime() <= 0.0);
+		boolean noAcceleration = ( getAccelTime() <= 0.0);
+		boolean noHeat = (engineHeat <= 0.0);
+		
+		return noRotation && noAcceleration && noHeat;
+	}
+
+	/**
+	 * Taunt the player
+	 */
+	private void trashTalk(Combatant opponent) {
+		
+		String[] taunts = {
+				"Fear my wrath.",
+				"I find your lack of win disturbing.", 
+				"Liberate tutemet ex infernis!",
+				"Are you gonna bark all day, little doggie, or are you gonna bite?"};
+		
+		if (opponent instanceof PlayerShip) {
+			if (Math.random() > 0.75)  {
+				getGameServer().sendMessage(opponent.getShipNumber(),"\nMessage from " + this.commander + " :  " + taunts[new Random().nextInt(taunts.length-1)]+ "\n");
+			}
+		}
+		
+	}
+
+	@Override
+	public void update(long updateTime) {
+		super.update(updateTime);
+		
+		long intervalLong = updateTime - getLastUpdateTime();
+		double intervalLen = (double)(intervalLong / 1000);
+		cycleTimeLeft = Math.max(cycleTimeLeft - intervalLen, 0.0);
 	}
 }

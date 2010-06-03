@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.log4j.Logger;
+import org.ncombat.GameServer;
 import org.ncombat.combatants.Combatant;
 
 public class CommandBatch
@@ -12,6 +14,8 @@ public class CommandBatch
 	private Combatant combatant;
 	private List<Command> commands = new ArrayList<Command>();
 	private boolean regenStatusReadout;
+	
+	
 	
 	public CommandBatch(long timestamp, Combatant combatant) {
 		this.timestamp = timestamp;

@@ -17,9 +17,6 @@ public class Vector
 	private static final double PI = Math.PI;
 	private static final double TWO_PI = 2.0 * Math.PI;
 	
-	private double x;
-	private double y;
-	
 	/**
 	 * Constructs a vector using the specified coordinates, where theta is
 	 * expressed in radians.
@@ -27,7 +24,6 @@ public class Vector
 	public static Vector polar(double r, double theta) {
 		return new Vector( r * Math.cos(theta), r * Math.sin(theta));
 	}
-	
 	/**
 	 * Constructs a vector using the specified coordinates, where theta is
 	 * expressed in radians.
@@ -35,22 +31,6 @@ public class Vector
 	public static Vector polarDegrees(double r, double theta) {
 		double thetaDegrees = Math.toRadians(theta);
 		return polar(r, thetaDegrees);
-	}
-	
-	/**
-	 * Constructs a unit vector with the orientation expressed in radians.
-	 */
-	public static Vector unit(double theta) {
-		double x = Math.cos(theta);
-		double y = Math.sin(theta);
-		return new Vector(x,y);
-	}
-	
-	/**
-	 * Constructs a unit vector with the orientation expressed in degrees.
-	 */
-	public static Vector unitDegrees(double theta) {
-		return unit(Math.toRadians(theta));
 	}
 	
 	/*
@@ -69,7 +49,7 @@ public class Vector
 		
 		return angle;
 	}
-
+	
 	/*
 	 * Returns the angle equivalent to the given angle (in degrees) and within
 	 * the interval -180 (exclusive) to 180 (inclusive).
@@ -88,6 +68,26 @@ public class Vector
 	}
 	
 	/**
+	 * Constructs a unit vector with the orientation expressed in radians.
+	 */
+	public static Vector unit(double theta) {
+		double x = Math.cos(theta);
+		double y = Math.sin(theta);
+		return new Vector(x,y);
+	}
+	
+	/**
+	 * Constructs a unit vector with the orientation expressed in degrees.
+	 */
+	public static Vector unitDegrees(double theta) {
+		return unit(Math.toRadians(theta));
+	}
+	
+	private double x;
+
+	private double y;
+	
+	/**
 	 * Constructs a zero vector.
 	 */
 	public Vector() {
@@ -99,14 +99,6 @@ public class Vector
 	public Vector(double x, double y) {
 		this.x = x;
 		this.y = y;
-	}
-	
-	/**
-	 * Returns the magnitude of this vector, often denoted as <code>r</code> in
-	 * polar coordinates.
-	 */
-	public double r() {
-		return Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2));
 	}
 	
 	/**
@@ -137,13 +129,13 @@ public class Vector
 		return Math.toDegrees(this.angle(that));
 	}
 	
-	
 	/**
 	 * Returns the component of this vector in a given direction.
 	 */
 	public double comp(Vector dir) {
 		return this.dot(dir.unit());
 	}
+	
 	
 	/**
 	 * Returns the perpendicular distance to a vector.
@@ -175,20 +167,6 @@ public class Vector
 		return ((this.x == that.x) && (this.y == that.y));
 	}
 	
-	/**
-	 * Returns the x coordinate of this vector.
-	 */
-	public double x() {
-		return x;
-	}
-	
-	/**
-	 * Returns the y coordinate of this vector.
-	 */
-	public double y() {
-		return y;
-	}
-
 	@Override
 	public int hashCode()
 	{
@@ -200,14 +178,14 @@ public class Vector
 		
 		return xhash ^ yhash;
 	}
-
+	
 	/**
 	 * Returns whether or not any component of this vector is infinite.
 	 */
 	public boolean isInfinite() {
 		return (Double.isInfinite(x) || Double.isInfinite(y));
 	}
-
+	
 	/**
 	 * Returns whether or not any component of this vector is not a number
 	 * (NaN).
@@ -232,14 +210,22 @@ public class Vector
 	public Vector negate() {
 		return new Vector(-this.x, -this.y);
 	}
-	
+
 	/**
 	 * Returns the projection of this vector onto another vector.
 	 */
 	public Vector proj(Vector that) {
 		return that.unit().multiply( this.comp(that)); 
 	}
-	
+
+	/**
+	 * Returns the magnitude of this vector, often denoted as <code>r</code> in
+	 * polar coordinates.
+	 */
+	public double r() {
+		return Math.sqrt(Math.pow(x, 2.0) + Math.pow(y, 2));
+	}
+
 	/**
 	 * Returns the difference between this vector and another vector.
 	 */
@@ -248,18 +234,6 @@ public class Vector
 		double diffx = this.x - that.x;
 		double diffy = this.y - that.y;
 		return new Vector(diffx, diffy);
-	}
-	
-	@Override
-	public String toString() {
-		return "[" + x + "," + y + "]";
-	}
-	
-	/**
-	 * Returns the unit vector in the same direction as this vector.
-	 */
-	public Vector unit() {
-		return divide(r());
 	}
 	
 	/**
@@ -276,6 +250,32 @@ public class Vector
 	 */
 	public double thetaDegrees() {
 		return Math.toDegrees( theta());
+	}
+	
+	@Override
+	public String toString() {
+		return "[" + x + "," + y + "]";
+	}
+	
+	/**
+	 * Returns the unit vector in the same direction as this vector.
+	 */
+	public Vector unit() {
+		return divide(r());
+	}
+	
+	/**
+	 * Returns the x coordinate of this vector.
+	 */
+	public double x() {
+		return x;
+	}
+	
+	/**
+	 * Returns the y coordinate of this vector.
+	 */
+	public double y() {
+		return y;
 	}
 
 }

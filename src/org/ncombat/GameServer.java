@@ -23,6 +23,14 @@ import org.springframework.beans.factory.DisposableBean;
 @SuppressWarnings("unchecked")
 public class GameServer implements DisposableBean
 {
+	public class GameServerTimerTask extends TimerTask
+	{
+		@Override
+		public void run() {
+			runGameCycle();
+		}
+	}
+	
 	public static final int NUM_BOT_SHIPS = 2;
 	
 	public static final int NUM_GORN_BASES = 4;
@@ -38,13 +46,20 @@ public class GameServer implements DisposableBean
 	
 	private static final long BOT_SHIP_REGEN_TIME = 60000; // milliseconds
 	
+	private static final long GORN_BASE_REGEN_TIME  = 180000; // milliseconds
+	
+	
 	/*
 	 * Shields snap on automatically when joining the game if there is another
 	 * combatant within SHIELD_SNAP_RANGE kilometers.
 	 */
-	private static final double SHIELD_SNAP_RANGE = 20000;
+	private static final double SHIELD_SNAP_RANGE = 20000; 
 	
-	private static int nextBotShipNum = 1; 
+	private static int nextBotShipNum = 1;
+	
+	private static final long PLAYER_SYNC_TIMEOUT = 5000; // milliseconds
+	
+	private static int nextServerNumber = 1;
 	
 	private static Vector randomPosition()
 	{
@@ -64,33 +79,29 @@ public class GameServer implements DisposableBean
 		return velocity;
 	}
 	
-	private static final long PLAYER_SYNC_TIMEOUT = 5000; // milliseconds
-	
-	private static int nextServerNumber = 1;
-	
 	private Logger log = Logger.getLogger(GameServer.class);
 	
 	private GameManager gameManager;
-	
 	private int serverNumber;
 	private Timer timer;
 	private GameServerTimerTask timerTask;
 	private long cyclePeriod = DEFAULT_CYCLE_PERIOD;
-	private boolean started;
 	
 	//------------------------------------------------------------
 	// The following variables are protected by the cycle monitor.
 	//------------------------------------------------------------
 	
+	private boolean started;
 	private Object cycleMonitor = new Object();
 	private boolean paused;
 	private Map<Integer,Combatant> combatants = new HashMap<Integer,Combatant>();
 	private LinkedList<Combatant> formerPlayers = new LinkedList<Combatant>();
-	private List<CommandBatch> commandBatches = new ArrayList<CommandBatch>();
 	
 	//-------------------------------------------------
 	// End of variables protected by the cycle monitor.
 	//-------------------------------------------------
+	
+	private List<CommandBatch> commandBatches = new ArrayList<CommandBatch>();
 	
 	/*
 	 * This object is used by the GameController to synchronize the game cycle
@@ -100,7 +111,7 @@ public class GameServer implements DisposableBean
 	 * messages and accept the next round of commands.
 	 */
 	private Object playerSyncMonitor = new Object();
-	
+
 	public GameServer(GameManager gameManager)
 	{
 		this.gameManager = gameManager;
@@ -126,9 +137,251 @@ public class GameServer implements DisposableBean
 		timer = new Timer("GameServer" + serverNumber, true);
 		timerTask = new GameServerTimerTask();
 	}
+	
+	public int addCombatant(Combatant combatant)
+	{
+		synchronized (cycleMonitor) {
+			for (int shipNum = 1 ; shipNum <= 15 ; shipNum++){
+				if (!combatants.containsKey(shipNum)) {
+					addCombatant(shipNum, combatant);
+					return shipNum;
+				}
+			}
+		}
+		
+		return 0;
+	}
+	
+	public void addCombatant(int shipNumber, Combatant combatant) {
+		synchronized (cycleMonitor) {
+			combatant.setShipNumber(shipNumber);
+			combatant.setGameServer(this);
+			combatant.setLastUpdateTime(System.currentTimeMillis());
+			combatants.put(shipNumber, combatant);
+			
+			String fmt = "Ship %d - %s commanding, just appeared.";
+			sendMessage( String.format(fmt, shipNumber, 
+							combatant.getCommander()), shipNumber);
+		}
+	}
 
+	public void addCommandBatch(CommandBatch commandBatch) {
+		synchronized (cycleMonitor) {
+			commandBatches.add(commandBatch);
+		}
+	}
+	
+	private void createBotShip()
+	{
+		Vector position = randomPosition();
+		Vector velocity = randomVelocity();
+		double heading = velocity.theta();
+	
+		BotShip botShip = new BotShip("Bot Ship #" + nextBotShipNum++);
+		botShip.setPosition(position);
+		botShip.setVelocity(velocity);
+		botShip.setHeading(heading);
+	
+		addCombatant(botShip);
+	}
+	
+	void createGornBase(int baseNum)
+	{
+		if ((baseNum <= 0) || (baseNum > NUM_GORN_BASES)) {
+			log.error("Invalid Gorn base number: " + baseNum);
+			return;
+		}
+		
+		GornBase gorn = new GornBase("Gorn Base " + baseNum);
+
+		// Determine position on the ring of Gorn bases.
+		double theta = 90.0 - ((360.0 / NUM_GORN_BASES) * (baseNum - 1));
+		Vector position = Vector.polarDegrees(GORN_BASE_RADIUS, theta);
+		log.debug("Setting Gorn " + baseNum + " position with vector " + position);
+		gorn.setPosition(position);
+		
+		addCombatant(20 + baseNum, gorn);
+	}
+
+	public PlayerShip createPlayerShip(String commander)
+	{
+		PlayerShip ship = new PlayerShip(commander);
+		ship.setPosition( randomPosition());
+		
+		if ( addCombatant(ship) == 0) {
+			return null;
+		}
+		
+		if ( ship.nearestRange() <= SHIELD_SNAP_RANGE) {
+			ShipShieldArray shields = (ShipShieldArray) ship.getShields();
+			shields.setPower(1, 25.0);
+			shields.setPower(2, 25.0);
+		}
+		
+		ship.generateShipRoster();
+		ship.generateDataReadout();
+		
+		return ship;
+	}
+	
 	public void destroy() throws Exception {
 		stop();
+	}
+
+	private List<CommandBatch> drainCommandBatches() {
+		synchronized (cycleMonitor) {
+			List<CommandBatch> drainedBatches = new ArrayList(commandBatches);
+			commandBatches.clear();
+			return drainedBatches;
+		}
+	}
+	
+	public Combatant getCombatant(int shipNum) {
+		synchronized (cycleMonitor) {
+			return combatants.get(shipNum);
+		}
+	}
+	
+	public List<Combatant> getCombatants()
+	{
+		List<Combatant> results = null;
+		
+		synchronized (cycleMonitor) {
+			results = new ArrayList<Combatant>( combatants.values());
+		}
+		
+		Collections.sort(results, new Comparator<Combatant>() {
+			public int compare(Combatant o1, Combatant o2) {
+				Integer s1 = o1.getShipNumber();
+				Integer s2 = o2.getShipNumber();
+				
+				// list Gorns last
+				if ((o1 instanceof PlayerShip) && (o2 instanceof GornBase)) { return  -1; }
+				
+				else if ((o1 instanceof GornBase) && (o2 instanceof PlayerShip)) { return  1; }
+				
+				else { 
+					return s1.compareTo(s2);
+				}
+			}
+		});
+		
+		return results;
+	}
+	
+	public long getCyclePeriod() {
+		return cyclePeriod;
+	}
+	
+	public List<Combatant> getFormerPlayers()
+	{
+		synchronized (cycleMonitor) {
+			return new ArrayList<Combatant>(formerPlayers);
+		}
+	}
+	
+	public boolean isPaused() {
+		synchronized (cycleMonitor) {
+			return paused;
+		}
+	}
+	
+	public Combatant nearest(Combatant combatant)
+	{
+		Combatant nearest = null;
+		double nearestRange = 0.0;
+		
+		for (Combatant aCombatant : getCombatants()) {
+			if (aCombatant == combatant) continue;
+			double range = combatant.range(aCombatant);
+			if ((nearest == null) || (range < nearestRange)) {
+				nearest = aCombatant;
+				nearestRange = range;
+			}
+		}
+		
+		return nearest;
+	}
+	
+	public double nearestRange(Combatant combatant)
+	{
+		Combatant nearest = nearest(combatant);
+		if (nearest == null) return Double.NaN;
+		return combatant.range(nearest);
+	}
+	
+	private void notifyPlayers()
+	{
+		synchronized (playerSyncMonitor) {
+			playerSyncMonitor.notifyAll();
+		}
+	}
+	
+	public void playerSync()
+	{
+		synchronized (playerSyncMonitor) {
+			try {
+				playerSyncMonitor.wait(PLAYER_SYNC_TIMEOUT);
+			}
+			catch (InterruptedException e) {
+				log.warn("playerSync() caught exception.", e);
+			}
+		}
+	}
+	
+	public void removeCombatant(Combatant combatant)
+	{
+		int regenTime=0;
+		
+		synchronized (cycleMonitor) {
+			if ( combatant.getGameServer() == this) {
+				int shipNumber = combatant.getShipNumber();
+				
+				if (combatants.containsKey(shipNumber)) {
+					combatants.remove(shipNumber);
+					combatant.setGameServer(null);
+				}
+				
+				if (combatant instanceof Ship) {
+					formerPlayers.addFirst(combatant);
+					
+					int maxNumFormerPlayers = 30;
+					for ( int numFormerPlayers = formerPlayers.size() ;
+						  numFormerPlayers > maxNumFormerPlayers ;
+						  numFormerPlayers--)
+					{
+						formerPlayers.removeLast();
+						gameManager.removeCombatant(combatant);
+					}
+				}
+				
+				if (combatant instanceof BotShip) {
+					TimerTask regenTask = new TimerTask() {
+						public void run() {
+							synchronized (cycleMonitor) {
+								createBotShip();
+							}
+						}
+					};
+					timer.schedule(regenTask, BOT_SHIP_REGEN_TIME);
+				}
+				
+				if (combatant instanceof GornBase) {
+					
+					final int gornNum = combatant.getId();
+					
+					TimerTask regenTask = new TimerTask() {
+						public void run() {
+							synchronized (cycleMonitor) {
+								createGornBase(gornNum);
+							}
+						}
+					};
+					timer.schedule(regenTask, GORN_BASE_REGEN_TIME);
+				}
+				
+			}
+		}
 	}
 	
 	private void runGameCycle()
@@ -184,188 +437,10 @@ public class GameServer implements DisposableBean
 		// log.debug("Exiting game cycle.");
 	}
 	
-	public boolean isPaused() {
-		synchronized (cycleMonitor) {
-			return paused;
-		}
-	}
-
-	public void setPaused(boolean paused) {
-		synchronized (cycleMonitor) {
-			this.paused = paused;
-		}
-	}
-	
-	private void createGornBase(int baseNum)
-	{
-		if ((baseNum <= 0) || (baseNum > NUM_GORN_BASES)) {
-			log.error("Invalid Gorn base number: " + baseNum);
-			return;
-		}
-		
-		GornBase gorn = new GornBase("Gorn Base " + baseNum);
-
-		// Determine its position on the ring of Gorn bases.
-		double theta = 90.0 - ((360.0 / NUM_GORN_BASES) * (baseNum - 1));
-		Vector position = Vector.polarDegrees(GORN_BASE_RADIUS, theta);
-		gorn.setPosition(position);
-		
-		int shipNumber = 20 + baseNum;
-		
-		addCombatant(shipNumber, gorn);
-	}
-	
-	public PlayerShip createPlayerShip(String commander)
-	{
-		PlayerShip ship = new PlayerShip(commander);
-		ship.setPosition( randomPosition());
-		
-		if ( addCombatant(ship) == 0) {
-			return null;
-		}
-		
-		if ( ship.nearestRange() <= SHIELD_SNAP_RANGE) {
-			ShipShieldArray shields = (ShipShieldArray) ship.getShields();
-			shields.setPower(1, 25.0);
-			shields.setPower(2, 25.0);
-		}
-		
-		ship.generateShipRoster();
-		ship.generateDataReadout();
-		
-		return ship;
-	}
-
-	private void createBotShip()
-	{
-		Vector position = randomPosition();
-		Vector velocity = randomVelocity();
-		double heading = velocity.theta();
-	
-		BotShip botShip = new BotShip("Bot Ship #" + nextBotShipNum++);
-		botShip.setPosition(position);
-		botShip.setVelocity(velocity);
-		botShip.setHeading(heading);
-	
-		addCombatant(botShip);
-	}
-	
-	public int addCombatant(Combatant combatant)
-	{
-		synchronized (cycleMonitor) {
-			for (int shipNum = 1 ; shipNum <= 15 ; shipNum++){
-				if (!combatants.containsKey(shipNum)) {
-					addCombatant(shipNum, combatant);
-					return shipNum;
-				}
-			}
-		}
-		
-		return 0;
-	}
-
-	public void addCombatant(int shipNumber, Combatant combatant) {
-		synchronized (cycleMonitor) {
-			combatant.setShipNumber(shipNumber);
-			combatant.setGameServer(this);
-			combatant.setLastUpdateTime(System.currentTimeMillis());
-			combatants.put(shipNumber, combatant);
-			
-			String fmt = "Ship %d - %s commanding, just appeared.";
-			sendMessage( String.format(fmt, shipNumber, 
-							combatant.getCommander()), shipNumber);
-		}
-	}
-	
-	public void removeCombatant(Combatant combatant)
-	{
-		synchronized (cycleMonitor) {
-			if ( combatant.getGameServer() == this) {
-				int shipNumber = combatant.getShipNumber();
-				
-				if (combatants.containsKey(shipNumber)) {
-					combatants.remove(shipNumber);
-					combatant.setGameServer(null);
-				}
-				
-				if (combatant instanceof Ship) {
-					formerPlayers.addFirst(combatant);
-					
-					int maxNumFormerPlayers = 30;
-					for ( int numFormerPlayers = formerPlayers.size() ;
-						  numFormerPlayers > maxNumFormerPlayers ;
-						  numFormerPlayers--)
-					{
-						formerPlayers.removeLast();
-						gameManager.removeCombatant(combatant);
-					}
-				}
-				
-				if (combatant instanceof BotShip) {
-					TimerTask regenTask = new TimerTask() {
-						public void run() {
-							synchronized (cycleMonitor) {
-								createBotShip();
-							}
-						}
-					};
-					
-					timer.schedule(regenTask, BOT_SHIP_REGEN_TIME);
-				}
-			}
-		}
-	}
-	
-	public Combatant getCombatant(int shipNum) {
-		synchronized (cycleMonitor) {
-			return combatants.get(shipNum);
-		}
-	}
-	
-	public List<Combatant> getCombatants()
-	{
-		List<Combatant> results = null;
-		
-		synchronized (cycleMonitor) {
-			results = new ArrayList<Combatant>( combatants.values());
-		}
-		
-		Collections.sort(results, new Comparator<Combatant>() {
-			public int compare(Combatant o1, Combatant o2) {
-				Integer s1 = o1.getShipNumber();
-				Integer s2 = o2.getShipNumber();
-				return s1.compareTo(s2);
-			}
-		});
-		
-		return results;
-	}
-	
-	public List<Combatant> getFormerPlayers()
-	{
-		synchronized (cycleMonitor) {
-			return new ArrayList<Combatant>(formerPlayers);
-		}
-	}
-	
-	public void addCommandBatch(CommandBatch commandBatch) {
-		synchronized (cycleMonitor) {
-			commandBatches.add(commandBatch);
-		}
-	}
-	
-	private List<CommandBatch> drainCommandBatches() {
-		synchronized (cycleMonitor) {
-			List<CommandBatch> drainedBatches = new ArrayList(commandBatches);
-			commandBatches.clear();
-			return drainedBatches;
-		}
-	}
-	
 	public void sendMessage(int shipNum, String message) {
 		synchronized (cycleMonitor) {
 			Combatant combatant = combatants.get(shipNum);
-			if (combatant != null) {
+			if ((combatant != null) && (combatant instanceof PlayerShip)) {
 				combatant.addMessage(message);
 			}
 		}
@@ -385,49 +460,16 @@ public class GameServer implements DisposableBean
 		}
 	}
 	
-	public void playerSync()
-	{
-		synchronized (playerSyncMonitor) {
-			try {
-				playerSyncMonitor.wait(PLAYER_SYNC_TIMEOUT);
-			}
-			catch (InterruptedException e) {
-				log.warn("playerSync() caught exception.", e);
-			}
+	public void setCyclePeriod(long cyclePeriod) {
+		this.cyclePeriod = cyclePeriod;
+	}
+	
+	public void setPaused(boolean paused) {
+		synchronized (cycleMonitor) {
+			this.paused = paused;
 		}
 	}
-	
-	private void notifyPlayers()
-	{
-		synchronized (playerSyncMonitor) {
-			playerSyncMonitor.notifyAll();
-		}
-	}
-	
-	public Combatant nearest(Combatant combatant)
-	{
-		Combatant nearest = null;
-		double nearestRange = 0.0;
-		
-		for (Combatant aCombatant : getCombatants()) {
-			if (aCombatant == combatant) continue;
-			double range = combatant.range(aCombatant);
-			if ((nearest == null) || (range < nearestRange)) {
-				nearest = aCombatant;
-				nearestRange = range;
-			}
-		}
-		
-		return nearest;
-	}
-	
-	public double nearestRange(Combatant combatant)
-	{
-		Combatant nearest = nearest(combatant);
-		if (nearest == null) return Double.NaN;
-		return combatant.range(nearest);
-	}
-	
+
 	public synchronized void start()
 	{
 		if (started) return;
@@ -440,21 +482,5 @@ public class GameServer implements DisposableBean
 		if (!started) return;
 		timerTask.cancel();
 		started = false;
-	}
-	
-	public long getCyclePeriod() {
-		return cyclePeriod;
-	}
-
-	public void setCyclePeriod(long cyclePeriod) {
-		this.cyclePeriod = cyclePeriod;
-	}
-	
-	public class GameServerTimerTask extends TimerTask
-	{
-		@Override
-		public void run() {
-			runGameCycle();
-		}
 	}
 }

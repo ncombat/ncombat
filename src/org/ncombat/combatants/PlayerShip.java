@@ -82,6 +82,33 @@ public class PlayerShip extends Ship
 
 	public void processHelpCommand(HelpCommand cmd)
 	{
+			// list out the commands
+		addMessage("HELP COMMAND LISTING =======");
+		addMessage("AX,Y ACCELERATE FROM -5 TO 5 KM/SEC^2. (X) FOR FROM 0 TO 300 SECONDS OF ACCELERATION. (Y)");
+		addMessage("B - DELETES HEADERS TO SPEED PRINTOUT.");
+		addMessage("E - SEND MESSAGES, \\X SENDS PRIVATE MESSAGE TO SHIP X.");
+		addMessage("F - FULL POWER TO BOTH SHIELDS.");
+		addMessage("G - SENSOR RANGE ADJUSTMENT. GX ");
+		addMessage("H - GIVES A BRIEF LIST OF COMMANDS.");
+		addMessage("I - INTELLIGENCE COMMAND. IX,Y  HERE ARE THE SUBCOMMANDS:");
+		addMessage("    1,N. PRINT ROTATION AND SPEED TO ATTAIN A PARALLEL COURSE WITH SHIP N."); 
+		addMessage("    EX: I1,3 PRINTS DATA TO PARALLEL SHIP 3.");
+		addMessage("    2. FIND RANGE AND AZIMUTH TO CENTER OF COMBAT ZONE."); 
+		addMessage("    3. PRINT OUT COMMANDERS NAME, TERMINAL NUMBER, USER NUMBER, AND KILLS.");
+		addMessage("       EX: I3,2 PRINTS DATA ON SHIP 2 ONLY. I3 PRINTS DATA ON ALL SHIPS.");
+		addMessage("    4. LIST OF LAST 30 USERS");
+		addMessage("    5. MAP OPTION. PRINTS MAP OF AREA OUT TO SENSOR RANGE.");
+		addMessage("    6. PRINTS DAMAGE ON, AZIMUTH TO, AND RANGE TO GORN BASES WITHIN RANGE SET BY \"G\" COMMAND.");
+		addMessage("L - FIRE LASERS. LX  0 TO 2000 ENERGY. SPREAD IS +OR- 1 DEG.");
+		addMessage("M - FIRE MISSILE. MX,Y OR MX MY     ");
+		addMessage("N - NULL COMMAND. SAME AS NO COMMAND.");
+		addMessage("P - DISTRIBUTE REPAIR RATE BETWEEN TWO SHIELDS.");    
+		addMessage("R - ROTATE SHIP. RX,Y  POSITIVE OR NEGATIVE ROTATION. 0 TO +//- 360 (X) AT 1 TO 6 DEG/SEC (Y)");
+		addMessage("S - INDIVIDUAL SHIELD POWER ADJUSTMENT. SX,Y ADJUSTS SHIELD (X) TO POWER (Y), 0 TO 25 POWER/SEC.");
+		addMessage("STOP - DESTRUCTS SHIP AND LOGS YOU OFF GAME.");
+		addMessage("VX - TRACK SHIP X."); 
+		addMessage("Z - ZERO POWER ON BOTH SHIELDS. ");
+		addMessage("======= END HELP COMMAND LISTING");	
 	}
 
 	public void processIntelCommand(IntelCommand cmd)
