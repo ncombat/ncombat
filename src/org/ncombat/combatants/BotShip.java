@@ -222,6 +222,12 @@ public class BotShip extends Ship
 			super.onEnergyExhaustion();
 		}
 	}
+	
+	/**
+	 * Implementation required because callback from command seems
+	 * to expect that every combatant needs to implement this.
+	 * @param cmd
+	 */
 	public void processMessageCommand(MessageCommand cmd)
 	{
 		// thanks for the share but the bot does not care
@@ -243,10 +249,10 @@ public class BotShip extends Ship
 	private void trashTalk(Combatant opponent) {
 		
 		String[] taunts = {
-				"Fear my wrath.",
+				"Maybe you should try XBox Live.",
 				"I find your lack of win disturbing.", 
-				"Liberate tutemet ex infernis!",
-				"Are you gonna bark all day, little doggie, or are you gonna bite?"};
+				"Fear my wrath.",
+				"Caesar si viveret, ad remum dareris."};
 		
 		if (opponent instanceof PlayerShip) {
 			if (Math.random() > 0.75)  {
