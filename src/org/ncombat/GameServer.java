@@ -122,12 +122,9 @@ public class GameServer implements DisposableBean
 		
 		log.info("GameServer #" + serverNumber + " is starting.");
 		
-		// Create Gorn bases
-		for (int i = 1 ; i <= NUM_GORN_BASES ; i++) {
-			createGornBase(i);
-		}
 		
 		// TODO: Gorn base regeneration
+		checkGornBases();
 		
 		// Create a few bot ships just for fun.
 		for (int i = 1 ; i <= NUM_BOT_SHIPS ; i++) {
@@ -138,6 +135,20 @@ public class GameServer implements DisposableBean
 		timerTask = new GameServerTimerTask();
 	}
 	
+	/**
+	 * Need to keep number of Gorn bases constant and because of way
+	 * Gorns are positioned, make sure all positions in Gorn orbital are filled.
+	 * Therefore, we check a list of gorn bases and fill each empty one.
+	 */
+	private void checkGornBases() {
+		
+		// Create Gorn bases
+		for (int i = 1 ; i <= NUM_GORN_BASES ; i++) {
+			createGornBase(i);
+		}
+		
+	}
+
 	public int addCombatant(Combatant combatant)
 	{
 		synchronized (cycleMonitor) {
@@ -192,15 +203,23 @@ public class GameServer implements DisposableBean
 			return;
 		}
 		
-		GornBase gorn = new GornBase("Gorn Base " + baseNum);
-
-		// Determine position on the ring of Gorn bases.
-		double theta = 90.0 - ((360.0 / NUM_GORN_BASES) * (baseNum - 1));
-		Vector position = Vector.polarDegrees(GORN_BASE_RADIUS, theta);
-		log.debug("Setting Gorn " + baseNum + " position with vector " + position);
-		gorn.setPosition(position);
+		if (this.getCombatant(baseNum+20) != null) {
+			log.debug("Gorn Base " + baseNum + " already exists.");
+			return;
+		}
 		
-		addCombatant(20 + baseNum, gorn);
+		else {
+		
+			GornBase gorn = new GornBase("Gorn Base " + baseNum);
+	
+			// Determine position on the ring of Gorn bases.
+			double theta = 90.0 - ((360.0 / NUM_GORN_BASES) * (baseNum - 1));
+			Vector position = Vector.polarDegrees(GORN_BASE_RADIUS, theta);
+			log.debug("Setting Gorn " + baseNum + " position with vector " + position);
+			gorn.setPosition(position);
+			
+			addCombatant(20 + baseNum, gorn);
+		}
 	}
 
 	public PlayerShip createPlayerShip(String commander)
@@ -367,13 +386,14 @@ public class GameServer implements DisposableBean
 				}
 				
 				if (combatant instanceof GornBase) {
+					// Gorn Base 1
 					
-					final int gornNum = combatant.getId();
-					
+					final int gornBN = Integer.parseInt(combatant.getCommander().substring(10)); 
+										
 					TimerTask regenTask = new TimerTask() {
 						public void run() {
 							synchronized (cycleMonitor) {
-								createGornBase(gornNum);
+								createGornBase(gornBN);
 							}
 						}
 					};
