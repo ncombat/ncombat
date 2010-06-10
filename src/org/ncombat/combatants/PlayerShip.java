@@ -23,52 +23,49 @@ import org.ncombat.utils.Vector;
 
 public class PlayerShip extends Ship
 {
+	public static class ShipInfo
+	{
+		public double azimuth;
+		public double course;
+
+		public double heading;
+		public double range;
+		public Ship ship1;
+		public Ship ship2;
+		public double speed;
+	}
+	
 	public static final double DEFAULT_SENSOR_RANGE = 30000.0;
 	
 	// If we have no contact from a player for NO_CONTACT_TIMEOUT milliseconds or more,
 	// he is assumed to have left the game, i.e. "hung up the phone".
 	public static final long NO_CONTACT_TIMEOUT = 120000;
 	
-	private Logger log = Logger.getLogger(PlayerShip.class);
+	private static int safeCompare(Date d1, Date d2)
+	{
+		if (d1 == d2) return 0;
+		if ((d1 == null) && (d2 == null)) return 0;
+		if (d1 == null) return 1;
+		if (d2 == null) return -1;
+		return d1.compareTo(d2);
+	}
 	
 	private boolean briefMode;
+	
+	private Logger log = Logger.getLogger(PlayerShip.class);
+	
+	private boolean regenDataReadout;
 	
 	private double sensorRange = DEFAULT_SENSOR_RANGE;
 	
 	private int trackedShip;
 	
-	private boolean regenDataReadout;
-	
 	public PlayerShip(String commander) {
 		super(commander);
 	}
-	
-	@Override
-	public void processCommands(CommandBatch commandBatch) {
-		super.processCommands(commandBatch);
-		this.regenDataReadout = commandBatch.getRegenStatusReadout();
-	}
-	
-	@Override
-	public void update(long updateTime)
-	{
-		long noContactTime = updateTime - getLastContactTime();
-		
-		// no credit awarded if player exited with STOP command
-		if ((noContactTime >= NO_CONTACT_TIMEOUT) && (super.getCombatantStatus() != "STOP")) {
-			Combatant lastAttacker = getLastAttacker();
-			if ((lastAttacker != null) && (lastAttacker.isAlive())) {
-				lastAttacker.processKill(this);
-			}
-			markHungUp();
-			return;
-		}
-		
-		super.update(updateTime);
-	}
 
 	@Override
-	public void completeGameCycle()
+	public synchronized void completeGameCycle()
 	{
 		if (regenDataReadout) {
 			generateDataReadout();
@@ -76,53 +73,16 @@ public class PlayerShip extends Ship
 		}
 	}
 	
-	public void processBriefModeCommand(BriefModeCommand cmd) {
-		briefMode = !briefMode;
+	private void computeCentralCourse()
+	{
+		double range = position.r();
+		double azimuth = Vector.stdAngleDegrees( 
+							Math.toDegrees( 
+								heading - position.negate().theta()));
+		
+		addMessage( String.format("AZ: %6.1f RNG: %8.0f TO CENTER", azimuth, range));
 	}
 
-	public void processHelpCommand(HelpCommand cmd)
-	{
-			// list out the commands
-		addMessage("HELP COMMAND LISTING =======");
-		addMessage("AX,Y ACCELERATE FROM -5 TO 5 KM/SEC^2. (X) FOR FROM 0 TO 300 SECONDS OF ACCELERATION. (Y)");
-		addMessage("B - DELETES HEADERS TO SPEED PRINTOUT.");
-		addMessage("E - SEND MESSAGES, \\X SENDS PRIVATE MESSAGE TO SHIP X.");
-		addMessage("F - FULL POWER TO BOTH SHIELDS.");
-		addMessage("G - SENSOR RANGE ADJUSTMENT. GX ");
-		addMessage("H - GIVES A BRIEF LIST OF COMMANDS.");
-		addMessage("I - INTELLIGENCE COMMAND. IX,Y  HERE ARE THE SUBCOMMANDS:");
-		addMessage("    1,N. PRINT ROTATION AND SPEED TO ATTAIN A PARALLEL COURSE WITH SHIP N."); 
-		addMessage("    EX: I1,3 PRINTS DATA TO PARALLEL SHIP 3.");
-		addMessage("    2. FIND RANGE AND AZIMUTH TO CENTER OF COMBAT ZONE."); 
-		addMessage("    3. PRINT OUT COMMANDERS NAME, TERMINAL NUMBER, USER NUMBER, AND KILLS.");
-		addMessage("       EX: I3,2 PRINTS DATA ON SHIP 2 ONLY. I3 PRINTS DATA ON ALL SHIPS.");
-		addMessage("    4. LIST OF LAST 30 USERS");
-		addMessage("    5. MAP OPTION. PRINTS MAP OF AREA OUT TO SENSOR RANGE.");
-		addMessage("    6. PRINTS DAMAGE ON, AZIMUTH TO, AND RANGE TO GORN BASES WITHIN RANGE SET BY \"G\" COMMAND.");
-		addMessage("L - FIRE LASERS. LX  0 TO 2000 ENERGY. SPREAD IS +OR- 1 DEG.");
-		addMessage("M - FIRE MISSILE. MX,Y OR MX MY     ");
-		addMessage("N - NULL COMMAND. SAME AS NO COMMAND.");
-		addMessage("P - DISTRIBUTE REPAIR RATE BETWEEN TWO SHIELDS.");    
-		addMessage("R - ROTATE SHIP. RX,Y  POSITIVE OR NEGATIVE ROTATION. 0 TO +//- 360 (X) AT 1 TO 6 DEG/SEC (Y)");
-		addMessage("S - INDIVIDUAL SHIELD POWER ADJUSTMENT. SX,Y ADJUSTS SHIELD (X) TO POWER (Y), 0 TO 25 POWER/SEC.");
-		addMessage("STOP - DESTRUCTS SHIP AND LOGS YOU OFF GAME.");
-		addMessage("VX - TRACK SHIP X."); 
-		addMessage("Z - ZERO POWER ON BOTH SHIELDS. ");
-		addMessage("======= END HELP COMMAND LISTING");	
-	}
-
-	public void processIntelCommand(IntelCommand cmd)
-	{
-		switch (cmd.getSubcommand()) {
-		case 1:	computeParallelCourse(cmd.getShip()); break;
-		case 2: computeCentralCourse();	break;
-		case 3: generateShipRoster( cmd.getShip()); break;
-		case 4: generatePlayerHistory(); break;
-		case 5: generateMap(); break;
-		case 6: generateGornReadout(); break;
-		}
-	}
-	
 	private void computeParallelCourse(int shipNum)
 	{
 		Combatant combatant = getGameServer().getCombatant(shipNum);
@@ -152,146 +112,7 @@ public class PlayerShip extends Ship
 		addMessage( String.format("%2d %8.3f %8.3f    %8.3f %8.3f",
 									shipNum, rot1, speed1, rot2, speed2));
 	}
-	
-	private void computeCentralCourse()
-	{
-		double range = position.r();
-		double azimuth = Vector.stdAngleDegrees( 
-							Math.toDegrees( 
-								heading - position.negate().theta()));
-		
-		addMessage( String.format("AZ: %6.1f RNG: %8.0f TO CENTER", azimuth, range));
-	}
 
-	public void processMessageCommand(MessageCommand cmd)
-	{
-		int shipNum = cmd.getDestination();
-		
-		String message = cmd.getMessage();
-		if (message == null) return;
-		message = message.trim();
-		if (message.length() == 0) return;
-		
-		if (shipNum > 0) {
-			message = "/" + getShipNumber() + " " + message;
-			getGameServer().sendMessage(shipNum, message);
-		}
-		else {
-			message = "#" + getShipNumber() + " " + message;
-			getGameServer().sendMessage(message, getShipNumber());
-		}
-	}
-
-	public void processNullCommand(NullCommand cmd) {
-		// Do nothing.  Duh.
-	}
-	
-	public void processSensorCommand(SensorCommand cmd) {
-		sensorRange = cmd.getRange();
-	}
-
-	public void processStopCommand(StopCommand cmd) {
-		markStopCommand();
-	}
-
-	public void processTrackCommand(TrackCommand cmd) {
-		trackedShip = cmd.getTarget();
-	}
-
-	public static class ShipInfo
-	{
-		public Ship ship1;
-		public Ship ship2;
-
-		public double speed;
-		public double course;
-		public double azimuth;
-		public double range;
-		public double heading;
-	}
-	
-	public void generateShipRoster() {
-		generateShipRoster(0);
-	}
-	
-	public void generateShipRoster(int shipNum)
-	{
-		addMessage("SHP  COMMANDERS NAME       KL");
-		
-		for (Combatant combatant : gameServer.getCombatants()) {
-			if (combatant instanceof Ship) {
-				if ((shipNum <= 0) || (shipNum == combatant.getShipNumber())) {
-					String fmt = "%2d   %-20s %3d";
-					addMessage( String.format(fmt,
-									combatant.getShipNumber(),
-									combatant.commander,
-									combatant.numKills));
-				}
-			}
-		}
-	}
-	
-	public void generatePlayerHistory()
-	{
-		List<Combatant> players = gameServer.getCombatants();
-		
-		for (Iterator<Combatant> it = players.iterator() ; it.hasNext() ; ) {
-			Combatant combatant = it.next();
-			if (!(combatant instanceof Ship)) {
-				it.remove();
-			}
-		}
-		
-		players.addAll( gameServer.getFormerPlayers());
-		
-		Comparator<Combatant> comp = new Comparator<Combatant>() {
-			public int compare(Combatant o1, Combatant o2) {
-				int result = 0;
-				if (result == 0) {
-					result = safeCompare( o1.timeOn, o2.timeOn);
-				}
-				if (result == 0) {
-					result = safeCompare( o1.timeOff, o2.timeOff);
-				}
-				if (result == 0) {
-					Integer s1 = o1.getShipNumber();
-					Integer s2 = o2.getShipNumber();
-					result = s1.compareTo(s2);
-				}
-				return result;
-			}
-		};
-		
-		Collections.sort(players, comp);
-		
-		int numItems = 0;
-		
-		if (!briefMode) {
-			addMessage( String.format("SP %-20s STATUS KL   TIME ON    TIME OFF",
-										"COMMANDER"));
-		}
-		
-		SimpleDateFormat dateFmt = new SimpleDateFormat("MM/dd HH:mm");
-		
-		for (Combatant player : players) {
-			if (numItems++ > 30) break;
-			String timeOn = dateFmt.format(player.timeOn);
-			String timeOff = ( player.timeOff == null ? "" : dateFmt.format(player.timeOff));
-			addMessage( String.format("%2d %-20s %6s %2d %11s %11s", 
-							player.getShipNumber(), player.commander, player.getStatus(), 
-							player.numKills, timeOn, timeOff));
-		}
-	}
-	
-	private static int safeCompare(Date d1, Date d2)
-	{
-		if (d1 == d2) return 0;
-		if ((d1 == null) && (d2 == null)) return 0;
-		if (d1 == null) return 1;
-		if (d2 == null) return -1;
-		return d1.compareTo(d2);
-	}
-	
 	public void generateDataReadout()
 	{
 		List<String> buf = new ArrayList<String>();
@@ -385,6 +206,30 @@ public class PlayerShip extends Ship
 		this.regenDataReadout = false;
 	}
 	
+	private void generateGornReadout()
+	{
+		if (!briefMode) {
+			addMessage("GN DMG AZMUTH   RANGE");
+		}
+		
+		for (Combatant combatant : gameServer.getCombatants()) {
+			if (combatant instanceof GornBase) {
+				if (combatant.isAlive()) {
+					double range = range(combatant);
+					double azimuth = azimuth(combatant);
+					if ((range < sensorRange) || Math.abs(azimuth) < 15.0) {
+						String fmt = "%2d %2d%% %6.1f %7d";
+						addMessage( String.format( fmt,
+										combatant.getShipNumber() - 20,
+										(int) combatant.damage,
+										azimuth,
+										(int) range));
+					}
+				}
+			}
+		}
+	}
+	
 	private void generateMap()
 	{
 		int width = 15;
@@ -453,28 +298,183 @@ public class PlayerShip extends Ship
 		}
 		addMessage(boundary);
 	}
-	
-	private void generateGornReadout()
+
+	public void generatePlayerHistory()
 	{
-		if (!briefMode) {
-			addMessage("GN DMG AZMUTH   RANGE");
+		List<Combatant> players = gameServer.getCombatants();
+		
+		for (Iterator<Combatant> it = players.iterator() ; it.hasNext() ; ) {
+			Combatant combatant = it.next();
+			if (!(combatant instanceof Ship)) {
+				it.remove();
+			}
 		}
 		
+		players.addAll( gameServer.getFormerPlayers());
+		
+		Comparator<Combatant> comp = new Comparator<Combatant>() {
+			public int compare(Combatant o1, Combatant o2) {
+				int result = 0;
+				if (result == 0) {
+					result = safeCompare( o1.timeOn, o2.timeOn);
+				}
+				if (result == 0) {
+					result = safeCompare( o1.timeOff, o2.timeOff);
+				}
+				if (result == 0) {
+					Integer s1 = o1.getShipNumber();
+					Integer s2 = o2.getShipNumber();
+					result = s1.compareTo(s2);
+				}
+				return result;
+			}
+		};
+		
+		Collections.sort(players, comp);
+		
+		int numItems = 0;
+		
+		if (!briefMode) {
+			addMessage( String.format("SP %-20s STATUS KL   TIME ON    TIME OFF",
+										"COMMANDER"));
+		}
+		
+		SimpleDateFormat dateFmt = new SimpleDateFormat("MM/dd HH:mm");
+		
+		for (Combatant player : players) {
+			if (numItems++ > 30) break;
+			String timeOn = dateFmt.format(player.timeOn);
+			String timeOff = ( player.timeOff == null ? "" : dateFmt.format(player.timeOff));
+			addMessage( String.format("%2d %-20s %6s %2d %11s %11s", 
+							player.getShipNumber(), player.commander, player.getStatus(), 
+							player.numKills, timeOn, timeOff));
+		}
+	}
+
+	public void generateShipRoster() {
+		generateShipRoster(0);
+	}
+	
+	public void generateShipRoster(int shipNum)
+	{
+		addMessage("SHP  COMMANDERS NAME       KL");
+		
 		for (Combatant combatant : gameServer.getCombatants()) {
-			if (combatant instanceof GornBase) {
-				if (combatant.isAlive()) {
-					double range = range(combatant);
-					double azimuth = azimuth(combatant);
-					if ((range < sensorRange) || Math.abs(azimuth) < 15.0) {
-						String fmt = "%2d %2d%% %6.1f %7d";
-						addMessage( String.format( fmt,
-										combatant.getShipNumber() - 20,
-										(int) combatant.damage,
-										azimuth,
-										(int) range));
-					}
+			if (combatant instanceof Ship) {
+				if ((shipNum <= 0) || (shipNum == combatant.getShipNumber())) {
+					String fmt = "%2d   %-20s %3d";
+					addMessage( String.format(fmt,
+									combatant.getShipNumber(),
+									combatant.commander,
+									combatant.numKills));
 				}
 			}
 		}
+	}
+
+	public void processBriefModeCommand(BriefModeCommand cmd) {
+		briefMode = !briefMode;
+	}
+
+	@Override
+	public void processCommands(CommandBatch commandBatch) {
+		super.processCommands(commandBatch);
+		this.regenDataReadout = commandBatch.getRegenStatusReadout();
+	}
+
+	public void processHelpCommand(HelpCommand cmd)
+	{
+			// list out the commands
+		addMessage("HELP COMMAND LISTING =======");
+		addMessage("AX,Y ACCELERATE FROM -5 TO 5 KM/SEC^2. (X) FOR FROM 0 TO 300 SECONDS OF ACCELERATION. (Y)");
+		addMessage("B - DELETES HEADERS TO SPEED PRINTOUT.");
+		addMessage("E - SEND MESSAGES, \\X SENDS PRIVATE MESSAGE TO SHIP X.");
+		addMessage("F - FULL POWER TO BOTH SHIELDS.");
+		addMessage("G - SENSOR RANGE ADJUSTMENT. GX ");
+		addMessage("H - GIVES A BRIEF LIST OF COMMANDS.");
+		addMessage("I - INTELLIGENCE COMMAND. IX,Y  HERE ARE THE SUBCOMMANDS:");
+		addMessage("    1,N. PRINT ROTATION AND SPEED TO ATTAIN A PARALLEL COURSE WITH SHIP N."); 
+		addMessage("    EX: I1,3 PRINTS DATA TO PARALLEL SHIP 3.");
+		addMessage("    2. FIND RANGE AND AZIMUTH TO CENTER OF COMBAT ZONE."); 
+		addMessage("    3. PRINT OUT COMMANDERS NAME, TERMINAL NUMBER, USER NUMBER, AND KILLS.");
+		addMessage("       EX: I3,2 PRINTS DATA ON SHIP 2 ONLY. I3 PRINTS DATA ON ALL SHIPS.");
+		addMessage("    4. LIST OF LAST 30 USERS");
+		addMessage("    5. MAP OPTION. PRINTS MAP OF AREA OUT TO SENSOR RANGE.");
+		addMessage("    6. PRINTS DAMAGE ON, AZIMUTH TO, AND RANGE TO GORN BASES WITHIN RANGE SET BY \"G\" COMMAND.");
+		addMessage("L - FIRE LASERS. LX  0 TO 2000 ENERGY. SPREAD IS +OR- 1 DEG.");
+		addMessage("M - FIRE MISSILE. MX,Y OR MX MY     ");
+		addMessage("N - NULL COMMAND. SAME AS NO COMMAND.");
+		addMessage("P - DISTRIBUTE REPAIR RATE BETWEEN TWO SHIELDS.");    
+		addMessage("R - ROTATE SHIP. RX,Y  POSITIVE OR NEGATIVE ROTATION. 0 TO +//- 360 (X) AT 1 TO 6 DEG/SEC (Y)");
+		addMessage("S - INDIVIDUAL SHIELD POWER ADJUSTMENT. SX,Y ADJUSTS SHIELD (X) TO POWER (Y), 0 TO 25 POWER/SEC.");
+		addMessage("STOP - DESTRUCTS SHIP AND LOGS YOU OFF GAME.");
+		addMessage("VX - TRACK SHIP X."); 
+		addMessage("Z - ZERO POWER ON BOTH SHIELDS. ");
+		addMessage("======= END HELP COMMAND LISTING");	
+	}
+	
+	public void processIntelCommand(IntelCommand cmd)
+	{
+		switch (cmd.getSubcommand()) {
+		case 1:	computeParallelCourse(cmd.getShip()); break;
+		case 2: computeCentralCourse();	break;
+		case 3: generateShipRoster( cmd.getShip()); break;
+		case 4: generatePlayerHistory(); break;
+		case 5: generateMap(); break;
+		case 6: generateGornReadout(); break;
+		}
+	}
+	
+	public void processMessageCommand(MessageCommand cmd)
+	{
+		int shipNum = cmd.getDestination();
+		
+		String message = cmd.getMessage();
+		if (message == null) return;
+		message = message.trim();
+		if (message.length() == 0) return;
+		
+		if (shipNum > 0) {
+			message = "/" + getShipNumber() + " " + message;
+			getGameServer().sendMessage(shipNum, message);
+		}
+		else {
+			message = "#" + getShipNumber() + " " + message;
+			getGameServer().sendMessage(message, getShipNumber());
+		}
+	}
+	
+	public void processNullCommand(NullCommand cmd) {
+		// Do nothing.  Duh.
+	}
+	
+	public void processSensorCommand(SensorCommand cmd) {
+		sensorRange = cmd.getRange();
+	}
+	
+	public void processStopCommand(StopCommand cmd) {
+		markStopCommand();
+	}
+	
+	public void processTrackCommand(TrackCommand cmd) {
+		trackedShip = cmd.getTarget();
+	}
+	
+	@Override
+	public void update(long updateTime)
+	{
+		long noContactTime = updateTime - getLastContactTime();
+		
+		// no credit awarded if player exited with STOP command
+		if ((noContactTime >= NO_CONTACT_TIMEOUT) && (super.getCombatantStatus() != "STOP")) {
+			Combatant lastAttacker = getLastAttacker();
+			if ((lastAttacker != null) && (lastAttacker.isAlive())) {
+				lastAttacker.processKill(this);
+			}
+			markHungUp();
+			return;
+		}
+		
+		super.update(updateTime);
 	}
 }

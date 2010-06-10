@@ -61,7 +61,7 @@ public class BotShip extends Ship
 	}
 	
 	@Override
-	public void completeGameCycle()
+	public synchronized void completeGameCycle()
 	{
 		long now = System.currentTimeMillis();
 		CommandBatch batch = new CommandBatch(now, this);

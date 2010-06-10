@@ -17,7 +17,7 @@ public class GornBase extends Ship
 {
 	
 	// Length of time between command generation cycles (seconds).
-	private static final double CYCLE_LEN = 60.0;
+	private static final double CYCLE_LEN = 45.0;
 	
 	// increasing repair capacity and speed - Gorns are tough!
 	// Repairs begin REPAIR_WAIT_TIME seconds after damage is inflicted. 
@@ -25,6 +25,8 @@ public class GornBase extends Ship
 	
 	// Default damage repair rate (in % per second).
 	private static final double GORN_REPAIR_RATE = 0.20;
+	
+	private static final int GORN_BLASTER_FIRING_POWER = 2000;
 	
 	// Gorn base
 	
@@ -36,20 +38,21 @@ public class GornBase extends Ship
 	*/
 	private static final double ENGAGEMENT_RANGE = 100000.0;
 	private static final double GORN_INITIAL_ENERGY = 20000.0;
-
+	private static final double GORN_MINIMUM_ENERGY = 10000.0;
+	private static final double GORN_MAXIMUM_ENERGY = 30000.0;
 	
 	// ships and/or bots exceeding WARNING_RANGE will recieve WARNING_MESSAGE
-	private static final double WARNING_RANGE = 50000.0;
-	private static final String WARNING_MSG = "WARNING - YOU ARE APPROACHING GORN SPACE. TURN BACK OR I WILL OPEN FIRE.";
+	private static final double WARNING_RANGE = 20000.0;
+	private static final String WARNING_MSG = "WARNING - YOU ARE APPROACHING GORN SPACE. TURN BACK OR I WILL OPEN FIRE.\n";
 	
 	// ships exceeding TRESPASS_RANGE will be fired upon and recieve TRESPASS_MESSAGE
-	private static final double TRESPASS_RANGE = 70000.0;
-	private static final String TRESPASS_MSG = "YOU ARE TRESPASSING IN GORN SPACE. TURN BACK OR I WILL DESTROY YOU.";
+	private static final double TRESPASS_RANGE = 35000.0;
+	private static final String TRESPASS_MSG = "YOU ARE TRESPASSING IN GORN SPACE. TURN BACK OR YOU WILL BE DESTROYED.\n";
 	
 	
 	
 	private double cycleTimeLeft = CYCLE_LEN;
-	protected double GornBlasterFiringPower=2000;
+
 	
 	// Gorns are armed with one laser.
 	protected double laserCoolingTime;
@@ -63,38 +66,44 @@ public class GornBase extends Ship
 		log.info(commander + " joins the fray.");
 	}
 
-	// I'm a Gorn. This is my boomstick. I don't wait for no cooldown time.
+	// I'm a Gorn. This is my boomstick. I don't miss.
 	private void attack(Combatant nearest) {
-		energy =- GornBlasterFiringPower;		
-		AttackResult result = nearest.onLaserHit(this, GornBlasterFiringPower);
+		
+		log.debug(this.commander + " preparing to fire at " + nearest.getCommander() + ". My energy remaining: " + energy);
+		
+		energy = energy - GORN_BLASTER_FIRING_POWER;		
+		AttackResult result = nearest.onLaserHit(this, GORN_BLASTER_FIRING_POWER);
 		String fmt = "Gorn blaster hit on shield %d of ship %2d caused %3d damage.";
-		addMessage( String.format(fmt, result.shieldHit, 
-						nearest.getShipNumber(), (int) result.damage));
+		addMessage( String.format(fmt, result.shieldHit, nearest.getShipNumber(), (int) result.damage));
 		
 		if (!nearest.isAlive()) {
 			processKill(nearest);
 			nearest.markDestroyed(this);
 		}
 		
+		log.debug(this.commander + " just fired at " + nearest.getCommander() + ". My energy remaining: " + energy);
+		
 	}
 
 	/**
 	 * Gorns do not run out of energy, but they don't consume much unless a player is
-	 *  in range. Therefore, we try to keep the Gorn energy level to a constant level
+	 *  in range. Therefore, we try to keep the Gorn energy level within a specific range
 	 *  so they do are neither helpless nor an invaluable prize by constantly accumulating energy. 
 	 *  If the base is under attack, it gets a smaller boost.
 	 */
 	
 	protected void checkEnergy()
 	{
-			if ((damage < 0.1) || (energy > 30001)) {
-				energy = 30000;
+			if ((damage < 0.1) || (energy < GORN_MINIMUM_ENERGY)) {
+				energy = GORN_INITIAL_ENERGY;
 			}
-			else {energy =+ 5000; }
+			else if (energy > GORN_MAXIMUM_ENERGY) { energy = GORN_MAXIMUM_ENERGY; }
+			
+			else { energy = energy + 5000; }
 	}
 
 	@Override
-	public void completeGameCycle() {
+	public synchronized void completeGameCycle() {
 		
 		int lastNearest =0;
 		
@@ -103,35 +112,38 @@ public class GornBase extends Ship
 			long now = System.currentTimeMillis();
 			CommandBatch batch = new CommandBatch(now, this);
 			
-			Combatant nearest = nearest();
 			
-			double nearest_distance = nearest.position.r();
+			if (cycleTimeLeft <= 0.0) {
 			
-			double nearestRange = nearestRange();
-
-			batch.addCommand( new ShieldCommand(1, 25));
+				Combatant nearest = nearest();
+				double nearest_distance = nearest.position.r();
+				double nearestRange = range(nearest);
+				batch.addCommand( new ShieldCommand(1, 25));
 			
-			this.checkEnergy();
-			
-			// if it's approaching Gorn space, send a nastygram
-			if  ((nearest_distance < WARNING_RANGE) && (nearest_distance > TRESPASS_RANGE) && (lastNearest!=nearest.getId()) && (nearest instanceof PlayerShip)) {
-				log.debug( String.format("[%s] warning interloper [%s] at range %7.1f", commander, nearest.commander, nearestRange));
-				getGameServer().sendMessage(nearest.getShipNumber(), "\nMessage from " + this.commander + " : " + WARNING_MSG);
+				this.checkEnergy();
+				
+				// if it's approaching Gorn space, send a nastygram
+				if  ((nearest_distance > WARNING_RANGE) && (nearest_distance < TRESPASS_RANGE) && (lastNearest!=nearest.getId()) && (nearest instanceof PlayerShip)) {
+					log.debug( String.format("[%s] warning interloper [%s] at range %7.1f", commander, nearest.commander, nearestRange));
+					getGameServer().sendMessage(nearest.getShipNumber(), "\nMessage from " + this.commander + " : " + WARNING_MSG + "\n");
+				}
+				
+				// if it's trespassing on Gorn space and is in engagement range ( and isn't a Gorn :) ), kill it!
+				// TODO: Should Gorn base refrain from attacking if ship is headed back toward core (say azimuth > +/- 90)?
+	
+				if ((nearest_distance >= TRESPASS_RANGE) && (nearestRange < ENGAGEMENT_RANGE) && !(nearest instanceof GornBase)){
+					log.info( String.format("[%s] attacking intruder [%s] at range %7.1f", commander, nearest.commander, nearestRange));
+					getGameServer().sendMessage(nearest.getShipNumber(), "\nMessage from " + this.commander + " : " + TRESPASS_MSG + "\n");
+					attack(nearest);
+				}
+				
+				// this is to prevent loop where it continually broadcasts warnings
+				lastNearest = nearest.getId();
+				
+				gameServer.addCommandBatch(batch);
+				cycleTimeLeft = CYCLE_LEN;
 			}
 			
-			// if it's trespassing on Gorn space and is in engagement range ( and isn't a Gorn :) ), kill it!
-			// TODO: Should Gorn base refrain from attacking if ship is headed back toward core (say azimuth > +/- 90)?
-
-			if ((nearest_distance <= TRESPASS_RANGE) && (nearestRange < ENGAGEMENT_RANGE) && !(nearest instanceof GornBase)){
-				log.info( String.format("[%s] attacking interloper [%s] at range %7.1f", commander, nearest.commander, nearestRange));
-				getGameServer().sendMessage(nearest.getShipNumber(), "\nMessage from " + this.commander + " : " + TRESPASS_MSG);
-				attack(nearest);
-			}
-			
-			// this is to prevent loop where it continually broadcasts warnings
-			lastNearest = nearest.getId();
-			
-			gameServer.addCommandBatch(batch);
 		}
 		catch (Exception e) {
 			log.error(e);
@@ -194,7 +206,7 @@ public class GornBase extends Ship
 		double shipDamage = addDamage(coeffDamage);
 		shields.addDamage(shieldHit, coeffDamage);
 		
-		String exclamation = (shipDamage > 20.0 ? "**BLAM**" : ">>PWANG<<");
+		String exclamation = (shipDamage > 20.0 ? "**BLAM** " : ">>PWANG<< ");
 		String fmt = "%s Ship %d laser hit shield %d caused %d%% damage.";
 		addMessage( String.format(fmt, exclamation, attacker.getShipNumber(), 
 										shieldHit, (int) shipDamage));
