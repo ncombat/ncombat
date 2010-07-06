@@ -9,7 +9,7 @@
 <property name="test.classes.dir" location="${build.dir}/classes/tests"/>
 
 	
-<taskdef file="tomcatTasks.properties" description="tomcat ant tasks for automated local deploys">
+<taskdef file="tomcatTasks.properties" description="Tomcat ant tasks for automated local deploys">
     <classpath>
         <pathelement path="${tomcat.antjmxlib}"/>
         <pathelement path="${tomcat.antlib}"/>
