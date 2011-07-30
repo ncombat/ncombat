@@ -8,7 +8,5 @@
 	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.web.container"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/log4j-1.2.15.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/spring-webmvc.jar" sourcepath="WebContent/WEB-INF/src/spring-webmvc-sources.jar"/>
-	<classpathentry kind="lib" path="WebContent/WEB-INF/lib/spring.jar" sourcepath="WebContent/WEB-INF/lib/spring.jar"/>
 	<classpathentry kind="output" path="WebContent/WEB-INF/classes"/>
 </classpath>
