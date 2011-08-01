@@ -20,8 +20,8 @@
 	<pathelement location="${test.classes.dir}"/>
  	<pathelement location="${stage.dir}/WEB-INF/classes"/>
  	<fileset dir=".">
- 	                <include name="WebContent/WEB-INF/lib/*.jar"/>
- 	                <include name="lib/*.jar"/>
+ 	<include name="WebContent/WEB-INF/lib/*.jar"/>
+ 	<include name="lib/*.jar"/>
  	</fileset>
   </path>
 
