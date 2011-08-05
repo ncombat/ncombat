@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html>
+	<!-- code adapted from http://demo.superdit.com/jquery/one_page_company_profile.html -->
+	<head>
+		<title>NCombat Design lab - HTML 5</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<script type="text/javascript" src="../../lib/ncombat_base.js"></script>
+		<script type="text/javascript" src="../../lib/teletype.js"></script>
+		<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+		<link type="text/css" rel="stylesheet" 	href="../../styles/ncombat_screen_2.css">
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$("#nav .nav1").click(function() {
+					if (!$(this).next().is(":visible")) {
+						$(this).find("span").html('–');
+						$(this).next().slideDown('fast');
+				} else {
+					$(this).find("span").html('+');
+					$(this).next().slideUp('fast');
+				}
+				return false;
+			});
+			$(".about").click(function() {
+				$(this).css("color", "#ff4040");
+				$(this).siblings().css("color", "#999");
+				var id = "a-" + $(this).attr("id").replace("a", "");
+				$("#p-about").show();
+				$("#" + id).slideDown('fast');
+				$("#" + id).siblings().slideUp('fast');
+				return false;
+			});
+			});
+		</script>
+	</head>
+	<body>
+	<div id="main">
+		<div id="header">
+			<div class="head1">N * C * O * M * B * A * T</div>
+		</div>
+		<div id="nav">
+			<a href="" class="nav1"><span>+</span>play</a>
+			<div class="subnav">
+				<p class="statusScreen">Main gameplay console appears here.</p>
+			</div>
+			<a href="" class="nav1"><span>+</span>help</a>
+			<div class="subnav">
+				<a href="" class="nav2 about" id="acommands">Commands</a> 
+				<a href="" class="nav2 about" id="ashields">Shields</a> 
+				<a href="" class="nav2 about" id="agorns">Gorns</a>
+				<a href="" class="nav2 about" id="agameplay">Gameplay</a> 
+				<a href="http://code.google.com/p/ncombat/source/list" class="nav2">Source</a> 
+				<div id="p-about">
+					<p id="a-team"></p>
+					<p id="a-vision">DES/NGIN© visions are to becoming one of big player in creative internet technology industry field that can give some benefit to our client, and to keep our good relationship	for each client.</p>
+					<p id="a-methodology">Requirement → Design → Interface Mockup →	Implementation → Launch</p>
+					<p id="a-commands" class="help"><dl>
+							<dt>A - ACCELERATE SHIP.</dt>
+							<dd>AX,Y ACCELERATE FROM -5 TO 5 KM/SEC^2. (X)
+							    FROM 0 TO 300 SECONDS OF ACCELERATION. (Y) EX: A2,30 ACCELERATE
+							    AT 2 KM/SEC^2 FOR 30 SECONDS.
+							    FINAL SPEED = ACCELERATION * TIME OF ACCELERATION
+							    NEGATIVE VALUES OF ACELLERATION ALLOW YOU TO GO IN REVERSE.
+							    ONE KM/SEC^2 ACCELERATION COSTS 50 ENERGY UNITS.
+							    ACCLERATION GENERATES ENGINE HEAT.
+							    ENGINE HEAT BUILDS UP AS FOLLOWS: 
+							    	HEAT = 35 * ACCELERATION * TIME. 
+									HEAT DISSIPATES AT 20 DEGREES A SECOND. 
+									IF HEAT EXCEEDS 5000, EACH SECOND HEAT IS ABOVE 5000 COSTS 50 ENERGY UNITS. 
+									IF HEAT EXCEEDS 7999 ENGINES BLOW UP AND ARE USELESS. 
+									10 PERCENT DAMAGE IS DONE TO THE SHIP, WHICH STOPS REPAIR FOR 40 SECONDS.
+								</dd>
+							<dt>B - TOGGLES BRIEF MODE ON AND OFF. </dt>
+							<dd>WHEN IT IS ON, IT DELETES HEADERS TO SPEED PRINTOUT.</dd>
+							
+							<dt>E - SEND MESSAGES. </dt>
+							<dd>AFTER ISSUING "E" COMMAND, PROGRAM ASKS YOU
+							    TO ENTER MESSAGE. ONLY 69 CHARACTERS ARE SENT. NULL LINES
+							    (I.E. JUST A -CR-) SENDS NO MESSAGE. TO SEND TO JUST ONE PERSON
+							    TYPE:   
+							    	/3 HI THERE. 
+							    (WHERE 3 IS THE SHIP NUMBER YOU WANT TO RECEIVE PRIVATE MESSAGE.) 
+							    OTHERWISE EVERYONE RECIEVES EVERYONE ELSE"S MESSAGES. MESSAGES ARE PRINTED AUTOMATICALLY.
+							    THE MESSAGE SENDING COMMAND WORKS THE SAME FOR SHIPS 10-15...
+							    TO SEND A PRIVATE MESSAGE TO SHIP 15, PUT #/15# AT THE BEGINNING OF THE MESSAGE LINE.
+							    </dd>
+							
+							<dt>F - FULL POWER TO BOTH SHIELDS.</dt>
+							<dd>FASTER THAN DOING S1,25S2,25 TO PUT POWER ON SHIELDS.</dd>
+							
+							<dt>G - GRAVIMETRIC SENDOR RANGE ADJUSTMENT. </dt>
+							<dd>GX  WHEN SIGNING ON, SENSOR RANGE IS 30000 KM. THIS COMMAND ALLOWS A PLAYER TO ALTER THE TAKES FOR PRINT OUT OF STATUS ON SHIPS. GORN DATA IS ALSO AFFECTED BY "G" RANGE. BE SURE TO SET UP THE "G" RANGE IF YOU CAN"T SEE ANY OTHER SHIP OR GORN.</dd>
+							
+							<dt>H - GIVES A BRIEF LIST OF COMMANDS.</dt>
+							
+							<dt>I - INTELLIGENCE COMMAND. IX,Y  </dt>
+							<dd>HERE ARE THE SUBCOMMANDS:
+							    1. PRINT ROTATION AND SPEED TO ATTAIN A PARALLEL COURSE
+							       WITH SHIP N. EX: I1,3 WOULD PRINT:
+							       SP     ROT   SPD OR ROT   SPD
+							        3  -120.5    10.  59.5  -10.
+							       SINCE A SHIP CAN GO FORWARD OR REVERSE THE PLAYER HAS A
+							       CHOICE OF TURNING IN EITHER OF TWO DIRECTIONS AND USING THE
+							       APPROPRIATE ENGINE. SINCE 59.5 IS CLOSER, R59.5 IS ISSUED.
+							       AFTER ROTATION IS COMPLETE (ABOUT 10 SECONDS) A-5,2 IS ISSUED.
+							       THEN THE SHIPS WILL BE STATIONARY RELATIVE TO EACH OTHER.
+							       (NO MATTER WHAT ANGLES AND SPEEDS SHIPS HAD BEEN FLYING).
+							       ONCE PARALLEL, YOU CAN ROTATE YOUR SHIP TO ZERO THE AZIMUTH
+							       OF YOUR TARGET SHIP AND THEN FIRE, OR ACCELLERATE TO CLOSE IN ON IT.
+							    2. FIND RANGE AND ZIMUTH TO CENTER OF COMBAT ZONE. EX: I2
+							       PRINTS: AZ: 0180. RNG:   27034. TO CENTER
+							    3. PRINT OUT COMMANDERS NAME, TERMINAL NUMBER, USER NUMBER,
+							       AND KILLS OF SHIPS PRESENTLY ON.
+							       EX: I3,2 WOULD GIVE DATA ON SHIP 2 ONLY. I3 WOULD PRINT
+							       DATA ON ALL SHIPS.
+							    4. LIST OF LAST 30 USERS GIVING SHIP, STATUS, KILLS MADE,
+							       TERMINAL NUMBER, USERNUMBER, TIME ON, TIME OFF, AND
+							       COMMANDERS NAME.
+							       STATUS:     = STILL PLAYING
+							               HNG = SHIP HUNG UP HIS PHONE.
+							               LPR = SHIP LOST ALL POWER.
+							               DGN = SHIP DESTROYED BY GORN BASE N.
+							               DDS = SHIP SELF-DESTRUCTED.
+							               DDN = SHIP DESTROYED BY SHIP N.
+							               PUR = SHIP WAS PURGED BY A MONITOR.
+							    5. MAP OPTION. PRINTS MAP OF AREA OUT TO SENSOR RANGE.
+							       (15*15 SIZE.) SX=SHIP X, GX=GORN X. **=TWO OR MORE SHIPS WITHIN
+							       THAT SQUARE. ZERO DEGREES IS STRAIGHT UP. NEGATIVE DEGREES
+							       LEFT AND POSITIVE DEGREES RIGHTHAND SIDE.
+							       SHIPS 10-15 ARE REPRESENTED THIS WAY:
+						   				SHIP 10 = S+
+									    SHIP 11 = S-
+						   				SHIP 12 = S*
+						   				SHIP 13 = S/
+						   				SHIP 14 = S(
+						   				SHIP 15 = S)
+							    6. PRINTS DAMAGE ON, AZIMUTH TO, AND RANGE TO GORN BASES
+							       STILL ON, IF WITHIN RANGE SET BY "G" COMMAND. OR +OR- 15 DEGREES.</dd>
+							       
+							<dt>L - FIRE LASERS.</dt> 
+							<dd>LX  FIRE  0 TO 2000 ENERGY. SPREAD IS +OR- 1 DEG.
+							    LASERS HIT ALL TARGETS WITHIN SPREAD REGARDLESS OF RANGE.
+							    THE MORE POWER APPLIED TO LASERS, THE LONGER IT TAKES FOR
+							    THE LASERS TO COOL DOWN. THE EXACT EQUATION FOR TIME REQUIRED
+							    FOR LASERS TO COOL IS:  (POWER/40)+10
+							    EX: L1000 (1000/40)+10 = 35 SECONDS.
+							    DAMAGE CAUSED DEPENDS ON LASER POWER, RANGE TO TARGET, POWER ON
+							    SHIELD AND SHIELD HIT, SINCE SHIELD ?1 IS STRONGER THAN ?2.
+							    CD = COEFF. OF DAMAGE = (LASER POW * 12 * (33-SHIELD POW)/RANGE/1)/2
+							    HIT ON SHIELD ?1 CAUSES:
+							    CD PERCENT DAMAGE ON SHIELD ?1
+							    CD PERCENT DAMAGE ON SHIP ITSELF.
+							    HIT ON SHIELD ?2 CAUSES:
+							    CD*2 PERCENT DAMAGE ON SHIELD ?2
+							    CD PERCENT DAMAGE ON SHIP ITSELF.</dd>
+							    
+							<dt>M - FIRE MISSILE.</dt>
+							<dd> MX,Y OR MX MY  2 TUBES AVAILABLE TO FIRE, COMPUTER
+							    FIRES TUBE(S) IF THEY ARE READY. IT TAKES 60 SECONDS TO LOAD A TUBE.
+							    RANGE OF MISSILES IS 20000 KM. SHIPS HAVE A MAXIMUM CAPACITY
+							    OF 25 MISSILES. MISSILES ARE RESTORED AFTER EVERY FIVE KILLS.
+							    MISSILES ARE NOT FIRED AT NON-EXISTANT SHIPS OR NON-EXISTANT GORNS.
+							    EX: M5 FIRES 1 MISSILE AT SHIP 5. IF TUBE 1 WERE NOT READY YET,
+							    COMPUTER WOULD FIRE TUBE 2 (PROVIDED IT WAS READY).
+							    FOR PURPOSES OF MISSILE TARGETTING, GORN BASES 1,2,3, _ 4
+							    ARE CONSIDERED TARGETS 21,22,23, AND 24, RESPECTIVELY.
+							    CD = COEFF. OF DAMAGE = (102 - (SHIELD POW. * 4))/2
+							    HIT ON SHIELD ?1 CAUSES:
+							  	  CD PERCENT DAMAGE TO SHIELD ?1
+								    CD PERCENT DAMAGE TO SHIP ITSELF.
+							    HIT ON SHIELD ?2 CAUSES:
+							    CD*2 PERCENT DAMAGE TO SHIELD ?2.
+							    CD PERCENT DAMAGE TO SHIP ITSELF.</dd>
+							    
+							<dt>N - NULL COMMAND.</dt>
+									<dd> IF PLAYER WISHES TO GET THE LATEST INFORMATION
+							    ABOUT THE POSITION OF SHIPS, SHIPS DESTROYED, AND OTHER RELATED
+							    INFORMATION, AND HAVE USED ONLY THE B, C, E, G, OR I COMMANDS,
+							    USUALLY N, TO GET THE UPDATED INFORMATION.</dd>
+							    
+							<dt>P - DISTRIBUTE REPAIR RATE BETWEEN TWO SHIELDS AND SHIP.</dt>
+								 <dd>PX,Y
+							    THE MAXIMUM RATE OF 1.5 PERCENT PER SECOND, CAN BE DISTRIBUTED
+							    IN ANY MATTER. PX,Y IS THE FORMAT. X=RATE ON SHIELD ?1.
+							    Y=RATE ON SHIELD ?2  SHIP GETS 1.5-X-Y. EX: P1,0 (OR P1) GIVES
+							    SHIELD ?1 1 PERCENT REPAIR PER SECOND. ABSENT PARAMETERS = 0.
+							    EX: P GIVES FULL REPAIR RATE TO SHIP. REPAIR AUTOMATICALLY
+							    STARTS 40 SECONDS AFTER DAMAGE OCCURS. REPAIR PREVIOUSLEY TAKING
+							    PLACE IS SYSPENDED AFTER DAMAGE OCCURS. REPAIR CONTINUES THROUGHOUT
+							    ANY ACTION OF YOURS HOWEVER.
+							    DISTRIBUTION IS INNITIALLY .5 PERCENT PER SHIELD AND SHIP.
+							    IT IS ADVISED TO KEEP REPAIR OFF BY STAGGERING MISSILES AND LASERS
+							    OR IF OUT OF MISSILE RANGE BY SHOOTING LASERS ABOUT 1000.</dd>
+							    
+							<dt>R - ROTATE SHIP. </dt>
+									<dd>RX,Y  POSITIVE OR NEGATIVE ROTATION. 0 TO +OR- 360. (X)
+							    EX: R180 WILL ROTATE AT 6 DEG/SEC. WHICH WILL TAKE ABOUT 30 SECONDS.
+							    RATE OR ROTATION CAN ALSO BE VARIED. EX: R180,1 WILL ROTATE AT
+							    1 DEG/SEC INSTEAD OF 6 DEG/SEC. THIS WILL TAKE 180 SECONDS.
+							    MAXIMUM RATE OF ROTATION IS 6 DEG/SEC.</dd>
+							    
+							<dt>S - INDIVIDUAL SHIELD POWER ADJUSTMENT.</dt>
+							<dd>SX,Y  FROM 0 TO 25 POWER/SEC.
+								 EX: S1,13 SHIELD 1 TO POWER 13
+								 EX: S2,25 SHIELD 2 TO POWER 25
+								 EX: FS2 TURNS S1 AND S2 ON TO FULL AND THEN TURNS S2 OFF. FASTER
+								 THAN S1,25. SHIELDS SNAP ON AUTOMATICALLY IF YOU SIGN ON WITHIN
+								 20000 KM OF ANOTHER SHIP. THEIRS DO NOT DETECT YOU, HOWEVER.
+								 </dd>
+								 
+							<dt>STOP - DESTRUCTS SHIP AND LOGS YOU OFF GAME. </dt>
+							<dd>BUT ONLY IF YOU ARE AT LEAST 30000 KM. FROM THE NEAREST SHIP. THE ONLY OTHER WAYS OUT ARE THROUGH BEING DESTROYED BY SOMEONE OR SOMETHING ELSE, OR BY LOSING ALL POWER. (WHICH ISN'T HARD).
+							       I HAVE RIGGED IT SO THAT IF A PERSON <strike>HANGS UP THE PHONE,</strike> DISCONNECTS, THE PERSON WHO HIT HIM LAST GETS THE HUNG-UP PERSONS POWER, AND CREDIT FOR KILLING THAT SHIP. THEREFORE, HANGING UP THE PHONE NO LONGER CAN DEPRIVE SOME WORTHY SOUL OF A KILL AND ENERGY.</dd>
+							       
+							<dt>VX TRACK SHIP X.</dt> 
+							<dd>THE ONLY DATA YOU WILL RECEIVE WILL BE THE
+							       GENERAL DATA FOR THE SHIP YOU ARE TRACKING (FIRST LINE),
+							       AND A LIST OF ALL EXISTING SHIPS AND THEIR COURSES
+							       TOWARD YOU (SECOND LINE), AND YOUR TWO DATA LINES.
+							       WHEN THE SHIP YOU ARE TRACKING IS DESTROYED, YOU GO OUT OF
+							       TRACKING MODE, AND BACK INTO NORMAL OUTPUT MODE.
+							       IF TRACKING WHILE NOT IN BRIEF MODE, THE SECOND LINE OF
+							       OUTPUT IS HEADED BY A #S HEADNG# ENTRY FOR ALL EXISTING SHIPS.</dd>
+							       
+							<dt>Z - ZERO POWER ON BOTH SHIELDS. </dt>
+							<dd>USEFUL UTILITY COMMAND TO HELP CONSERVE SHIPS ENERGY.</dd>
+						</dl>
+					</p>
+					<p id="a-shields" class="help">
+						EACH SHIP HAS TWO SHIELDS. SHIELD ?1 COVERS THE AREA IN
+						FRONT OF A SHIP FROM +30 DEGREES AZIMUTH TO -30 DEGREES. SHIELD
+						?2 COVERS EVERYTHING ELSE.
+						EX: SHIP IS AT -34 DEGREES AZIMUTH. ENEMY SHIP WOULD HIT
+						SHIELD ?2 IF FIRED AT YOU. EX: SHIP AT 17 DEGREES AZIMUTH. SHIP
+						WOULD HIT SHIELD ?1 IF FIRED AT YOU.
+					</p>
+					<p id="a-display" class="help">
+						DATA IS PRINTED OUT AS:
+						
+						SP DMG P1 P2  SPEED COURSE AZMUTH  RANGE HEADING
+						* THIS MUCH FOR OWN SHIP *
+						
+						SP = SHIP NUMBER
+						DMG = DAMAGE TO SHIP
+						P1 = POWER ON SHIELD ?1
+						P2 = POWER ON SHIELD ?2
+						SPEED = SPEED OF SHIP IN KM/SEC.
+						COURSE = FLIGHT ANGLE AWAY OR TOWARD YOUR SHIP .
+						   IF YOUR OWN SHIPS COURSE IS NOT EQUAL TO ZERO, IT MEANS
+						   YOU ARENT POINTING THE DIRECTION YOU ARE MOVING.
+						   180 OR -180 INDICATES YOU ARE POINTING OPPOSITE
+						   THE DIRECTION YOU ARE MOVING. TO REGAIN A 0 COURSE
+						   ANGLE, ROTATE -NEGATIVE- THE COURSE ANGLE.
+						   EX:  -136.5   SO: R136.5
+						   TO STOP THE MOVEMENT OF YOUR SHIP, YOU MUST ACCELERATE
+						   IN THE OPPOSITE DIRECTION OF THE INITIAL ACCELERATION.
+						   EX:   152.3  ADD 27.7 TO GET 180 THUS: R27.7
+						   OR R-152.3 WHICH WILL ALLOW YOU TO USE REVERSE ENGINES.
+						   OR DO I1,X COMMAND WHERE X IS YOUR SHIP NUMBER. IT WILL FIGURE
+						   OUT ALL THE ANGLES AND SPEEDS NEEDED. JUST ENTER THEM.
+						   REMEMBER TO WAIT UNTIL YOU HAVE ROTATED (UP TO 30 SECONDS)
+						   BEFORE ACCELERATING.
+						   THE COURSE OF ANOTHER SHIP INDICATES WHETHER IT IS
+						   COMING TOWARD YOU (0 COURSE ANGLE) OR MOVING AWAY (180
+						   OR -180). EX:  -27 MEANS THE OTHER SHIP WILL MOVE
+						   PAST YOU, EX: -.3 MEANS SHIP IS COMING ALMOST AT YOU.
+						AZIMUTH = ANGLE OFF LINE OF FIRE (FROM FRONT OF SHIP)
+						   EX: OWN COURSE IS ZERO, AZIMUTH TO SHIP IS -179  MEANS
+						   YOU ARE MOVING ALMOST DIRECTLY AWAY FROM SHIP 3, AND
+						   ARE UNABLE TO MAKE ANY HITS ON SHIP 3.
+						   EX: SHIP 5 IS AT RANGE 20300 AZIMUTH 137.2 AND YOU WISH
+						   TO HIT SHIP 5 WITH MISSILES. THUS:
+						   R137.2    THEN:   A1,30   A LITTLE LATER SHIP
+						   IS AT RANGE LESS THAN 20000 AND YOU CAN FIRE WITH MISSILES.
+						   BUT THEN SHIP 5 STARTS MOVING OFF AT HIGH SPEED, SO
+						   YOU USE THE I1,5 COMMAND TO PARALLEL SHIP 5 TO MAKE
+						   STATIONARY RELATIVE TO YOU....BY THIS TIME SHIP 5 HAS
+						   BEEN DESTROYED BY SHIP 9 AND SHIP 2 POPPED UP 5000 KM
+						   FROM YOU AND IS MAKING LIFE MISERABLE....
+						RANGE = DISTANCE TO SHIP IN KM.
+						HEADING = DIRECTION SHIP IS POINTING  (0 = AT YOU, 180 = AWAY FROM YOU)
+						   EX: SHIP 2 HAS HEADING OF 2.5 DEGREES. THIS MEANS THAT
+						   PLAYER 5 SEES THAT AZIMUTH TO YOU IS 2.5 AND
+						   IT JUST SO HAPPENS THE RANGE IS 18000 KM. SO HE DECIDES
+						   TO FIRE 2 MISSILES AT YOU.
+						   
+						DATA ABOUT YOUR OWN SHIP COMES BEFORE THE COMMAND INPUT REQUEST.
+						
+						ENERGY DMG1 DMG2 T1/MI/T2 T3 ACCEL/TIM  DEG/TIM HEAT
+						
+						ENERGY = ENERGY REMAINING
+						DMG1 = DAMAGE ON SHIELD ?1
+						DMG2 = DAMAGE TO SHIELD ?2
+						T1 = TIME TILL TUBE ONE IS LOADED AND READY TO FIRE
+						MI = NUMBER OF MISSILES REMAINING
+						T2 = TIME TILL TUBE TWO IS LOADED AND READY TO FIRE
+						T3 = TIME TILL LASER IS COOLED DOWN AND READY TO FIRE
+						ACEL = ACCELERATION IN KM/SEC^2 OF LAST ACCELERATION COMMAND
+						TIM = SECONDS LEFT TILL ACCELERATION IS COMPLETE
+						DEG = ANGLE LEFT TO ROTATE FOR LAST ROTATION COMMAND
+						TIM = SECONDS TILL ROTATION IS COMPLETE
+						HEAT = ENGINE HEAT
+						
+						HIT INDICATIONS:
+						IF DAMAGE > 20 PERCENT
+						**BLAM** SHIP 1 LASER HIT SHIELD I CAUSED ?? DAMAGE.
+						**BLAM** ...MISSILE...
+						
+						IF DAMAGE < 20 PERCENT
+						>>PWANG<< (IN PLACE OF **BLAM**)
+					</p>
+					<p id="a-gameplay" class="help">
+						COMMANDS AND THIER PARAMETERS CAN BE PLACED ON THE SAME INPUT LINE
+						IN COMBAT IV TO SPEED PLAY, AS CAN BE SEEN IN SOME EXAMPLES ABOVE.
+						EX: COMMANDS: A1,100P1L2000M1,1FS2
+						THIS LINE WOULD DO THE FOLLOWING:
+							A1,100  WOULD START ACCELERATION SHIP AT 1 KM/SEC^2
+							L2000 FIRES LASER WITH 2000 UNITS OF ENERGY
+							M1,1 FIRES TWO MISSILES AT SHIP 1
+							FS2 RAISES FULL POWER TO SHIELD 2
+					</p>
+					<p id="a-gorns" class="help">
+						THERE ARE 4 GORN BASES AROUND THE PERIMETER OF THE COMBAT ZONE
+						THAT GUARD AGAINST INTRUDERS INTO GORN SPACE. ANYONE ENTERING
+						THIER SPACE IS SHOT AT UNTIL THE SHIP IS DESTROYED, OR THE GORN WITHIN
+						100000 KM IS DESTROYED. OR UNTIL YOU LEAVE GORN TERRITORY.
+						DESTROYED GORNS RE-APPEAR ONE HALF-HOUR AFTER THEY ARE DESTROYED.
+						THE RANGE OF GORN BLASTERS IS 100,000 KM.
+						DAMAGE TO GORNS IS CALCULATED DIFFERENTLY THAN DAMAGE TO SHIPS.
+						GORNS CAN FIRE IN ANY DIRECTION WITH EQUAL EASE, AND FIRE ONCE
+						EVERY 50 SECONDS. GORNS ARE 30000 KM AWAY FROM THEIR BORDERS.
+						GORN SPACE ENCIRCLES THE ENTIRE COMBAT ZONE. THE BOUNDARY IS
+						70000 KM. FROM THE CENTER, PLAYERS ARE WARNED AT GREATER THAN
+						60000 KM. WHEN THEY ARE NEAR GORN TERRITORY.
+						
+						NOW TO SHOOT A MISSILE AT A GORN, ADD 20 TO THE GORN NUMBER.
+						EXAMPLE: TO SHOOT A MISSILE AT GORN BASE 1, DO #M21#...
+					</p>
+				</div>
+			<a href="" class="nav1"><span>+ </span>contact</a>
+			<div class="subnav">
+				<div id="c-contact">
+					<div class="clear"></div>
+					<p class="con">
+						<label>Drop us an email</label>: <mailto>codeteam@ncombat.org</mailto>
+					</p>
+					<div class="clear"></div>
+					<p class="con">
+						<label><a href="http://code.google.com/p/ncombat/">Google Code Home</a></label>: 
+					</p>
+					<div class="clear"></div>
+				</div>
+			</div>
+			<a href="" class="nav1"><span>+</span>news</a>
+			<div class="subnav">
+				<a href="#" class="nav2 blog">Blog Post 1</a> <a href="#"
+					class="nav2 blog">Blog Post 2</a> <a href="#" class="nav2 blog">Blog
+					Post 3</a> <a href="#" class="nav2 blog">More Posts</a>
+			</div>
+		</div>
+		</div>
+		<div id="footer">copyright<span>NCOMBAT</span></div>
+	</body>
+</html>

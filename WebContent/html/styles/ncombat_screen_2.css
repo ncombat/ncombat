@@ -1,0 +1,265 @@
+----------------------------------------------------------------------------
+* /
+	/* Import other stylesheets
+-----------------------------------------------------------------------------*/
+	/* Set the document up
+/* Remove padding and margin */ 
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.clear {
+	clear: both;
+}
+/* Sections 
+
+/* Header
+-----------------------------------------------------------------------------*/
+#header {
+	line-height: 200%;
+	font-family: Monospace, Serif;
+	font-variant: small-caps;
+	width: 100%;
+	text-align: center;
+}
+
+#ncombatTitle {
+	margin: 10px;
+	padding: 10px;
+	background: #FFFFFF;
+	font-size: 150%;
+}
+
+/* Body
+-----------------------------------------------------------------------------*/
+body {
+	margin: 0px;
+	padding: 0px;
+	font-size: 100%;
+}
+
+#content {
+	float: center;
+}
+
+/*overall */
+* {
+	font-family: Arial, "Free Sans";
+}
+
+a {
+	text-decoration: none;
+}
+
+body {
+	background: #000;
+	margin: 0;
+	padding: 0;
+}
+
+#main {
+	width: 800px;
+}
+
+#header {
+	height: 100px;
+	font-size: 192px;
+	color: #333;
+	letter-spacing: -18px;
+	font-weight: bold;
+	margin: 0;
+	padding: 0;
+}
+
+.head1 {
+	position: relative;
+	top: -40px;
+	left: -15px;
+}
+
+.head2 {
+	position: relative;
+	top: -120px;
+	left: -15px;
+}
+
+#nav {
+	position: relative;
+	top: -70px;
+	border: 2px dashed #999;
+	border-width: 0 0 1px 0;
+	padding: 40px 35px;
+	margin-top: 15px;
+}
+
+.subnav {
+	color: #fff;
+}
+
+.nav1 {
+	color: #d3d3d3;
+	font-size: 42px;
+	letter-spacing: -2px;
+	font-weight: bold;
+	display: block;
+}
+
+.nav1:hover {
+	color: #999;
+}
+
+.subnav {
+	padding-left: 20px;
+	display: none;
+}
+
+.nav2 {
+	color: #999;
+	font-size: 24px;
+	letter-spacing: -2px;
+	font-weight: bold;
+	margin-right: 15px;
+}
+
+.nav2:hover {
+	color: #666;
+	border-bottom: 2px solid #666;
+}
+
+.services:hover {
+	color: #00cc00;
+}
+
+.clients:hover {
+	color: #0099cc;
+}
+
+.about:hover {
+	color: #ff4040;
+}
+
+#p-about,#c-contact {
+	border: 4px solid #666;
+	margin-top: 10px;
+	padding: 0 15px;
+	-webkit-border-radius: .5em;
+	-moz-border-radius: .5em;
+	border-radius: .5em;
+	display: none;
+}
+
+#c-contact {
+	padding: 15px;
+	display: block;
+}
+
+#c-contact p {
+	margin: 0;
+	font-weight: bold;
+	font-size: 18px;
+	color: #0099cc;
+}
+
+.con label {
+	width: 220px;
+	float: left;
+}
+
+.clear {
+	clear: both;
+}
+
+#p-about p {
+	font-weight: bold;
+	font-size: 18px;
+	display: none;
+}
+
+.blog:hover {
+	color: #ff3399;
+}
+
+#footer {
+	font-size: 32px;
+	color: #666;
+	font-weight: bold;
+	letter-spacing: -4px;
+	font-style: italic;
+	position: relative;
+	top: -64px;
+	text-align: right;
+}
+
+#footer span {
+	background: #0099cc;
+	padding: 0 13px 0 8px;
+	margin-left: 5px;
+	color: #d3d3d3;
+	-webkit-border-radius: .3em;
+	-moz-border-radius: .3em;
+	border-radius: .3em;
+}
+
+/* Game console and elements
+-----------------------------------------------------------------------------*/
+#gameConsole {
+	background: #FFEBCD;
+	float: center;
+	width: 96%;
+}
+
+#playerInfo {
+	background: #FFFFFF;
+	float: center;
+	width: 94%;
+}
+
+.statusScreen {
+	font-family: Monospace, Serif;
+	font-variant: small-caps;
+	background: #FFFFCC;
+	float: center;
+	width: 94%;
+	height: 400px;
+	overflow: auto;
+}
+
+.commandConsole {
+	background: #FFFFFF;
+	float: center;
+	width: 94%;
+}
+
+#docPane {
+	background: #E5F1FF;
+}
+
+#restartPane {
+	background: pink;
+	display: none;
+	width: 94%;
+}
+
+#restartLink {
+	padding-top: 10px;
+	padding-left: 50px;
+	padding-bottom: 5px;
+}
+
+/* Footer
+-----------------------------------------------------------------------------*/
+#footer {
+	background: #E5FFE6;
+	clear: both;
+	width: 100%;
+	text-align: right;
+}
+
+/* Forms
+-----------------------------------------------------------------------------*/
+input.text {
+	padding: 3px;
+	border: 1px solid #999999;
+}
