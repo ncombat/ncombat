@@ -45,6 +45,8 @@
 			<a href="" class="nav1"><span>+</span>help</a>
 			<div class="subnav">
 				<a href="" class="nav2 about" id="acommands">Commands</a> 
+				<a href="" class="nav2 about" id="amovement">Movement</a>
+				<a href="" class="nav2 about" id="aweapons">Weapons</a>  
 				<a href="" class="nav2 about" id="ashields">Shields</a> 
 				<a href="" class="nav2 about" id="agorns">Gorns</a>
 				<a href="" class="nav2 about" id="agameplay">Gameplay</a> 
@@ -53,9 +55,9 @@
 					<p id="a-team"></p>
 					<p id="a-vision">DES/NGIN© visions are to becoming one of big player in creative internet technology industry field that can give some benefit to our client, and to keep our good relationship	for each client.</p>
 					<p id="a-methodology">Requirement → Design → Interface Mockup →	Implementation → Launch</p>
-					<p id="a-commands" class="help"><dl>
-							<dt>A - ACCELERATE SHIP.</dt>
-							<dd>AX,Y ACCELERATE FROM -5 TO 5 KM/SEC^2. (X)
+					<p id="a-movement" class="help">
+						A - ACCELERATE SHIP.
+						AX,Y ACCELERATE FROM -5 TO 5 KM/SEC^2. (X)
 							    FROM 0 TO 300 SECONDS OF ACCELERATION. (Y) EX: A2,30 ACCELERATE
 							    AT 2 KM/SEC^2 FOR 30 SECONDS.
 							    FINAL SPEED = ACCELERATION * TIME OF ACCELERATION
@@ -68,7 +70,55 @@
 									IF HEAT EXCEEDS 5000, EACH SECOND HEAT IS ABOVE 5000 COSTS 50 ENERGY UNITS. 
 									IF HEAT EXCEEDS 7999 ENGINES BLOW UP AND ARE USELESS. 
 									10 PERCENT DAMAGE IS DONE TO THE SHIP, WHICH STOPS REPAIR FOR 40 SECONDS.
-								</dd>
+						
+						R - ROTATE SHIP.
+								RX,Y  POSITIVE OR NEGATIVE ROTATION. 0 TO +OR- 360. (X)
+							    EX: R180 WILL ROTATE AT 6 DEG/SEC. WHICH WILL TAKE ABOUT 30 SECONDS.
+							    RATE OR ROTATION CAN ALSO BE VARIED. EX: R180,1 WILL ROTATE AT
+							    1 DEG/SEC INSTEAD OF 6 DEG/SEC. THIS WILL TAKE 180 SECONDS.
+							    MAXIMUM RATE OF ROTATION IS 6 DEG/SEC.
+					</p>
+					<p id="a-weapons" class="help">
+						Weapons - Commands controlling your weapons
+						
+						L - FIRE LASERS.</dt> 
+						LX  FIRE  0 TO 2000 ENERGY. SPREAD IS +OR- 1 DEG.
+							    LASERS HIT ALL TARGETS WITHIN SPREAD REGARDLESS OF RANGE.
+							    THE MORE POWER APPLIED TO LASERS, THE LONGER IT TAKES FOR
+							    THE LASERS TO COOL DOWN. THE EXACT EQUATION FOR TIME REQUIRED
+							    FOR LASERS TO COOL IS:  (POWER/40)+10
+							    EX: L1000 (1000/40)+10 = 35 SECONDS.
+							    DAMAGE CAUSED DEPENDS ON LASER POWER, RANGE TO TARGET, POWER ON
+							    SHIELD AND SHIELD HIT, SINCE SHIELD ?1 IS STRONGER THAN ?2.
+							    CD = COEFF. OF DAMAGE = (LASER POW * 12 * (33-SHIELD POW)/RANGE/1)/2
+							    HIT ON SHIELD ?1 CAUSES:
+							    CD PERCENT DAMAGE ON SHIELD ?1
+							    CD PERCENT DAMAGE ON SHIP ITSELF.
+							    HIT ON SHIELD ?2 CAUSES:
+							    CD*2 PERCENT DAMAGE ON SHIELD ?2
+							    CD PERCENT DAMAGE ON SHIP ITSELF.
+						
+						M - FIRE MISSILE.
+								MX,Y OR MX MY  2 TUBES AVAILABLE TO FIRE, COMPUTER
+							    FIRES TUBE(S) IF THEY ARE READY. IT TAKES 60 SECONDS TO LOAD A TUBE.
+							    RANGE OF MISSILES IS 20000 KM. SHIPS HAVE A MAXIMUM CAPACITY
+							    OF 25 MISSILES. MISSILES ARE RESTORED AFTER EVERY FIVE KILLS.
+							    MISSILES ARE NOT FIRED AT NON-EXISTANT SHIPS OR NON-EXISTANT GORNS.
+							    EX: M5 FIRES 1 MISSILE AT SHIP 5. IF TUBE 1 WERE NOT READY YET,
+							    COMPUTER WOULD FIRE TUBE 2 (PROVIDED IT WAS READY).
+							    FOR PURPOSES OF MISSILE TARGETTING, GORN BASES 1,2,3, _ 4
+							    ARE CONSIDERED TARGETS 21,22,23, AND 24, RESPECTIVELY.
+							    CD = COEFF. OF DAMAGE = (102 - (SHIELD POW. * 4))/2
+							    HIT ON SHIELD ?1 CAUSES:
+							  	  CD PERCENT DAMAGE TO SHIELD ?1
+								    CD PERCENT DAMAGE TO SHIP ITSELF.
+							    HIT ON SHIELD ?2 CAUSES:
+							    CD*2 PERCENT DAMAGE TO SHIELD ?2.
+							    CD PERCENT DAMAGE TO SHIP ITSELF.
+
+					</p>
+					
+					<p id="a-commands" class="help">
 							<dt>B - TOGGLES BRIEF MODE ON AND OFF. </dt>
 							<dd>WHEN IT IS ON, IT DELETES HEADERS TO SPEED PRINTOUT.</dd>
 							
@@ -136,40 +186,6 @@
 							    6. PRINTS DAMAGE ON, AZIMUTH TO, AND RANGE TO GORN BASES
 							       STILL ON, IF WITHIN RANGE SET BY "G" COMMAND. OR +OR- 15 DEGREES.</dd>
 							       
-							<dt>L - FIRE LASERS.</dt> 
-							<dd>LX  FIRE  0 TO 2000 ENERGY. SPREAD IS +OR- 1 DEG.
-							    LASERS HIT ALL TARGETS WITHIN SPREAD REGARDLESS OF RANGE.
-							    THE MORE POWER APPLIED TO LASERS, THE LONGER IT TAKES FOR
-							    THE LASERS TO COOL DOWN. THE EXACT EQUATION FOR TIME REQUIRED
-							    FOR LASERS TO COOL IS:  (POWER/40)+10
-							    EX: L1000 (1000/40)+10 = 35 SECONDS.
-							    DAMAGE CAUSED DEPENDS ON LASER POWER, RANGE TO TARGET, POWER ON
-							    SHIELD AND SHIELD HIT, SINCE SHIELD ?1 IS STRONGER THAN ?2.
-							    CD = COEFF. OF DAMAGE = (LASER POW * 12 * (33-SHIELD POW)/RANGE/1)/2
-							    HIT ON SHIELD ?1 CAUSES:
-							    CD PERCENT DAMAGE ON SHIELD ?1
-							    CD PERCENT DAMAGE ON SHIP ITSELF.
-							    HIT ON SHIELD ?2 CAUSES:
-							    CD*2 PERCENT DAMAGE ON SHIELD ?2
-							    CD PERCENT DAMAGE ON SHIP ITSELF.</dd>
-							    
-							<dt>M - FIRE MISSILE.</dt>
-							<dd> MX,Y OR MX MY  2 TUBES AVAILABLE TO FIRE, COMPUTER
-							    FIRES TUBE(S) IF THEY ARE READY. IT TAKES 60 SECONDS TO LOAD A TUBE.
-							    RANGE OF MISSILES IS 20000 KM. SHIPS HAVE A MAXIMUM CAPACITY
-							    OF 25 MISSILES. MISSILES ARE RESTORED AFTER EVERY FIVE KILLS.
-							    MISSILES ARE NOT FIRED AT NON-EXISTANT SHIPS OR NON-EXISTANT GORNS.
-							    EX: M5 FIRES 1 MISSILE AT SHIP 5. IF TUBE 1 WERE NOT READY YET,
-							    COMPUTER WOULD FIRE TUBE 2 (PROVIDED IT WAS READY).
-							    FOR PURPOSES OF MISSILE TARGETTING, GORN BASES 1,2,3, _ 4
-							    ARE CONSIDERED TARGETS 21,22,23, AND 24, RESPECTIVELY.
-							    CD = COEFF. OF DAMAGE = (102 - (SHIELD POW. * 4))/2
-							    HIT ON SHIELD ?1 CAUSES:
-							  	  CD PERCENT DAMAGE TO SHIELD ?1
-								    CD PERCENT DAMAGE TO SHIP ITSELF.
-							    HIT ON SHIELD ?2 CAUSES:
-							    CD*2 PERCENT DAMAGE TO SHIELD ?2.
-							    CD PERCENT DAMAGE TO SHIP ITSELF.</dd>
 							    
 							<dt>N - NULL COMMAND.</dt>
 									<dd> IF PLAYER WISHES TO GET THE LATEST INFORMATION
@@ -191,12 +207,7 @@
 							    IT IS ADVISED TO KEEP REPAIR OFF BY STAGGERING MISSILES AND LASERS
 							    OR IF OUT OF MISSILE RANGE BY SHOOTING LASERS ABOUT 1000.</dd>
 							    
-							<dt>R - ROTATE SHIP. </dt>
-									<dd>RX,Y  POSITIVE OR NEGATIVE ROTATION. 0 TO +OR- 360. (X)
-							    EX: R180 WILL ROTATE AT 6 DEG/SEC. WHICH WILL TAKE ABOUT 30 SECONDS.
-							    RATE OR ROTATION CAN ALSO BE VARIED. EX: R180,1 WILL ROTATE AT
-							    1 DEG/SEC INSTEAD OF 6 DEG/SEC. THIS WILL TAKE 180 SECONDS.
-							    MAXIMUM RATE OF ROTATION IS 6 DEG/SEC.</dd>
+
 							    
 							<dt>S - INDIVIDUAL SHIELD POWER ADJUSTMENT.</dt>
 							<dd>SX,Y  FROM 0 TO 25 POWER/SEC.
