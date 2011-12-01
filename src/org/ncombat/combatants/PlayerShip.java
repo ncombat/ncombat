@@ -361,7 +361,10 @@ public class PlayerShip extends Ship
 		
 		for (Combatant combatant : gameServer.getCombatants()) {
 			if (combatant instanceof Ship) {
-				if ((shipNum <= 0) || (shipNum == combatant.getShipNumber())) {
+				if ((combatant instanceof GornBase)) {
+					; // don't show Gorn bases
+				}
+				else if ((shipNum <= 0) || (shipNum == combatant.getShipNumber())) {
 					String fmt = "%2d   %-20s %3d";
 					addMessage( String.format(fmt,
 									combatant.getShipNumber(),
