@@ -1,5 +1,7 @@
 package org.ncombat.combatants;
 
+import java.util.ArrayList;
+
 import org.apache.log4j.Logger;
 import org.ncombat.GornShieldArray;
 import org.ncombat.MotionComputer;
@@ -49,7 +51,8 @@ public class GornBase extends Ship
 	private static final double TRESPASS_RANGE = 35000.0;
 	private static final String TRESPASS_MSG = "YOU ARE TRESPASSING IN GORN SPACE. TURN BACK OR YOU WILL BE DESTROYED.\n";
 	
-	
+	// keeping a list of ships I've warned, to reduce number of duplicate messages
+	ArrayList<Combatant> warnedPlayers = new ArrayList();
 	
 	private double cycleTimeLeft = CYCLE_LEN;
 
@@ -112,7 +115,6 @@ public class GornBase extends Ship
 			long now = System.currentTimeMillis();
 			CommandBatch batch = new CommandBatch(now, this);
 			
-			
 			if (cycleTimeLeft <= 0.0) {
 			
 				Combatant nearest = nearest();
@@ -122,22 +124,23 @@ public class GornBase extends Ship
 			
 				this.checkEnergy();
 				
-				// if it's approaching Gorn space, send a nastygram
-				if  ((nearest_distance > WARNING_RANGE) && (nearest_distance < TRESPASS_RANGE) && (lastNearest!=nearest.getId()) && (nearest instanceof PlayerShip)) {
+				// if it's approaching Gorn space, send a nastygram unless we warned them last cycle
+				if  ((nearest_distance > WARNING_RANGE) && (nearest_distance < TRESPASS_RANGE) && (nearest instanceof PlayerShip) && !(warnedPlayers.contains(nearest))) {
 					log.debug( String.format("[%s] warning interloper [%s] at range %7.1f", commander, nearest.commander, nearestRange));
 					getGameServer().sendMessage(nearest.getShipNumber(), "\nMessage from " + this.commander + " : " + WARNING_MSG + "\n");
+					warnedPlayers.add(nearest);
 				}
 				
 				// if it's trespassing on Gorn space and is in engagement range ( and isn't a Gorn :) ), kill it!
 				// TODO: Should Gorn base refrain from attacking if ship is headed back toward core (say azimuth > +/- 90)?
 	
-				if ((nearest_distance >= TRESPASS_RANGE) && (nearestRange < ENGAGEMENT_RANGE) && !(nearest instanceof GornBase)){
+				if ((nearest_distance >= TRESPASS_RANGE) && (nearestRange < ENGAGEMENT_RANGE) && (nearest instanceof PlayerShip)){
 					log.info( String.format("[%s] attacking intruder [%s] at range %7.1f", commander, nearest.commander, nearestRange));
 					getGameServer().sendMessage(nearest.getShipNumber(), "\nMessage from " + this.commander + " : " + TRESPASS_MSG + "\n");
 					attack(nearest);
 				}
 				
-				// this is to prevent loop where it continually broadcasts warnings
+				// this is to prevent loop where it continually broadcasts warnings to the same user
 				lastNearest = nearest.getId();
 				
 				gameServer.addCommandBatch(batch);
@@ -297,6 +300,10 @@ public class GornBase extends Ship
 		double intervalLen = (double)(intervalLong / 1000);
 		cycleTimeLeft = Math.max(cycleTimeLeft - intervalLen, 0.0);
 		
+		// reset list of warned players so they will be warned again if they remain in Gorn space on next cycle
+		if (cycleTimeLeft < 0.01) {
+			warnedPlayers.clear();
+		}
 		
 	}
 }
