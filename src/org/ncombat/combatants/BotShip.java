@@ -47,6 +47,9 @@ public class BotShip extends Ship
 	 * kilometers.
 	 */
 	private static final double SHIELD_SNAP_RANGE = 20000.0;
+
+	// Percent chance bot will trash-talk opponent.
+	private static final double BOT_TRASH_TALK = .90;
 	
 	private LinkedList<Command> commandQueue = new LinkedList<Command>();
 	
@@ -244,7 +247,7 @@ public class BotShip extends Ship
 	}
 
 	/**
-	 * Taunt the player
+	 * Taunt the opponent.
 	 */
 	private void trashTalk(Combatant opponent) {
 		
@@ -255,7 +258,7 @@ public class BotShip extends Ship
 				"Caesar si viveret, ad remum dareris."};
 		
 		if (opponent instanceof PlayerShip) {
-			if (Math.random() > 0.75)  {
+			if (Math.random() > BOT_TRASH_TALK)  {
 				getGameServer().sendMessage(opponent.getShipNumber(),"\nMessage from " + this.commander + " :  " + taunts[new Random().nextInt(taunts.length-1)]+ "\n");
 			}
 		}
