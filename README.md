@@ -6,6 +6,6 @@ Though we do not have original source code, we do have the player documentation 
 
 Project goals include:
 
-Keep interface simple - emphasis on text-only.
-Keep command and player interaction as close to original as possible.
-See NCombatRules, ToDosAndThoughts, ProjectLog
+# Keep interface simple - emphasis on text-only.
+# Keep command and player interaction as close to original as possible.
+# See NCombatRules, ToDosAndThoughts, ProjectLog
