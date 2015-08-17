@@ -52,7 +52,7 @@ public class GornBase extends Ship
 	private static final String TRESPASS_MSG = "YOU ARE TRESPASSING IN GORN SPACE. TURN BACK OR YOU WILL BE DESTROYED.\n";
 	
 	// keeping a list of ships I've warned, to reduce number of duplicate messages
-	ArrayList<Combatant> warnedPlayers = new ArrayList();
+	ArrayList<Combatant> warnedPlayers = new ArrayList<Combatant>();
 	
 	private double cycleTimeLeft = CYCLE_LEN;
 
