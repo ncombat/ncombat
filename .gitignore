@@ -1,0 +1,4 @@
+/build/
+/dist/
+/WebContent/WEB-INF/classes/
+*.class
