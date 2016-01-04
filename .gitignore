@@ -1,4 +1,5 @@
-/build/
-/dist/
-/WebContent/WEB-INF/classes/
-*.class
+.project
+.classpath
+.settings/
+bin/
+target/
