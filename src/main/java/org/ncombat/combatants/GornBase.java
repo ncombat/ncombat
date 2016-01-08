@@ -43,11 +43,11 @@ public class GornBase extends Ship
 	private static final double GORN_MINIMUM_ENERGY = 10000.0;
 	private static final double GORN_MAXIMUM_ENERGY = 30000.0;
 	
-	// ships and/or bots exceeding WARNING_RANGE will recieve WARNING_MESSAGE
+	// ships and/or bots at less than WARNING_RANGE will recieve WARNING_MESSAGE
 	private static final double WARNING_RANGE = 20000.0;
 	private static final String WARNING_MSG = "WARNING - YOU ARE APPROACHING GORN SPACE. TURN BACK OR I WILL OPEN FIRE.\n";
 	
-	// ships exceeding TRESPASS_RANGE will be fired upon and recieve TRESPASS_MESSAGE
+	// ships at less than TRESPASS_RANGE will be fired upon and recieve TRESPASS_MESSAGE
 	private static final double TRESPASS_RANGE = 35000.0;
 	private static final String TRESPASS_MSG = "YOU ARE TRESPASSING IN GORN SPACE. TURN BACK OR YOU WILL BE DESTROYED.\n";
 	
