@@ -83,6 +83,10 @@
 	background: #E5F1FF;
 }
 
+#docs {
+	display: none;
+}
+
 #restartPane {
 	background: pink;
 	display: none;

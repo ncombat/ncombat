@@ -65,10 +65,10 @@
 				$.getJSON("gamePing.json");
 			}, 30000);
 
-			$("#dd").load("html/content/docs/COMINFO.txt");
+			$("#docs").load("html/content/docs/COMINFO.txt");
 			// allow click to expand dd tag
-			$("dt").click(function(){
-				$(this).next().toggle();
+			$("#docsToggle").click(function(){
+				$("#docs").toggle();
 				
 			});
 			
@@ -103,8 +103,8 @@
 	</div>
 	<div id="docPane">
 		<dl>
-			<dt>Our starting point, the original player documentation (click to hide/unhide)</dt>
-			<dd><pre><span id="originalDocs"></span></pre></dd>
+			<dt id="docsToggle">Our starting point, the original player documentation (click to hide/unhide)</dt>
+			<dd><pre><span id="docs"></span></pre></dd>
 		</dl></div>
 	<div id="footer"><span id="about">about</span> <span id="contact">contact</span> <span id="help">help</span> <span id="license">license</span> </div>
 	<div id="googleanalytics">
