@@ -9,3 +9,5 @@ Project goals include:
 1. Keep interface simple - emphasis on text-only.
 2. Keep command and player interaction as close to original as possible.
 3. See NCombatRules, ToDosAndThoughts, ProjectLog
+
+See the Developer Quick Start [https://github.com/ncombat/ncombat/wiki/Developer-Quick-Start] for setup and configuration instructions.
