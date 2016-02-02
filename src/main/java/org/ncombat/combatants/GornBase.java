@@ -31,6 +31,9 @@ public class GornBase extends Ship
 	private static final int GORN_BLASTER_FIRING_POWER = 2000;
 	
 	// Gorn base
+	private static final double GORN_INITIAL_ENERGY = 20000.0;
+	private static final double GORN_MINIMUM_ENERGY = 10000.0;
+	private static final double GORN_MAXIMUM_ENERGY = 30000.0;
 	
 	/**
 	 * engagement range is distance I will fire at a trespasser. 
@@ -38,17 +41,14 @@ public class GornBase extends Ship
 	 * Because of the position of the bases around the perimeter it's possible two 
 	 * gorn bases could fire at the same ship simultaneously.
 	*/
-	private static final double ENGAGEMENT_RANGE = 100000.0;
-	private static final double GORN_INITIAL_ENERGY = 20000.0;
-	private static final double GORN_MINIMUM_ENERGY = 10000.0;
-	private static final double GORN_MAXIMUM_ENERGY = 30000.0;
+	private static final double ENGAGEMENT_RANGE = 80000.0;
 	
-	// ships and/or bots at less than WARNING_RANGE will recieve WARNING_MESSAGE
-	private static final double WARNING_RANGE = 20000.0;
+	// ships and/or bots at less than WARNING_RANGE will receive WARNING_MESSAGE
+	private static final double WARNING_RANGE = 40000.0;
 	private static final String WARNING_MSG = "WARNING - YOU ARE APPROACHING GORN SPACE. TURN BACK OR I WILL OPEN FIRE.\n";
 	
-	// ships at less than TRESPASS_RANGE will be fired upon and recieve TRESPASS_MESSAGE
-	private static final double TRESPASS_RANGE = 35000.0;
+	// ships at less than TRESPASS_RANGE will be fired upon and receive TRESPASS_MESSAGE
+	private static final double TRESPASS_RANGE = 25000.0;
 	private static final String TRESPASS_MSG = "YOU ARE TRESPASSING IN GORN SPACE. TURN BACK OR YOU WILL BE DESTROYED.\n";
 	
 	// keeping a list of ships I've warned, to reduce number of duplicate messages
@@ -118,14 +118,17 @@ public class GornBase extends Ship
 			if (cycleTimeLeft <= 0.0) {
 			
 				Combatant nearest = nearest();
-				double nearest_distance = nearest.position.r();
+				
 				double nearestRange = range(nearest);
+				
+				//log.info(this.commander + " - my nearest is " + nearest.commander	+ "\trange: " + nearestRange);
+				
 				batch.addCommand( new ShieldCommand(1, 25));
 			
 				this.checkEnergy();
 				
 				// if it's approaching Gorn space, send a nastygram unless we warned them last cycle
-				if  ((nearest_distance > WARNING_RANGE) && (nearest_distance < TRESPASS_RANGE) && (nearest instanceof PlayerShip) && !(warnedPlayers.contains(nearest))) {
+				if  ((nearestRange < WARNING_RANGE) && (nearestRange > TRESPASS_RANGE) && (nearest instanceof PlayerShip) && !(warnedPlayers.contains(nearest))) {
 					log.debug( String.format("[%s] warning interloper [%s] at range %7.1f", commander, nearest.commander, nearestRange));
 					getGameServer().sendMessage(nearest.getShipNumber(), "\nMessage from " + this.commander + " : " + WARNING_MSG + "\n");
 					warnedPlayers.add(nearest);
@@ -134,7 +137,7 @@ public class GornBase extends Ship
 				// if it's trespassing on Gorn space and is in engagement range ( and isn't a Gorn :) ), kill it!
 				// TODO: Should Gorn base refrain from attacking if ship is headed back toward core (say azimuth > +/- 90)?
 	
-				if ((nearest_distance >= TRESPASS_RANGE) && (nearestRange < ENGAGEMENT_RANGE) && (nearest instanceof PlayerShip)){
+				if ((nearestRange <= TRESPASS_RANGE) && (nearest instanceof PlayerShip)){
 					log.info( String.format("[%s] attacking intruder [%s] at range %7.1f", commander, nearest.commander, nearestRange));
 					getGameServer().sendMessage(nearest.getShipNumber(), "\nMessage from " + this.commander + " : " + TRESPASS_MSG + "\n");
 					attack(nearest);
