@@ -208,7 +208,7 @@ public class GornBase extends Ship
 		double range = range(attacker);
 		
 		// reducing Gorn damage effect by decreasing constant from 33 to 28
-		double coeffDamage = (power * 12.0 * (28.0 - shieldPower)) / range / 2.0;
+		double coeffDamage = (power * 12.0 * (33.0 - shieldPower)) / range / 2.0;
 		double shipDamage = addDamage(coeffDamage);
 		shields.addDamage(shieldHit, coeffDamage);
 		
@@ -233,7 +233,7 @@ public class GornBase extends Ship
 		int shieldHit = shields.coveringShield(azimuth(attacker));
 		double shieldPower = shields.getEffectivePower(shieldHit);
 		// Gorn's more powerful shields means coefficent needs to be increased, so less damage is done.
-		double coeffDamage = 102.0 - (shieldPower * 4.5);
+		double coeffDamage = 101.0 - (shieldPower * 4.0);
 		double shipDamage = addDamage(coeffDamage);
 		shields.addDamage(shieldHit, coeffDamage);
 		
