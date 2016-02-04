@@ -34,25 +34,25 @@ public abstract class Ship extends Combatant
 	private static final double ENGINE_HEATING_RATE = 50.0;
 	
 	// Heat level at which the engine is destroyed (in degrees).
-	public static final double ENGINE_MAX_HEAT = 8000.0;
+	protected static final double ENGINE_MAX_HEAT = 8000.0;
 	
-	private static final double INITIAL_ENERGY = 30000;
+	protected static final double INITIAL_ENERGY = 30000;
 	
-	private static final int INITIAL_NUM_MISSILES = 25;
+	protected static final int INITIAL_NUM_MISSILES = 25;
 	
 	// The maximum angular deviation within which a laser attack is effective (in degrees).
-	private static final double MAX_LASER_AZIMUTH = 1.0;
+	protected static final double MAX_LASER_AZIMUTH = 1.0;
 	
 	// The maximum angular deviation within which a missile attack is effective (in degrees).
-	private static final double MISSILE_MAX_AZIMUTH = 5.0;
+	protected static final double MISSILE_MAX_AZIMUTH = 5.0;
 	
 	// The maximum range from which a missile attack may be launched (in kilometers).
-	public static final double MISSILE_MAX_RANGE = 20000.0;
+	protected static final double MISSILE_MAX_RANGE = 20000.0;
 
 	// The time required to reload a missile tube after firing a missile (in seconds).
-	public static final double MISSILE_RELOAD_TIME = 60.0;
+	protected static final double MISSILE_RELOAD_TIME = 60.0;
 	
-	private static final int NUM_MISSILE_TUBES = 2;
+	protected static final int NUM_MISSILE_TUBES = 2;
 	
 	private double accelRate;
 	
