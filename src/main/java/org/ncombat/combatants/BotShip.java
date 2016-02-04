@@ -49,7 +49,7 @@ public class BotShip extends Ship
 	private static final double SHIELD_SNAP_RANGE = 20000.0;
 
 	// Percent chance bot will trash-talk opponent.
-	private static final double BOT_TRASH_TALK = .90;
+	private static final double BOT_TRASH_TALK = .30;
 	
 	private LinkedList<Command> commandQueue = new LinkedList<Command>();
 	
@@ -112,9 +112,16 @@ public class BotShip extends Ship
 						LaserCommand laserCmd = new LaserCommand(1000.0);
 						batch.addCommand(laserCmd);
 					}
-					else if (( Math.abs(azimuth) <= 5.0) && missileReady()) {
-						MissileCommand missileCmd = new MissileCommand(nearest.getShipNumber());
-						batch.addCommand(missileCmd);
+					
+
+					if (( Math.abs(azimuth) <= 5.0) && missileReady() && range(nearest)<=super.MISSILE_MAX_RANGE) {
+						// fire all ready tubes
+						for (int i = 0 ; i < this.numMissileTubes ; i++) {
+							if (missileLoadTime[i] <= 0.0) {
+								MissileCommand missileCmd = new MissileCommand(nearest.getShipNumber());
+								batch.addCommand(missileCmd);
+							}
+						}
 					}
 					
 					trashTalk(nearest);
@@ -233,7 +240,8 @@ public class BotShip extends Ship
 	 */
 	public void processMessageCommand(MessageCommand cmd)
 	{
-		// thanks for the share but the bot does not care
+		// the bot will fire back at you
+		//trashTalk(cmd.);
 		;
 	}
 	
@@ -255,10 +263,12 @@ public class BotShip extends Ship
 				"Maybe you should try XBox Live.",
 				"I find your lack of win disturbing.", 
 				"Fear my wrath.",
-				"Caesar si viveret, ad remum dareris."};
+				"Do you hear the voices too?",
+				"Caesar si viveret, ad remum dareris.",
+				"Are you gonna bark all day, little doggie, or are you gonna bite?"};
 		
 		if (opponent instanceof PlayerShip) {
-			if (Math.random() > BOT_TRASH_TALK)  {
+			if (Math.random() < BOT_TRASH_TALK)  {
 				getGameServer().sendMessage(opponent.getShipNumber(),"\nMessage from " + this.commander + " :  " + taunts[new Random().nextInt(taunts.length-1)]+ "\n");
 			}
 		}
