@@ -34,7 +34,7 @@ public class BotShip extends Ship
 	 * Bot ship will attack a vessel that comes within ENGAGEMENT_RANGE
 	 * kilometers.
 	 */
-	private static final double ENGAGEMENT_RANGE = 15000.0;
+	private static final double ENGAGEMENT_RANGE = 25000.0;
 
 	/*
 	 * When the bot ship gets NORMAL_RADIUS kilometers or more from the center
@@ -114,7 +114,7 @@ public class BotShip extends Ship
 					}
 					
 
-					if (( Math.abs(azimuth) <= 5.0) && missileReady() && range(nearest)<=super.MISSILE_MAX_RANGE) {
+					if (( Math.abs(azimuth) <= super.MISSILE_MAX_AZIMUTH) && missileReady() && range(nearest)<=super.MISSILE_MAX_RANGE) {
 						// fire all ready tubes
 						for (int i = 0 ; i < this.numMissileTubes ; i++) {
 							if (missileLoadTime[i] <= 0.0) {
@@ -240,8 +240,8 @@ public class BotShip extends Ship
 	 */
 	public void processMessageCommand(MessageCommand cmd)
 	{
-		// the bot will fire back at you
-		//trashTalk(cmd.);
+		// the bot will talk back at you
+		trashTalk(nearest());
 		;
 	}
 	
