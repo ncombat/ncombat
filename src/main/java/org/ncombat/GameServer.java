@@ -31,7 +31,7 @@ public class GameServer implements DisposableBean
 		}
 	}
 	
-	public static final int NUM_BOT_SHIPS = 2;
+	public static final int NUM_BOT_SHIPS = 3;
 	
 	public static final int NUM_GORN_BASES = 4;
 	
@@ -187,7 +187,8 @@ public class GameServer implements DisposableBean
 		Vector position = randomPosition();
 		Vector velocity = randomVelocity();
 		double heading = velocity.theta();
-	
+		
+		// make the names more creative! properties file!
 		BotShip botShip = new BotShip("Bot Ship #" + nextBotShipNum++);
 		botShip.setPosition(position);
 		botShip.setVelocity(velocity);
