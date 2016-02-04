@@ -106,7 +106,7 @@
 			<dt id="docsToggle">Our starting point, the original player documentation (click to hide/unhide)</dt>
 			<dd><pre><span id="docs"></span></pre></dd>
 		</dl></div>
-	<div id="footer"><span id="about">about</span> <span id="contact">contact</span> <span id="help">help</span> <span id="license">license</span> </div>
+	<div id="footer"><a href="https://github.com/ncombat/ncombat">GitHub</a> </a><span id="about">about</span> <span id="contact">contact</span> <span id="help">help</span> <span id="license">license</span> </div>
 	<div id="googleanalytics">
 		<script type="text/javascript">
 			var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");

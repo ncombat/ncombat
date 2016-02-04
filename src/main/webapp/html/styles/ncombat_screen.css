@@ -23,13 +23,16 @@
 	line-height: 200%;
 	font-family: Monospace,Serif;
 	font-variant:small-caps;
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
 	width:100%;
 	text-align:center;
 }
 #ncombatTitle {
 	margin: 10px;
 	padding: 10px;
-	background: #FFFFFF;
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
 	font-size:150%;
 }
 
@@ -38,12 +41,14 @@
 	body {
 	margin: 0px;
 	padding: 0px;
-	background: #F0FFFF;
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
 	font-size:100%;
 	}
 
 	#content {
-		background: #FFEBCD;
+		background-image: url("../images/paper-texture.gif");
+		background: #f5f5f5;
 		float: center;
 	}
 
@@ -52,13 +57,15 @@
 /* Game console and elements
 -----------------------------------------------------------------------------*/	
 #gameConsole {
-	background: #FFEBCD;
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
 	float: center;
 	width: 96%;
 }
 
 #playerInfo {
-	background: #FFFFFF;
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
 	float: center;
 	width: 94%;
 }
@@ -66,7 +73,8 @@
 #statusScreen {
 	font-family:Monospace,Serif;
 	font-variant: small-caps;
-	background: #FFFFCC;
+	background-image: url("/images/paper-texture.gif");
+	background: #f5f5f5;
 	float: center;
 	width: 94%;
 	height: 400px;
@@ -74,13 +82,16 @@
 }
 
 #commandConsole {
-	background: #FFFFFF;
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
 	float: center;
 	width: 94%;
 }
 
 #docPane {
-	background: #E5F1FF;
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
+	
 }
 
 #docs {
@@ -102,7 +113,8 @@
 /* Footer
 -----------------------------------------------------------------------------*/
 #footer {
-	background: #E5FFE6;
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
 	clear: both;
 	width: 100%;
 	text-align: right;
@@ -113,6 +125,8 @@
 
 input.text
     {
+    	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
     padding: 3px;
     border: 1px solid #999999;    
 }
