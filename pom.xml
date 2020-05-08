@@ -11,6 +11,7 @@
 	<packaging>war</packaging>
 
 	<properties>
+		<jackson.version>2.11.0</jackson.version>
 		<jsp.version>2.3.1</jsp.version>
 		<jstl.version>1.2.1</jstl.version>
         <junit.version>4.12</junit.version>
@@ -33,6 +34,11 @@
     </build>
 
 	<dependencies>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>${jackson.version}</version>
+		</dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

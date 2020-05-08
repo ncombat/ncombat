@@ -11,9 +11,9 @@ import org.ncombat.command.MessageCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
@@ -21,7 +21,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-@Controller
+@RestController
 public class GameRestController
 {
 	public static final String LOGIN_URL = "gameLogin.json";
@@ -36,7 +36,7 @@ public class GameRestController
 		this.gameManager = gameManager;
 	}
 
-	@PostMapping(path = "/gameJoin.json", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping("/gameJoin.json")
 	public Map gameJoin(HttpServletRequest request)
 	{
 		GameStatusModel model = new GameStatusModel();
@@ -74,7 +74,7 @@ public class GameRestController
 		return model.promptForName();
 	}
 
-	@PostMapping(path = "/gameLogin.json", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping("/gameLogin.json")
 	public Map gameLogin(HttpServletRequest request)
 	{
 		GameStatusModel model = new GameStatusModel();
@@ -120,7 +120,7 @@ public class GameRestController
 		return model.promptForCommands();
 	}
 
-	@PostMapping(path = "/gameCommands.json", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping("/gameCommands.json")
 	public Map gameCommands(HttpServletRequest request)
 	{
 		GameStatusModel model = new GameStatusModel();
@@ -217,7 +217,7 @@ public class GameRestController
 		return model;
 	}
 
-	@PostMapping(path = "/gameMessage.json", produces = MediaType.APPLICATION_JSON_VALUE)
+	@PostMapping("/gameMessage.json")
 	public Map gameMessage(HttpServletRequest request)
 	{
 		GameStatusModel model = new GameStatusModel();
