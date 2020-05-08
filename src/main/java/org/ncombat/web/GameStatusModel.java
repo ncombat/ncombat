@@ -62,19 +62,19 @@ public class GameStatusModel extends HashMap
 	
 	public GameStatusModel promptForCommands() {
 		setPrompt(COMMAND_PROMPT);
-		setUrl(GameController.COMMAND_URL);
+		setUrl(GameRestController.COMMAND_URL);
 		return this;
 	}
 	
 	public GameStatusModel promptForName() {
 		setPrompt(NAME_PROMPT);
-		setUrl(GameController.LOGIN_URL);
+		setUrl(GameRestController.LOGIN_URL);
 		return this;
 	}
 	
 	public GameStatusModel promptForMessage() {
 		setPrompt(MESSAGE_PROMPT);
-		setUrl(GameController.MESSAGE_URL);
+		setUrl(GameRestController.MESSAGE_URL);
 		return this;
 	}
 	
