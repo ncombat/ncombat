@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import org.apache.log4j.Logger;
 import org.ncombat.combatants.BotShip;
 import org.ncombat.combatants.Combatant;
 import org.ncombat.combatants.GornBase;
@@ -18,6 +17,8 @@ import org.ncombat.combatants.PlayerShip;
 import org.ncombat.combatants.Ship;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.utils.Vector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 
 @SuppressWarnings("unchecked")
@@ -79,7 +80,7 @@ public class GameServer implements DisposableBean
 		return velocity;
 	}
 	
-	private Logger log = Logger.getLogger(GameServer.class);
+	private Logger log = LoggerFactory.getLogger(GameServer.class);
 	
 	private GameManager gameManager;
 	private int serverNumber;

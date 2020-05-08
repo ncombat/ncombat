@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.log4j.Logger;
 import org.ncombat.command.BriefModeCommand;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.command.HelpCommand;
@@ -20,6 +19,8 @@ import org.ncombat.command.StopCommand;
 import org.ncombat.command.TrackCommand;
 import org.ncombat.utils.NcombatMath;
 import org.ncombat.utils.Vector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PlayerShip extends Ship
 {
@@ -52,7 +53,7 @@ public class PlayerShip extends Ship
 	
 	private boolean briefMode;
 	
-	private Logger log = Logger.getLogger(PlayerShip.class);
+	private Logger log = LoggerFactory.getLogger(PlayerShip.class);
 	
 	private boolean regenDataReadout;
 	

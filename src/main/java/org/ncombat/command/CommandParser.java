@@ -12,8 +12,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.log4j.Logger;
 import org.ncombat.combatants.Combatant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("unchecked")
 public class CommandParser
@@ -36,7 +37,7 @@ public class CommandParser
 	// Maps command class (like org.ncombat.command.AccelerateCommand) to validation method.
 	private static Map<Class,Method> validateMethods;
 	
-	private Logger log = Logger.getLogger(CommandParser.class);
+	private Logger log = LoggerFactory.getLogger(CommandParser.class);
 	
 	private Combatant combatant;
 	

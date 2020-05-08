@@ -1,8 +1,9 @@
 package org.ncombat;
 
-import org.apache.log4j.Logger;
 import org.ncombat.combatants.Combatant;
 import org.ncombat.combatants.PlayerShip;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +13,7 @@ import java.util.Map;
 @Component
 public class GameManager implements InitializingBean
 {
-	private Logger logger = Logger.getLogger(GameManager.class);
+	private Logger logger = LoggerFactory.getLogger(GameManager.class);
 	
 	private GameServer gameServer;
 	

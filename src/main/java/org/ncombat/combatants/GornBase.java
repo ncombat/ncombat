@@ -2,7 +2,6 @@ package org.ncombat.combatants;
 
 import java.util.ArrayList;
 
-import org.apache.log4j.Logger;
 import org.ncombat.GornShieldArray;
 import org.ncombat.MotionComputer;
 import org.ncombat.combatants.Combatant.AttackResult;
@@ -14,6 +13,8 @@ import org.ncombat.command.RotateCommand;
 import org.ncombat.command.ShieldCommand;
 import org.ncombat.utils.NcombatMath;
 import org.ncombat.utils.Vector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class GornBase extends Ship
 {
@@ -59,7 +60,7 @@ public class GornBase extends Ship
 	
 	// Gorns are armed with one laser.
 	protected double laserCoolingTime;
-	private Logger log = Logger.getLogger(GornBase.class);
+	private Logger log = LoggerFactory.getLogger(GornBase.class);
 	
 	public GornBase(String commander) {
 		super(commander);
@@ -152,7 +153,7 @@ public class GornBase extends Ship
 			
 		}
 		catch (Exception e) {
-			log.error(e);
+			log.error("completeGameCycle exception", e);
 		}
 	}
 
