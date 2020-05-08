@@ -4,7 +4,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
 
-import org.apache.log4j.Logger;
 import org.ncombat.command.AccelerateCommand;
 import org.ncombat.command.Command;
 import org.ncombat.command.CommandBatch;
@@ -15,6 +14,8 @@ import org.ncombat.command.RotateCommand;
 import org.ncombat.command.ShieldCommand;
 import org.ncombat.utils.NcombatMath;
 import org.ncombat.utils.Vector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class BotShip extends Ship
@@ -55,7 +56,7 @@ public class BotShip extends Ship
 	
 	private double cycleTimeLeft = CYCLE_LEN;
 	
-	private Logger log = Logger.getLogger(BotShip.class);
+	private Logger log = LoggerFactory.getLogger(BotShip.class);
 	
 	private State state = State.NORMAL;
 	
@@ -209,7 +210,7 @@ public class BotShip extends Ship
 				msg.append(" ");
 				msg.append(cmd.toString());
 			}
-			log.debug(msg);
+			log.debug(msg.toString());
 			
 			gameServer.addCommandBatch(batch);
 		}

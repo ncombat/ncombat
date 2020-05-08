@@ -1,6 +1,5 @@
 package org.ncombat.web;
 
-import org.apache.log4j.Logger;
 import org.ncombat.GameManager;
 import org.ncombat.GameServer;
 import org.ncombat.combatants.Combatant;
@@ -9,6 +8,8 @@ import org.ncombat.command.Command;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.command.CommandParser;
 import org.ncombat.command.MessageCommand;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +30,7 @@ public class GameController
 	public static final String COMMAND_URL = "gameCommands.json";
 	public static final String MESSAGE_URL = "gameMessage.json";
 	
-	private Logger log = Logger.getLogger(GameController.class);
+	private Logger log = LoggerFactory.getLogger(GameController.class);
 	
 	private final GameManager gameManager;
 

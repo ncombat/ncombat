@@ -8,12 +8,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.log4j.Logger;
 import org.ncombat.GameServer;
 import org.ncombat.ShieldArray;
 import org.ncombat.command.Command;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.utils.Vector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("unchecked")
 public abstract class Combatant
@@ -36,7 +37,7 @@ public abstract class Combatant
 		return nextId++;
 	}
 	
-	private Logger log = Logger.getLogger(Combatant.class);
+	private Logger log = LoggerFactory.getLogger(Combatant.class);
 	
 	private int id;
 	
