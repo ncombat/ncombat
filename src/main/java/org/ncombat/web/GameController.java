@@ -1,13 +1,5 @@
 package org.ncombat.web;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-
 import org.apache.log4j.Logger;
 import org.ncombat.GameManager;
 import org.ncombat.GameServer;
@@ -17,12 +9,21 @@ import org.ncombat.command.Command;
 import org.ncombat.command.CommandBatch;
 import org.ncombat.command.CommandParser;
 import org.ncombat.command.MessageCommand;
-import org.springframework.beans.factory.annotation.Required;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
-import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
 
-@SuppressWarnings("unchecked")
-public class GameController extends MultiActionController
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Map;
+
+@Controller
+public class GameController
 {
 	public static final String LOGIN_URL = "gameLogin.json";
 	public static final String COMMAND_URL = "gameCommands.json";
@@ -30,21 +31,19 @@ public class GameController extends MultiActionController
 	
 	private Logger log = Logger.getLogger(GameController.class);
 	
-	private GameManager gameManager;
-	
-	public GameController() {
-	}
-	
-	@Required
-	public void setGameManager(GameManager gameManager) {
+	private final GameManager gameManager;
+
+	public GameController(GameManager gameManager) {
 		this.gameManager = gameManager;
 	}
 
-	public ModelAndView game(HttpServletRequest request, HttpServletResponse response) {
+	@GetMapping("/game.do")
+	public ModelAndView game() {
 		return new ModelAndView("ncombat");
 	}
-	
-	public Map gameJoin(HttpServletRequest request, HttpServletResponse response)
+
+	@PostMapping(path = "/gameJoin.json", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map gameJoin(HttpServletRequest request)
 	{
 		GameStatusModel model = new GameStatusModel();
 		
@@ -80,8 +79,9 @@ public class GameController extends MultiActionController
 		
 		return model.promptForName();
 	}
-	
-	public Map gameLogin(HttpServletRequest request, HttpServletResponse response)
+
+	@PostMapping(path = "/gameLogin.json", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map gameLogin(HttpServletRequest request)
 	{
 		GameStatusModel model = new GameStatusModel();
 		
@@ -125,8 +125,9 @@ public class GameController extends MultiActionController
 		
 		return model.promptForCommands();
 	}
-	
-	public Map gameCommands(HttpServletRequest request, HttpServletResponse response)
+
+	@PostMapping(path = "/gameCommands.json", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map gameCommands(HttpServletRequest request)
 	{
 		GameStatusModel model = new GameStatusModel();
 		
@@ -221,8 +222,9 @@ public class GameController extends MultiActionController
 		
 		return model;
 	}
-	
-	public Map gameMessage(HttpServletRequest request, HttpServletResponse response)
+
+	@PostMapping(path = "/gameMessage.json", produces = MediaType.APPLICATION_JSON_VALUE)
+	public Map gameMessage(HttpServletRequest request)
 	{
 		GameStatusModel model = new GameStatusModel();
 		
@@ -305,8 +307,9 @@ public class GameController extends MultiActionController
 		
 		return model;
 	}
-	
-	public Map gamePing(HttpServletRequest request, HttpServletResponse response)
+
+	@GetMapping(path = "/gamePing.json")
+	public Map gamePing(HttpServletRequest request)
 	{
 		GameStatusModel model = new GameStatusModel();
 		model.setSuccess(false);

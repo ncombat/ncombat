@@ -1,13 +1,15 @@
 package org.ncombat;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.apache.log4j.Logger;
 import org.ncombat.combatants.Combatant;
 import org.ncombat.combatants.PlayerShip;
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.stereotype.Component;
 
+import java.util.HashMap;
+import java.util.Map;
+
+@Component
 public class GameManager implements InitializingBean
 {
 	private Logger logger = Logger.getLogger(GameManager.class);

@@ -1,12 +1,13 @@
 package org.ncombat.web;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.springframework.validation.Errors;
+import org.springframework.web.servlet.View;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-
-import org.springframework.web.servlet.View;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 @SuppressWarnings("unchecked")
 public class JsonView implements View
@@ -25,6 +26,13 @@ public class JsonView implements View
 	{
 		if (model == null) {
 			model = new HashMap();
+		}
+
+		for (Iterator<Map.Entry<Object, Object>> it = model.entrySet().iterator() ; it.hasNext() ; ) {
+			Object value = it.next().getValue();
+			if (value != null && value instanceof Errors) {
+				it.remove();
+			}
 		}
 		
 		String contentType = DEFAULT_CONTENT_TYPE;
