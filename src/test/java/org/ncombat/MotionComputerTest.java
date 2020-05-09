@@ -1,7 +1,7 @@
 package org.ncombat;
 
-import static junit.framework.Assert.assertEquals;
-import junit.framework.Assert;
+import static org.junit.Assert.assertEquals;
+import org.junit.Assert;
 
 import org.junit.Before;
 import org.junit.Test;
