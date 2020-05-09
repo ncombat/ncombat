@@ -3,6 +3,9 @@ target/
 !**/src/main/**
 !**/src/test/**
 
+## local directory ##
+local/
+
 ### STS ###
 .apt_generated
 .classpath
