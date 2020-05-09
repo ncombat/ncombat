@@ -7,20 +7,20 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.stereotype.Component;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
 @Component
 public class GameManager implements InitializingBean
 {
-	private Logger logger = LoggerFactory.getLogger(GameManager.class);
+	private final Logger logger = LoggerFactory.getLogger(GameManager.class);
 	
-	private GameServer gameServer;
+	private volatile GameServer gameServer;
 	
-	private Map<Integer, Combatant> combatants = new HashMap<Integer, Combatant>();
-	
-	public GameManager() {
-	}
+	private final Map<Integer, Combatant> combatants = new HashMap<Integer, Combatant>();
+
+	private final Instant startInstant = Instant.now();
 
 	public void afterPropertiesSet() throws Exception
 	{
@@ -63,5 +63,9 @@ public class GameManager implements InitializingBean
 		synchronized (combatants) {
 			combatants.remove(combatant.getId());
 		}
+	}
+
+	public Instant getStartInstant() {
+		return startInstant;
 	}
 }
