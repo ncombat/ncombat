@@ -261,12 +261,16 @@ public class BotShip extends Ship
 	private void trashTalk(Combatant opponent) {
 		
 		String[] taunts = {
-				"Maybe you should try XBox Live.",
-				"I find your lack of win disturbing.", 
-				"Fear my wrath.",
-				"Do you hear the voices too?",
-				"Caesar si viveret, ad remum dareris.",
-				"Are you gonna bark all day, little doggie, or are you gonna bite?"};
+			"Go back to Fortnite.",
+			"I find your lack of win disturbing.", 
+			"Fear my wrath.",
+			"Do you hear the voices too?",
+			"Caesar si viveret, ad remum dareris.",
+			"Where we're going, we won't need eyes to see.".
+			"Libera te tutemet...ex inferis...",
+			"Are you gonna bark all day, little doggie, or are you gonna bite?",
+			"Monkey needs a hug.",
+			"Monkey loves you."};
 		
 		if (opponent instanceof PlayerShip) {
 			if (Math.random() < BOT_TRASH_TALK)  {
