@@ -1,0 +1,142 @@
+----------------------------------------------------------------------------*/
+/* Import other stylesheets
+-----------------------------------------------------------------------------*/
+
+/* Set the document up
+/* Remove padding and margin */
+*
+    {
+    margin: 0;
+    padding: 0;
+    border: 0;
+}
+
+.clear
+    {
+    clear:both;
+}
+/* Sections 
+
+/* Header
+-----------------------------------------------------------------------------*/
+#header {
+	line-height: 200%;
+	font-family: Monospace,Serif;
+	font-variant:small-caps;
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
+	width:100%;
+	text-align:center;
+}
+#ncombatTitle {
+	margin: 10px;
+	padding: 10px;
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
+	font-size:150%;
+}
+
+/* Body
+-----------------------------------------------------------------------------*/
+	body {
+	margin: 0px;
+	padding: 0px;
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
+	font-size:100%;
+	}
+
+	#content {
+		background-image: url("../images/paper-texture.gif");
+		background: #f5f5f5;
+		float: center;
+	}
+
+
+
+/* Game console and elements
+-----------------------------------------------------------------------------*/	
+#gameConsole {
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
+	float: center;
+	width: 96%;
+}
+
+#playerInfo {
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
+	float: center;
+	width: 94%;
+}
+
+#statusScreen {
+	font-family:Monospace,Serif;
+	font-variant: small-caps;
+	background-image: url("/images/paper-texture.gif");
+	background: #f5f5f5;
+	float: center;
+	width: 94%;
+	height: 400px;
+	overflow: auto;
+}
+
+#commandConsole {
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
+	float: center;
+	width: 94%;
+}
+
+#docPane {
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
+	
+}
+
+#docs {
+	display: none;
+}
+
+#restartPane {
+	background: pink;
+	display: none;
+	width: 94%;
+}
+
+#restartLink {
+	padding-top: 10px;
+	padding-left: 50px;
+	padding-bottom: 5px;
+}
+	
+/* Footer
+-----------------------------------------------------------------------------*/
+#footer {
+	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
+	clear: both;
+	width: 100%;
+	text-align: right;
+}
+
+/* Forms
+-----------------------------------------------------------------------------*/
+
+input.text
+    {
+    	background-image: url("../images/paper-texture.gif");
+	background: #f5f5f5;
+    padding: 3px;
+    border: 1px solid #999999;    
+}
+
+
+
+
+
+
+
+
+
+

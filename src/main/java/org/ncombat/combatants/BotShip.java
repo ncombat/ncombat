@@ -266,7 +266,7 @@ public class BotShip extends Ship
 			"Fear my wrath.",
 			"Do you hear the voices too?",
 			"Caesar si viveret, ad remum dareris.",
-			"Where we're going, we won't need eyes to see.".
+			"Where we're going, we won't need eyes to see.",
 			"Libera te tutemet...ex inferis...",
 			"Are you gonna bark all day, little doggie, or are you gonna bite?",
 			"Monkey needs a hug.",

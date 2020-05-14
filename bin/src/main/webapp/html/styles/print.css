@@ -1,0 +1,75 @@
+/* from http://line25.com/tutorials/handy-tips-for-creating-a-print-css-stylesheet */
+@CHARSET "ISO-8859-1";
+
+
+<!-
+Palette, generated from 
+	http://www.degraeve.com/color-palette/index.php?q=http://www.xmission.com/~legalize/vintage/images/ti/texassilent700.gif,5d0b0b575254989896c8cdd0827e7c,790000716568a99f99c5c6c0f9ffff		
+	dull
+		#551111
+		#555555
+		#999999
+		#cccccc
+		#887777
+	
+	vibrant
+		#770000
+		#776666
+		#aa9999
+		#ccccbb
+		#ffffff
+-->
+
+
+body {
+	font-family: Monospace, Serif;
+	color: #000;
+	background: #fff;
+}
+
+#nav, #side, #footer, .post-meta, #respond, .reply, .post-info {
+	display: none;
+}
+
+#header h1 {
+	text-align: center;
+	font-size: 42pt; font-style: italic;
+	margin: 0;
+}
+#header h2 {
+	text-align: center;
+	font-size: 10pt;
+}
+
+#content h2 {
+	font-size: 32pt
+	font-style: italic;
+}
+
+#content h3 {
+	font-size: 18pt;
+	margin: 0;
+}
+
+a {
+	color: #000;
+	text-decoration: none;
+}
+
+#main p a:after {
+	content: " ("attr(href)") ";
+	font-size: 10pt;
+}
+
+#comments {
+	page-break-before: always;
+}
+
+ol.commentlist li {
+	list-style: none;
+	border-bottom: 2px solid #eee;
+	margin: 0 0 10pt 0;
+}
+	ol.commentlist li div.comment-meta {
+		font-size: 6pt;
+	}

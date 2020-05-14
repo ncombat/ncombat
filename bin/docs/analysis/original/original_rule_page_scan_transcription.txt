@@ -1,0 +1,202 @@
+-- transcribed from original rules scans.
+
+OL, COMINFO/UN=GAP****
+:LN
+
+Combat IV command explanation and game notes
+
+I have added 6 ships to combat, making a total of 15 ships. 
+
+Commands are -
+
+A - Accelerate ship. 
+	Ax,y accelerate from -5 to 5 km/sec^2 (x) from 0 to 300 seconds of acceleration (y). 
+	Ex: A2,30 accelerate at 2 km/sec^2 for 30 seconds.
+
+	Final speed = acceleration * time of acceleration
+	Negative values of acceleration allow you to go in reverse.
+	One km/sec^2 acceleration costs 50 energy units
+
+B - toggles brief mode on and off. When it is on, it deletes headers to speed printout.
+
+E - send messages. After issuing E command, program asks you to enter a message. Only 69 characters are sen, null line sends no message. To send to just one person type: /3 Hi there (where 3 is the ship number you want to receive private messages.) Otherwise everyone receives everyone else's messages. 
+
+F - full power to both shields. Faster than doing S1,25S2,25 to put power on shields.
+
+G - gravimetric sensor range adjustment, Gx. When signing on, sensor range is 30000 KM. This command allows a player to alter the time it takes for status printout on ships.
+
+H - gives a brief list of commmands.
+
+I - intelligence command. IX,Y here are the subcommands:
+   1. Print rotation and speed to attain a parallel course
+        with ship n. Ex: I1,3 would print:
+        SP      ROT     SPD or ROT      SPD
+        3       -120.5  10      59.5    -10
+        
+        Since a ship can go forward or reverse the player has a choice of turning in either of two directions and using the appropriate engine. Since 59.5 is closer, R59.5 is issued. After rotation is complete (about 10 seconds) A-5,2 is issues then the ships will be stationary relative to each other (no matter what angles and speeds ships had been flying). Once parallel, you can rotate your ship to zero the azimuth and fdire, or accelerate to close in.
+
+   2. Find range and azimuth to center of combat zone. Ex: I2 prints AZ: 0180 RNG: 27034 TO CENTER.
+        
+   3. Print out commander's name, terminal number, user number and kills of ships presently on. EX: I3,2 would give data on ship 2 only. I3 would print data on all ships.
+
+   4. List of last 30 users giving ship, status, kills made, terminal number, usernumber, time on, time off and commanders name.
+      STATUS:  = Still playing
+                HNG = Ship hung up his phone.
+                LPR = Ship lost all power.
+                DGN = Ship destroyed by gorn base n.
+                DDS = Ship self-destructed.
+                PUR = Ship was purged by a monitor.
+
+   5. Map option. Prints map of area out to sensor range (15 * 15 size). Sx = ship x, Gx = Gorn x, **  two or more ships within square. Zero degrees is straight up, negative degrees left and positive degrees righthand side.
+
+   6. Prints damage on, azimuth to and range to gorn bases still on, if within range set by G command or +/- 15 degrees azimuth.
+
+L = fire lasers. LX Fire 0 to 2000 energy, spread is +/- 1 degree/ Lasers hit all targets within spread regardless of range. The more power applied to lasers, the longer it takes for  the lasers to cool down. The exact equation for time require for lasers to cool is (POWER/40)+10
+Ex: L1000 (1000/40)+10 = 35 seconds.
+Damage caused depends on laser power, range to target, power on shield and shield hit. Since shield 1 is stronger than shield 2, 
+
+CD = Coefficient of Damage = (laser pow * 12 * (33-shield pow)/Range/1)/2
+
+hit on shield 1 causes:
+ CD percent damage on shield 1
+ CD percent damage on ship itself.
+ 
+hit on shield 2 causes 
+ CD*2 percent damanage on shield 2
+ CD percent damage on ship itself
+
+M - fire missile. MX,Y or MX MY 2 tubes available to fire, computer fires tubes if they are ready. It takes 60 seconds to load a tube. Range of missiles is 20000 KM. Ships have a maximum capacity of 25 missiles. Missiles are restored after every five kills. Target must be within +/- 5 degrees azimuth to allow a hit. Missiles are not fired at non-existent ships or gorns. Ex: M5 fires one missile at ship 5, if tube 1 were not ready yet, computer would fire tube 2 automatically if it were ready. For purposes of missile targeting, gorn bases are considered targets 21, 22, 23 and 24 respectively.
+CD = coeff of damage = (102-(shield pow * 4))/2
+
+hit on shield 1 causes:
+ CD percent damage on shield 1
+ CD percent damage on ship itself.
+hit on shield 2 causes 
+ CD*2 percent damanage on shield 2
+ CD percent damage on ship itself
+
+N - null command, If player wishes to get the latest information about the position of ships, ships destroyed and other related information, and have used only the b,c,e,g,i usually n
+
+P - distribute repair rate between two shields and ship. Px,y. The maximum rate of 1.5 percent per second, can be distributedin any manner. Px,y is the format, x = rate on shield 1 y = rate on shield 2. Ship gets 1.5-x-y
+Ex: P1,0 (or P1) gives shield 1 1 percent repair per second, shield 2 gets none, so ship get
+ .5 percent per second. Absent parameters = 0.
+
+Ex. P gives full power to ship. Repair automatically starts 40 seconds after damage occurs. Repair previously taking place is suspended after damage occurs. Repair continues through any action of yours however.
+Distribution is initally .5 percent per shield and ship. It is advised to keep repair off by staggering missiles and lasers or if out of missile range by shooting lasers about 1000.
+
+R - rotate ship. RX,y Positive or negative rotation. 0 to +/- 360 (X)
+ex: R180 will rotate at 6 deg/sec which will take about 30 seconds. Rate of rotation can also be varied. RX R180, 1 will rotate at 1 deg/sec instead of 6 dec/sec. this will takke about 180 seonds. Maximum rate of rotation is 6 deg/sec.
+
+S - individual shield power adjustment. Sx,y from 0 to 25 power/sec. 
+ex: S1,13 shield 1 to power 13.
+ex: S2,25 shield 2 to power 25.
+Ex FS2 turns S1 and S2on to full and then turns s2 off, faster than S1,25. Shield come on automatically if you sign on within 20000 km of another ship. Their shields do not detect you, however.
+
+STOP - destructs ship and logs you off game, but only if you are at least 30000 away from the nearest ship. The only other ways out are through being destroyed by someone or something else, or by losing all power (which isn't hard).
+
+Vx track ship x. The only data you will receiev will be the general data for the ship you are tracking (first line) and a list of all the existing ships and their courses toward you (second line) and your two data lines. When the ship you are tracking is destroyed, you go out of tracking mode and back into the normal output mode. IF tracking while not in breif mode, the second line our output is headed by a #S heading# entry for all existing ships.
+
+Z - zero power on both shield. Useful utility command to help conserve ships energy.
+
+Concerning hanging up the phone:
+I have rigged it so that if a person hangs  up the phone, the person who hit them last gets the hung-up persons power and credit for killing that ship. Therefore, hanging up the phone can no longer deprive some worthy soul of a kill and energy.
+
+Each ship has two shields. Shield 1 convers the area in fron of a ship from +/- 30 degrees. Shield 2 concers everything else.
+Ex: ship is at -34 degrees azimuth,. Enemy ship would hit your shield 2 if fired at you. 
+Ex: ship at 17 degrees azimuth, ship would hit shield 1 if fired at you.
+
+There are 4 gorn bases around the perimeter of the combat one that guard against intruders into gorn space. Anyone entering their space is shot at until the ship is destroyed or until you leave gorn territory. The range of gorn blasters is 100,000 Km.
+Damage to gorns is calculated differently than damage to ships. Gorns can fire in any direction with equal ease, and fire once every 50 secnds. Gorns are 30000 KM from their borders. Gorn space encircles the entire combat zone. The boundary is 70000 km from the center. Players are warned at 60000 km when they are near gorn territory.
+
+Engine heat builds up as follows:
+Heat = 35 * acceleration * time. 
+Acceleration is in km/sec^2. 
+Heat dissipates at 20 degrees per second. 
+If heat exceeds 5000, each second heat is above 5000 degrees costs 50 energy units. 
+If heat exceeds 7999 engines blow up and are useless. 
+10 percent more damage is done to the ship, which stops repair for 40 seconds.
+
+Data is printed out as follows:
+
+SP      DMG     P1 P2   Speed Course Azimuth    Range Heading
+* this much for own ship*
+
+SP = ship number
+
+DMG =damage to ship
+
+P1 = power on shield 1
+P2 = power on shield 2
+
+Speed = speed of ship in km/sec.
+
+Course = flight angle away from or toward your ship.
+	If your own ships course is not equal to zero, it means you are not pointing the direction you are moving. 
+	180 or -180 indicates you are pointing opposite the direction you are moving. 
+	To regain a 0 course angle, rotate -negative- the course angle.
+		Ex: -136.5 so: r136.5
+	to stop the movement of your ship, you must accelerate in the opposite direction of the initial acceleration.
+	Ex: 152.3 add 27.7 to get 180 thus: R27.7 or R-152.3 which will allow you to use reverse engines. Or do I1,x where x is your ship number. It will figure out all the angles and speeds needed. Just enter them. Remember to wait until you have rotated (up to 30 seconds) before accelerating.
+	The course of another ship indicates whether it is coming toward you or moving away (180 or -180) 
+	Ex: -27 means the other ship will move past you
+	Ex: -.3 means ship is coming almost at you.
+
+Azimuth = angle off line of fire (from front of ship)
+	Ex: your own course is zero, azimuth to ship is -179 means you are moving almost directly away from ship 3, 
+		and are unable to make any hits on ship 3.
+	Ex: ship 5 is at range 20300 Azimuth 137.2 and you wish to hit ship 5 with missiles. 
+	This: R 137.2 then: A1,30
+	A little later ship is at range less than 20000 and you can fire with missiles. 
+		But then ship 5 starts moving off at high speed, so you use the I1,5 command to parallel ship 5 to make stationary relative to you...by this time ship 5 has been destroyed by ship 9 and ship 2 popped up 5000 km from you and is making life miserable...
+	
+Range = distance to ship in KM.
+	
+Heading = direction ship is pointing (0=at you 180=away from you) 
+	Ex: ship 2 has heading of 2.5 degrees. This means that player 2 seens that the azimuth to you is 2.5 and it just so happens the range is 18000 km so he decides to fire 2 missiles at you.
+
+Data about your own ship comes before commands input request.
+
+Energy DMG1 DMG2 T1/MI/T2 T3 ACEL/TIM Deg/Tim Heat
+
+Energy = energy remaining
+
+Dmg1 = Damage on shield 1
+Dmg2 = Damage on shield 2
+
+T1 = Time until tube 1 is loaded and ready to fire
+MI = number of missiles remaining
+T2 = time till tube 2 is loaded and ready to fire
+
+T3 = time till laser is cooled down and ready to fire
+
+ACEL = acceleration in km/sec^2 of last acceleration command
+Tim = seconds left until accleration is complete
+
+deg = angle left to rotate for last rotation command
+tim = seconds until rotation is complete
+
+heat = engine heat
+
+hit indications:
+if damage > 20 percent
+**BLAM** Ship 1 laser hit shield 1 caused ?? damage
+**BLAM** Missile ...
+
+If damage < 20 percent
+>>PWANG<< (in place of **BLAM**)
+
+
+Commands and their parameters can be placed on the same input line in combat VI to speed play, as can be seen in some examples above.
+
+Ex: commands: A1,100P1L2000M1,1FS2
+This line would do the following:
+A1,100 would start ship acceleration at 1 km/sec^2
+P1 distributes 1 percent repair rate to shield 1. Therefore shield 2 gets zero percent repair and the ship gets .5 percent repair.
+L2000 fires laser with 2000 units of energy
+M1,1 fires two missiles at ship 1
+FS2 sets both shields to full strength and turns off shield 2.
+
+
+
+
+velocity = sqrt(x^2 + y^2);
