@@ -50,7 +50,7 @@ public class BotShip extends Ship
 	private static final double SHIELD_SNAP_RANGE = 20000.0;
 
 	// Percent chance bot will trash-talk opponent.
-	private static final double BOT_TRASH_TALK = .30;
+	private static final double BOT_TRASH_TALK = .33;
 	
 	private LinkedList<Command> commandQueue = new LinkedList<Command>();
 	
@@ -256,7 +256,8 @@ public class BotShip extends Ship
 	}
 
 	/**
-	 * Taunt the opponent.
+	 * Taunt the opponent. 
+	 * TODO: make this an external file.
 	 */
 	private void trashTalk(Combatant opponent) {
 		
