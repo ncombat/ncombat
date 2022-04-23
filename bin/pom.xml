@@ -18,7 +18,7 @@
 		<maven.compiler.target>1.7</maven.compiler.target>
 		<servlet.version>3.1.0</servlet.version>
 		<slf4j.version>1.7.13</slf4j.version>
-		<spring.version>5.2.9.RELEASE</spring.version>
+		<spring.version>5.3.19</spring.version>
         <war.warName>ncombat</war.warName>
 	</properties>
     
