@@ -52,15 +52,17 @@ Because the application is internet-exposed as an anonymous game, some "missing 
 
 **Evidence:** `pom.xml:11` declares `<version>2.2.6.RELEASE</version>` of `spring-boot-starter-parent`.
 
-**Impact:** Spring Boot 2.2.x reached end-of-life in 2020. The 2.2.6 release (April 2020) predates many published CVEs in Spring Framework, Spring Boot, embedded Tomcat, Jackson, Log4j-bridge, SnakeYAML, etc. Notable examples that apply (directly or via transitive dependencies):
+**Impact:** Spring Boot 2.2.x reached end-of-life in 2020 (unverified — confirm against the official Spring support matrix). The 2.2.6 release (April 2020 — also unverified date) predates many published CVEs in Spring Framework, Spring Boot, embedded Tomcat, Jackson, Log4j-bridge, SnakeYAML, etc. Examples below — **CVE applicability depends on the actual transitive dependency tree and runtime configuration; I did not run `./mvnw dependency:tree` to confirm each one. Treat this as a list to check, not a list of confirmed exposures.**
 
-- **CVE-2022-22965 ("Spring4Shell")** — RCE via data binding on JDK 9+ when running on Tomcat as a WAR. The active build is an embedded-JAR Spring Boot run, which mitigates the original PoC but does not eliminate exposure for any downstream packaging.
-- **CVE-2022-22950** — Spring Expression DoS.
-- **CVE-2023-20861 / CVE-2023-20860 / CVE-2023-20863** — Spring Framework SpEL/path-pattern vulnerabilities.
-- Numerous embedded-Tomcat CVEs from 2020–2024 (request smuggling, response header injection, etc.).
+- **CVE-2022-22965 ("Spring4Shell")** — RCE via data binding on JDK 9+ when running on Tomcat as a WAR. The active build is an embedded-JAR Spring Boot run, which mitigates the original PoC but may not eliminate exposure for downstream packaging changes.
+- **CVE-2022-22950** — Spring Expression DoS (applicability depends on whether SpEL is exposed to user input).
+- **CVE-2023-20861 / CVE-2023-20860 / CVE-2023-20863** — Spring Framework SpEL/path-pattern vulnerabilities (I have not verified the affected-version ranges against 2.2.6's pinned Spring Framework version).
+- Numerous embedded-Tomcat CVEs from 2020–2024 (request smuggling, response header injection, etc.) — applicability depends on the exact Tomcat version pulled by Boot 2.2.6 BOM, which I did not check.
 - Jackson `2.10.x` databind CVEs (polymorphic deserialization) if any Jackson typing is enabled.
 
-**Remediation:** Upgrade to a supported Spring Boot 3.x line (or at minimum 2.7.18 with commercial support). This is the highest-leverage fix and resolves a long tail of transitive CVEs in one move. Track via `./mvnw dependency:tree` + OWASP Dependency-Check (`org.owasp:dependency-check-maven`).
+**Recommended verification step before remediation:** Run `./mvnw org.owasp:dependency-check-maven:check` to get the authoritative list of CVEs against the actual artifact set, rather than relying on the inferred list above.
+
+**Remediation:** Upgrade to a supported Spring Boot 3.x line (or to the latest 2.7.x if Java 8 must be retained — I am not certain of the current OSS-support cutoff for 2.7.x, so verify against the official Spring support matrix before relying on it). This is the highest-leverage fix and resolves a long tail of transitive CVEs in one move. Track via `./mvnw dependency:tree` + OWASP Dependency-Check (`org.owasp:dependency-check-maven`).
 
 ---
 
@@ -70,14 +72,14 @@ Because the application is internet-exposed as an anonymous game, some "missing 
 - `src/main/resources/static/html/lib/jquery-1.3.2.js` (committed copy)
 - `src/main/resources/templates/ncombat.html:7`, `templates/ncombat2.html:7`, `templates/admin.html:7` load it.
 
-**Impact:** jQuery 1.3.2 was released in 2009. Affected by at least:
+**Impact:** jQuery 1.3.2 dates from around 2009 (release-year recollection, not verified against the jQuery changelog). Likely affected by the CVEs below — **I have not cross-checked each CVE's affected-version range against 1.3.2 specifically.** All five are commonly cited for legacy 1.x lines, but please verify against the NVD entry / jQuery security advisories before quoting these in a remediation ticket:
 
 - **CVE-2012-6708** — selector-based XSS via `$()` accepting HTML.
 - **CVE-2015-9251** — XSS via cross-domain Ajax + `text/javascript` content-type.
 - **CVE-2019-11358** — prototype pollution in `$.extend(true, …)`.
 - **CVE-2020-11022 / CVE-2020-11023** — XSS through `.html()`, `.append()`, etc., when handling untrusted HTML.
 
-Several of these are directly reachable: the templates call `$('#prompt').html(data.prompt)` (CVE-2020-11022/23 surface).
+`$('#prompt').html(data.prompt)` is the directly-reachable sink for CVE-2020-11022/23 *if* the affected-version range covers 1.3.2 (I believe it does — the advisory commonly cites "≥1.2"; verify).
 
 **Remediation:** Upgrade to jQuery 3.7.x at minimum, or — preferred — remove jQuery entirely. The amount of jQuery actually used (`$.ajax`, `$().html`, `$().css`, `$().load`, `$.getJSON`) is small and trivially replaceable with `fetch` and `Element.textContent`.
 
@@ -161,8 +163,8 @@ The only call to `session.invalidate()` is on player death (line 213).
 - No `server.ssl.*` configuration; the app speaks plain HTTP.
 
 **Impact:**
-- Session cookie is **not** marked `HttpOnly` by default in older Spring Boot — JS (and therefore any XSS) can read `document.cookie`. (Spring Boot does default HttpOnly to `true` in recent versions, but the project explicitly relies on default behaviour with no test coverage for it; making it explicit is safer.)
-- No `Secure` flag — cookie is sent over plaintext HTTP, observable on the wire.
+- Session cookie may not be marked `HttpOnly` — JS (and therefore any XSS) could read `document.cookie`. **I did not start the app to inspect the actual `Set-Cookie` header**, and I am not certain what the embedded Tomcat default is for the Spring Boot 2.2.6 line specifically (I believe recent Boot versions default `HttpOnly=true`, but verify by capturing a response). Making the attribute explicit in `application.properties` removes the doubt.
+- No `Secure` flag — cookie is sent over plaintext HTTP, observable on the wire (this part is certain — the app has no TLS configuration at all).
 - No `SameSite` — full CSRF surface (see #5).
 - No HSTS, no `redirect` from HTTP to HTTPS.
 
@@ -183,12 +185,12 @@ Front the application with HTTPS (reverse proxy or `server.ssl.*`) and enable HS
 - `src/main/resources/templates/ncombat.html:39` / `ncombat2.html:39` — `$('#prompt').html(data.prompt);`
 - Player-supplied text reaches `addMessage()` paths through `processMessageCommand` (`PlayerShip.java:432-449`) and through the "ship just appeared" / "ship just destroyed" formatted strings in `Combatant.java` and `GameServer.java`. Player names are merely uppercased and trimmed (`GameRestController.java:104`).
 
-**Impact:** Today's exposure is limited by two coincidences:
+**Impact:** Today's exposure is limited by two factors. **I did not test either empirically in a real browser** — both should be verified by trying to inject `<img src=x onerror=alert(1)>` as a player name and observing the rendered DOM:
 
-1. The teletype writes one character at a time. Each write reads back `innerHTML` (which the browser serializes with entity-escapes for `<`, `&`, `"`), then re-parses. As a result, multi-character HTML tag fragments do not assemble across writes in modern browsers — they end up as text. *This is an implementation accident, not a defense.*
-2. Prompts assigned via `.html()` are server-controlled constants (`"CMDS?"`, `"ENTER YOUR NAME?"`, etc.), so the `.html()` sink is currently fed only safe values.
+1. The teletype writes one character at a time. **I believe** each write reads back `innerHTML` (which the browser serializes text nodes with entity-escapes for `<`, `&`, etc.), then re-parses — which would mean multi-character HTML tag fragments do not assemble across writes. Browser serialization details vary across engines and have changed over time, so this should not be relied upon as a defense without testing it.
+2. Prompts assigned via `.html()` are server-controlled constants (`"CMDS?"`, `"ENTER YOUR NAME?"`, etc.) — this part is verifiable from `GameStatusModel.java:8-10`, so the `.html()` sink is currently fed only safe values.
 
-If either condition is changed (e.g. the teletype is "fixed" to render whole lines for performance, the message channel ever emits a server-side admin notice that includes user input, or `.html()` is reused for a player-driven value), this immediately becomes stored XSS in a multiplayer chat channel.
+If either condition is changed — or if my browser-behavior assumption in (1) turns out to be wrong on some target browser — this becomes stored XSS in a multiplayer chat channel. The fix (server-side escaping + `textContent` on the client) is cheap regardless of whether the current configuration is exploitable today.
 
 **Remediation:**
 - Render messages with `textContent` / `document.createTextNode`, never `innerHTML`.

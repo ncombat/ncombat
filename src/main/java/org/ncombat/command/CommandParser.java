@@ -453,7 +453,7 @@ public class CommandParser
 		String text = (argNum < numArgs ? cmdText.getArg(argNum) : null);
 		if (text != null) {
 			try {
-				result = new Double(text);
+				result = Double.valueOf(text);
 			}
 			catch (NumberFormatException e) {
 				throw new CommandParseException(text + ": not a valid " + description + ".");
@@ -471,7 +471,7 @@ public class CommandParser
 		String text = (argNum < numArgs ? cmdText.getArg(argNum) : null);
 		if (text != null) {
 			try {
-				result = new Integer(text);
+				result = Integer.valueOf(text);
 			}
 			catch (NumberFormatException e) {
 				throw new CommandParseException(text + ": not a valid " + description + ".");
