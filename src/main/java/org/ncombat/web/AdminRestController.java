@@ -10,8 +10,8 @@ import java.util.Map;
 public class AdminRestController
 {
 	@GetMapping("/adminTest.json")
-	public Map adminTest() {
-		Map model = new HashMap();
+	public Map<String, Object> adminTest() {
+		Map<String, Object> model = new HashMap<>();
 		model.put("msg1", "Hello, world!");
 		model.put("msg2", "AdminController says hello.");
 		return model;

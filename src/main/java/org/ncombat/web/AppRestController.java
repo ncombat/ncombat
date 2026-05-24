@@ -10,8 +10,8 @@ import java.util.Map;
 public class AppRestController
 {
 	@GetMapping("/appTest.json")
-	public Map appTest() {
-		Map model = new HashMap();
+	public Map<String, Object> appTest() {
+		Map<String, Object> model = new HashMap<>();
 		model.put("msg1", "Hello, world!");
 		model.put("msg2", "AppController says hello.");
 		return model;

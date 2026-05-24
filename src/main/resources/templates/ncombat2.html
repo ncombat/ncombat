@@ -3,40 +3,36 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	
 	<title>NCOMBAT</title>
-	
-	<script type="text/javascript" src="html/lib/jquery-1.3.2.js" ></script>
+	<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+
+	<script type="text/javascript" src="html/lib/jquery-3.7.1.min.js"></script>
 	<script type="text/javascript" src="html/lib/ncombat_base.js"></script>
 	<script type="text/javascript" src="html/lib/teletype.js"></script>
 	
 	<link type="text/css" rel="stylesheet" href="html/styles/ncombat_screen.css">
 	   
 	<script>
-		// Our configuration object, where we put our data to avoid cluttering
-		// up the global namespace.
 		ncombat = {};
-		
-		function processResponse(xhr, status) {
-			if (!status || (status != 'success')) return;
-			//alert("AJAX SUCCESS: status=" + status +", response=" + xhr.responseText);
-			eval('var data = ' + xhr.responseText + '.data');
+
+		function processResponse(response) {
+			var data = response.data;
 			var messages = data.messages;
 			if (messages) {
 				$('#commandConsole').css('display', 'none');
-				for (var i = 0 ; i < messages.length ; i++) {
+				for (var i = 0; i < messages.length; i++) {
 					teletype.println(messages[i]);
 				}
-				teletype.callWhenDone( function() {
+				teletype.callWhenDone(function () {
 					if (data.alive) {
 						$('#commandConsole').css('display', 'inline');
 						$('#cmds').val('').focus();
-					}
-					else {
+					} else {
 						$('#restartPane').css('display', 'inline-block');
 					}
 				});
 			}
 			if (data.prompt) {
-				$('#prompt').html(data.prompt);
+				$('#prompt').text(data.prompt);
 			}
 			if (data.url) {
 				ncombat.nextUrl = data.url;
@@ -44,42 +40,38 @@
 		}
 
 		function processError(xhr, status, error) {
-			alert("AJAX ERROR: status='" + status + "', error='" + error + "'");	
+			alert("AJAX ERROR: status='" + status + "', error='" + error + "'");
 		}
 
 		function sendRequest() {
 			if (ncombat.nextUrl) {
 				$.ajax({
-					complete: processResponse,
-					data: { text: $('#cmds').attr('value') },
-					error: processError,
+					url: ncombat.nextUrl,
 					type: 'post',
-					url: ncombat.nextUrl
+					dataType: 'json',
+					data: { text: $('#cmds').val() },
+					success: processResponse,
+					error: processError
 				});
-			}		
+			}
 		}
 
-		$(document).ready( function() {
-		
-			setInterval( function() {
-				$.getJSON("gamePing.json");
-			}, 30000);
+		$(function () {
+			setInterval(function () { $.getJSON("gamePing.json"); }, 30000);
 
 			$("#dd").load("html/content/docs/COMINFO.txt");
-			// allow click to expand dd tag
-			$("dt").click(function(){
+			$("dt").on('click', function () {
 				$(this).next().toggle();
-				
 			});
-			
-			// start interface	
+
 			teletype.start(statusScreen);
 			$.ajax({
-				complete: processResponse,
-				error: processError,
+				url: 'gameJoin.json',
 				type: 'post',
-				url: 'gameJoin.json'
-			});		
+				dataType: 'json',
+				success: processResponse,
+				error: processError
+			});
 		});
 	</script>
 </head>
@@ -107,17 +99,5 @@
 			<dd><pre><span id="originalDocs"></span></pre></dd>
 		</dl></div>
 	<div id="footer"><span id="about">about</span> <span id="contact">contact</span> <span id="help">help</span> <span id="license">license</span> </div>
-	<div id="googleanalytics">
-		<script type="text/javascript">
-			var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
-			document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
-		</script>
-		<script type="text/javascript">
-			try{
-				var pageTracker = _gat._getTracker("UA-10593313-2");
-				pageTracker._trackPageview();
-			} catch(err) {}
-		</script>
-	</div>
 </body>
 </html>

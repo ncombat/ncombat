@@ -21,7 +21,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 
-@SuppressWarnings("unchecked")
 public class GameServer implements DisposableBean
 {
 	public class GameServerTimerTask extends TimerTask
@@ -251,7 +250,7 @@ public class GameServer implements DisposableBean
 
 	private List<CommandBatch> drainCommandBatches() {
 		synchronized (cycleMonitor) {
-			List<CommandBatch> drainedBatches = new ArrayList(commandBatches);
+			List<CommandBatch> drainedBatches = new ArrayList<>(commandBatches);
 			commandBatches.clear();
 			return drainedBatches;
 		}

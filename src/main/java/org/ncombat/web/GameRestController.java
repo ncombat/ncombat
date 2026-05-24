@@ -1,5 +1,7 @@
 package org.ncombat.web;
 
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpSession;
 import org.ncombat.GameManager;
 import org.ncombat.GameServer;
 import org.ncombat.combatants.Combatant;
@@ -10,13 +12,10 @@ import org.ncombat.command.CommandParser;
 import org.ncombat.command.MessageCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
