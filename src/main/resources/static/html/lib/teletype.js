@@ -3,7 +3,7 @@ teletype = function() {
 	var SPACE = '&nbsp;';
 	var MAXSIZE = 3000;
 	var CLIPSIZE = 2000;
-	
+
 	var text = "";
 	var nextChar = 0;
 	var running = false;
@@ -11,14 +11,18 @@ teletype = function() {
 	var blockNum = 1;
 	var holdBuffer;
 	var callback;
+	var charCount = 0;
 
-	var clip = function(markup) {
-		var br = "<br>";
-		while (markup.length > CLIPSIZE) {
-			var i = markup.indexOf(br);
-			if (i > -1) markup = markup.substring(i + br.length);
+	var clip = function() {
+		while (charCount > CLIPSIZE && ttElem.firstChild) {
+			var node = ttElem.firstChild;
+			if (node.nodeType === Node.TEXT_NODE) {
+				charCount -= node.nodeValue.length;
+			} else {
+				charCount -= 1;
+			}
+			ttElem.removeChild(node);
 		}
-		return markup;
 	};
 
 	var typeCharacter = function() {
@@ -39,12 +43,20 @@ teletype = function() {
 			}
 		}
 	};
-	
+
 	var render = function(msg) {
 		if (running) {
-			var markup = ttElem.innerHTML + msg;
-			if (markup.length > MAXSIZE) markup = clip(markup);
-			ttElem.innerHTML = markup;
+			if (msg === NEWLINE) {
+				$(ttElem).append(document.createElement('br'));
+				charCount += 1;
+			} else if (msg === SPACE) {
+				$(ttElem).append(document.createTextNode(' '));
+				charCount += 1;
+			} else {
+				$(ttElem).append(document.createTextNode(msg));
+				charCount += msg.length;
+			}
+			if (charCount > MAXSIZE) clip();
 			ttElem.scrollTop = ttElem.scrollHeight;
 		}
 		else {
